@@ -1,0 +1,424 @@
+body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background:#f7f8fc;
+    color:#222;
+}
+/* ==========================
+RESET
+========================== */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:Poppins,sans-serif;
+
+background:#f6f7fb;
+
+color:#222;
+
+}
+
+/* ==========================
+APP
+========================== */
+
+.app{
+
+max-width:1350px;
+
+margin:auto;
+
+padding:35px;
+
+}
+
+/* ==========================
+HEADER
+========================== */
+
+.hero{
+
+text-align:center;
+
+margin-bottom:40px;
+
+}
+
+.hero h1{
+
+font-size:58px;
+
+font-weight:700;
+
+color:#251b8c;
+
+}
+
+.hero p{
+
+margin:auto;
+
+margin-top:15px;
+
+width:760px;
+
+max-width:100%;
+
+line-height:1.8;
+
+color:#6b7280;
+
+}
+
+/* ==========================
+WORKSPACE
+========================== */
+
+.workspace{
+    display:flex;
+    justify-content:center;
+}
+
+.left-panel{
+    width:430px;
+    max-width:100%;
+}
+
+/* ==========================
+LEFT PANEL
+========================== */
+
+.left-panel{
+
+width:100%;
+
+}
+
+/* ==========================
+RIGHT PANEL
+========================== */
+
+.right-panel{
+
+width:100%;
+
+}
+
+/* ==========================
+RESULT CARD
+========================== */
+
+.result-card{
+
+background:#fff;
+
+border:1px solid #d7d3ff;
+
+border-radius:18px;
+
+padding:24px;
+
+box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+}
+
+/* Header */
+
+.result-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:20px;
+
+}
+
+.result-header h2{
+
+font-size:28px;
+
+color:#251b8c;
+
+}
+
+/* Example */
+
+.example{
+
+font-size:14px;
+
+color:#666;
+
+}
+
+/* Preview */
+
+.preview-box{
+
+margin-top:15px;
+
+height:500px;
+
+background:#f2f4f8;
+
+border-radius:15px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+overflow:hidden;
+
+}
+
+.preview-box img{
+
+width:260px;
+
+}
+
+/* ==========================
+RESPONSIVE
+========================== */
+
+@media(max-width:1000px){
+
+.workspace{
+
+grid-template-columns:1fr;
+
+}
+
+.hero h1{
+
+font-size:40px;
+
+}
+
+}
+/* ===================================
+INPUT CARD
+=================================== */
+
+.input-card{
+
+    background:#ffffff;
+
+    border:1px solid #d8d3ff;
+
+    border-radius:18px;
+
+    padding:24px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+
+}
+
+/* Header */
+
+.card-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.card-header h2{
+
+    font-size:28px;
+
+    color:#251b8c;
+
+}
+
+/* icon */
+
+.info{
+
+    width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    background:#6b4eff;
+
+    color:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:12px;
+
+}
+
+/* label */
+
+.label{
+
+    display:block;
+
+    margin-bottom:10px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+/* upload */
+
+.upload-box{
+
+    border:2px dashed #d9d9d9;
+
+    border-radius:15px;
+
+    height:300px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    margin-bottom:20px;
+
+}
+
+.upload-box:hover{
+
+    border-color:#8b5cf6;
+
+}
+
+.upload-content{
+
+    text-align:center;
+
+}
+
+.upload-icon{
+
+    font-size:60px;
+
+    margin-bottom:18px;
+
+}
+
+.upload-content p{
+
+    color:#777;
+
+    font-size:14px;
+
+}
+
+/* AI Model */
+
+.model-info{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+}
+
+.badge{
+
+    background:#7c3aed;
+
+    color:white;
+
+    padding:3px 10px;
+
+    border-radius:30px;
+
+    font-size:12px;
+
+}
+
+/* Select */
+
+.select-model{
+
+    width:100%;
+
+    height:46px;
+
+    border:1px solid #ddd;
+
+    border-radius:10px;
+
+    padding:0 12px;
+
+    margin-bottom:20px;
+
+    font-size:15px;
+
+}
+
+/* Button */
+
+.split-btn{
+
+    width:100%;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(90deg,#8b5cf6,#b794f4);
+
+    color:white;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.split-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+/* Preview gambar upload */
+.preview-img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  object-fit: contain;
+}
