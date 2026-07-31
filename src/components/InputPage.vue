@@ -6,6 +6,8 @@ const emit = defineEmits(["next"]);
 const image = ref(null);
 const imagePreview = ref(null);
 
+const selectedModel = ref("basic");
+
 function chooseFile(event) {
   const file = event.target.files[0];
   if (file) {
@@ -75,22 +77,72 @@ function chooseFile(event) {
 
     </div>
 
-    <select class="select-model">
+    <div class="model-buttons">
 
-      <option>Basic</option>
+  <button
+    class="model-btn"
+    :class="{ active: selectedModel === 'basic' }"
+    @click="selectedModel = 'basic'"
+  >
+    Basic
+  </button>
 
-      <option>Advanced</option>
+  <button
+    class="model-btn"
+    :class="{ active: selectedModel === 'advanced' }"
+    @click="selectedModel = 'advanced'"
+  >
+    Advanced
+  </button>
 
-    </select>
+</div>
 
     <button
-  
-
-      class="split-btn"
-  @click="emit('next', { image, imagePreview })"
+  class="split-btn"
+  @click="emit('next', {
+    image,
+    imagePreview,
+    model: selectedModel
+  })"
 >
   Split Image
 </button>
 
   </div>
 </template>
+
+<style scoped>
+
+.split-btn {
+  margin-top: 16px;
+  /* baris-baris style lain yang sudah ada, biarkan tetap */
+}
+
+.model-buttons{
+    display:flex;
+    gap:12px;
+    margin-top:12px;
+}
+
+.model-btn{
+    flex:1;
+    padding:14px;
+    border:2px solid #7c3aed;
+    border-radius:12px;
+    background:#fff;
+    color:#7c3aed;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.model-btn:hover{
+    background:#f5f3ff;
+}
+
+.model-btn.active{
+    background:#7c3aed;
+    color:#fff;
+}
+</style>

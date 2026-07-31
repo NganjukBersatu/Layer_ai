@@ -5,7 +5,10 @@ const props = defineProps({
   layers: Object,
 });
 
-const emit = defineEmits(["restart"]);
+const emit = defineEmits([
+  "restart",
+  "delete-result"
+]);
 
 function formatFileSize(size) {
   if (!size) return "-";
@@ -20,6 +23,28 @@ function formatFileSize(size) {
 
   return (size / 1024 / 1024).toFixed(2) + " MB";
 }
+
+function downloadLayer() {
+  if (!props.layers?.result) {
+    alert("Belum ada hasil yang dapat didownload.");
+    return;
+  }
+
+  const link = document.createElement("a");
+  link.href = props.layers.result;
+  link.download = "layer.png";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function deleteLayer() {
+  if (confirm("Apakah Anda yakin ingin menghapus hasil?")) {
+    emit("delete-result");
+  }
+}
+
 
 </script>
 
@@ -83,41 +108,32 @@ function formatFileSize(size) {
 
       </div>
 
+<div class="button-group">
 
-      <button
-        class="btn"
-        @click="emit('restart')"
-      >
-        Upload New Image
-      </button>
+  <button
+    class="btn"
+    @click="emit('restart')"
+  >
+    Upload New Image
+  </button>
 
-      <button
-        class="btn"
-        @click="emit('restart')"
-      >
-        Download Layer
-      </button>
+  <button
+  class="btn"
+  @click="downloadLayer"
+  :disabled="!layers"
+>
+  Download Layer
+</button>
 
-      <button
-        class="btn"
-        @click="emit('restart')"
-      >
-        Favorite
-      </button>
+  <button
+  class="btn delete-btn"
+  @click="deleteLayer"
+>
+  Delete
+</button>
 
-      <button
-        class="btn"
-        @click="emit('restart')"
-      >
-        Delete
-      </button>
-
-      <button
-        class="btn"
-        @click="emit('restart')"
-      >
-        Share
-      </button>
+</div>
+      
 
     </div>
 
@@ -126,11 +142,25 @@ function formatFileSize(size) {
 
 <style scoped>
 
+.button-group{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:24px;
+}
+
+.button-group .btn{
+    flex:1;
+    margin-top:0;
+}
+
 .preview-page{
     display:grid;
     grid-template-columns:340px 1fr;
     gap:24px;
     margin-top:20px;
+/* Tambahkan ini */
+    align-items:start;
 }
 
 .card{
@@ -212,6 +242,20 @@ function formatFileSize(size) {
 
 .btn:hover{
     background:#6d28d9;
+}
+
+.btn:disabled{
+    background:#c4b5fd;
+    cursor:not-allowed;
+    opacity:.7;
+}
+
+.delete-btn{
+    background:#ef4444;
+}
+
+.delete-btn:hover{
+    background:#dc2626;
 }
 
 @media(max-width:900px){
