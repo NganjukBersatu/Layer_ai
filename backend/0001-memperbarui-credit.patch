@@ -1,0 +1,120 @@
+From ab972301a4af74a7e238487b518f51276d7cc652 Mon Sep 17 00:00:00 2001
+From: pujasonia78 <pujasonia78@gmail.com>
+Date: Wed, 5 Aug 2026 16:42:09 +0700
+Subject: [PATCH] memperbarui credit
+
+---
+ server.js | 97 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+
+diff --git a/server.js b/server.js
+index a1e851e..e9cb806 100644
+--- a/server.js
++++ b/server.js
+@@ -191,6 +191,103 @@ app.delete("/history/:id", async (req, res) => {
+ 
+ });
+ 
++app.post("/add-credit", async (req, res) => {
++  try {
++    const { user_id, amount } = req.body;
++
++    const result = await pool.query(
++      `UPDATE users
++       SET credit = credit + $1
++       WHERE id = $2
++       RETURNING credit`,
++      [amount, user_id]
++    );
++
++    if (result.rows.length === 0) {
++      return res.status(404).json({
++        success: false,
++        message: "User tidak ditemukan",
++      });
++    }
++
++    res.json({
++      success: true,
++      credit: result.rows[0].credit,
++    });
++
++  } catch (error) {
++    console.error(error);
++
++    res.status(500).json({
++      success: false,
++      message: "Gagal menambah credit",
++    });
++  }
++});
++
++app.get("/user-credit", async (req, res) => {
++  try {
++    const { user_id } = req.query;
++
++    const result = await pool.query(
++      "SELECT credit FROM users WHERE id = $1",
++      [user_id]
++    );
++
++    if (result.rows.length === 0) {
++      return res.status(404).json({
++        success: false,
++        message: "User tidak ditemukan",
++      });
++    }
++
++    res.json({
++      success: true,
++      credit: result.rows[0].credit,
++    });
++
++  } catch (error) {
++    console.error(error);
++    res.status(500).json({
++      success: false,
++      message: "Gagal mengambil sisa credit",
++    });
++  }
++});
++
++app.post("/deduct-credit", async (req, res) => {
++  try {
++    const { user_id, amount } = req.body;
++
++    const result = await pool.query(
++      `UPDATE users
++       SET credit = credit - $1
++       WHERE id = $2 AND credit >= $1
++       RETURNING credit`,
++      [amount, user_id]
++    );
++
++    if (result.rows.length === 0) {
++      return res.status(400).json({
++        success: false,
++        message: "Credit tidak cukup",
++      });
++    }
++
++    res.json({
++      success: true,
++      remaining_credit: result.rows[0].credit,
++    });
++
++  } catch (error) {
++    console.error(error);
++    res.status(500).json({
++      success: false,
++      message: "Gagal mengurangi credit",
++    });
++  }
++});
++
+ app.post("/upload-image", upload.single("image"), (req, res) => {
+ 
+   try {
+-- 
+2.55.0.windows.2
+
