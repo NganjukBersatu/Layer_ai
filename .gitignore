@@ -50,3 +50,36 @@ __pycache__/
 
 # Environment
 .env
+# Dependencies
+node_modules/
+
+# Python
+venv/
+**/venv/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build
+dist/
+build/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
