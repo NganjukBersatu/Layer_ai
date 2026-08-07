@@ -270,7 +270,7 @@ function handleSplitClick() {
         <template v-else>
           <img :src="imagePreview" class="preview-img" alt="Preview" />
 
-          <p>{{ image.name }}</p>
+          <p class="preview-filename">{{ image.name }}</p>
 
           <button
             type="button"
@@ -356,6 +356,45 @@ function handleSplitClick() {
 </template>
 
 <style scoped>
+/* ===== Fix responsive: cegah card & gambar overflow di layar sempit ===== */
+.input-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.upload-box {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; /* jaga-jaga kalau ada child yang tetap melebihi */
+}
+
+.upload-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.preview-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 260px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.preview-filename {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+/* ===== End fix responsive ===== */
+
 .add-credit-btn {
   border: none;
   background: #16a34a;
@@ -457,6 +496,10 @@ function handleSplitClick() {
 
   .mobile-menu {
     display: flex;
+  }
+
+  .preview-img {
+    max-height: 200px;
   }
 }
 

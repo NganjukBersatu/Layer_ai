@@ -22,12 +22,18 @@ const filteredHistories = computed(() => {
 
 async function loadHistory() {
   try {
-    const response = await fetch(`${API_BASE}/history`);
-    const data = await response.json();
+    const currentUserId = Number(localStorage.getItem("userId"));
 
-    if (data.success) {
-      histories.value = data.data;
-    }
+    const url = `${API_BASE}/history/${currentUserId}`;
+    console.log("Request URL:", url);
+
+    const response = await fetch(url);
+
+    console.log("Status:", response.status);
+
+    const text = await response.text();
+    console.log("Response:", text);
+
   } catch (error) {
     console.error(error);
   }

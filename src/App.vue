@@ -5,10 +5,15 @@ import ProcessPage from "./components/ProcessPage.vue";
 import PreviewPage from "./components/PreviewPage.vue";
 import LoginPage from "./components/LoginPage.vue";
 import HistoryPage from "./components/HistoryPage.vue";
+import ForgotPasswordPage from "./components/ForgotPasswordPage.vue";
+import RegisterPage from "./components/RegisterPage.vue";
 
 const isLoggedIn = ref(
     localStorage.getItem("isLoggedIn") === "true"
 );
+
+// Halaman yang ditampilkan sebelum login: "login" | "forgot-password" | "register"
+const authView = ref("login");
 
 const currentPage = ref("input"); // "input" | "process" | "preview" | "history"
 const historyOrigin = ref("input");
@@ -23,6 +28,7 @@ const selectedCreditAmount = ref(0);
 function loginSuccess() {
   isLoggedIn.value = true;
   localStorage.setItem("isLoggedIn", "true");
+  authView.value = "login"; // reset untuk sesi berikutnya (setelah logout)
 }
 
 function logout() {
@@ -33,10 +39,23 @@ function logout() {
   localStorage.removeItem("userName");
   localStorage.removeItem("userEmail");
 
+  authView.value = "login";
   currentPage.value = "input";
   selectedImage.value = null;
   selectedPreview.value = null;
   resultLayers.value = null;
+}
+
+function goToForgotPassword() {
+  authView.value = "forgot-password";
+}
+
+function goToRegister() {
+  authView.value = "register";
+}
+
+function backToLogin() {
+  authView.value = "login";
 }
 
 function goToProcess({ image, imagePreview, model, userId, creditAmount }) {
@@ -97,10 +116,32 @@ function goBackFromHistory() {
 
  <main class="workspace">
 
-  <LoginPage
-    v-if="!isLoggedIn"
-    @login="loginSuccess"
-  />
+  <template v-if="!isLoggedIn">
+    <Transition name="page-fade" mode="out-in">
+
+      <LoginPage
+        v-if="authView === 'login'"
+        key="login"
+        @login="loginSuccess"
+        @forgot-password="goToForgotPassword"
+        @register="goToRegister"
+      />
+
+      <ForgotPasswordPage
+        v-else-if="authView === 'forgot-password'"
+        key="forgot-password"
+        @back-to-login="backToLogin"
+      />
+
+      <RegisterPage
+        v-else-if="authView === 'register'"
+        key="register"
+        @back-to-login="backToLogin"
+        @registered="backToLogin"
+      />
+
+    </Transition>
+  </template>
 
   <section
     v-else

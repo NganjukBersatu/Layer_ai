@@ -115,12 +115,21 @@ app.post("/save-result", async (req, res) => {
   }
 });
 
-app.get("/history", async (req, res) => {
+app.get("/history/:userId", async (req, res) => {
 
   try {
 
+    const { userId } = req.params;
+
     const result = await pool.query(
-      "SELECT * FROM results ORDER BY created_at DESC"
+
+      `SELECT *
+       FROM results
+       WHERE user_id = $1
+       ORDER BY created_at DESC`,
+
+      [userId]
+
     );
 
     res.json({
@@ -134,7 +143,7 @@ app.get("/history", async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Gagal mengambil data",
+      message: "Gagal mengambil history",
     });
 
   }

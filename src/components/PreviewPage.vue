@@ -136,7 +136,7 @@ console.log(uploadData);
 
         <div class="info-row">
           <span>File Name</span>
-          <strong>{{ props.image?.name || "-" }}</strong>
+          <strong :title="props.image?.name || '-'">{{ props.image?.name || "-" }}</strong>
         </div>
 
         <div class="info-row">
@@ -249,19 +249,24 @@ console.log(uploadData);
     justify-content:space-between;
     gap:12px;
     margin-top:24px;
+    flex-wrap:wrap;
 }
 
 .button-group .btn{
     flex:1;
     margin-top:0;
+    min-width:140px;
 }
 
 .preview-page{
     display:grid;
-    grid-template-columns:340px 1fr;
+    grid-template-columns:minmax(0,340px) minmax(0,1fr);
     gap:24px;
     margin-top:20px;
     align-items:start;
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
 }
 
 .card{
@@ -270,6 +275,10 @@ console.log(uploadData);
     padding:24px;
     box-shadow:0 8px 25px rgba(0,0,0,.08);
     transition:transform .25s, box-shadow .25s;
+    min-width:0; /* penting: cegah grid item melebar mengikuti ukuran alami gambar di dalamnya */
+    box-sizing:border-box;
+    max-width:100%;
+    overflow:hidden;
 }
 
 .card:hover{
@@ -315,6 +324,7 @@ console.log(uploadData);
 
 .preview-image{
     width:100%;
+    max-width:100%;
     height:420px;
     background:#f5f5f5;
     border-radius:16px;
@@ -323,10 +333,12 @@ console.log(uploadData);
     align-items:center;
     overflow:hidden;
     border:2px dashed #dddddd;
+    box-sizing:border-box;
 }
 
 .result-image{
     width:100%;
+    max-width:100%;
     height:420px;
     background:linear-gradient(135deg, #f5f3ff 0%, #fdfcff 50%, #f5f3ff 100%);
     border-radius:16px;
@@ -335,6 +347,7 @@ console.log(uploadData);
     align-items:center;
     overflow:hidden;
     border:2px dashed #dddddd;
+    box-sizing:border-box;
 }
 
 .preview-image img,
@@ -354,6 +367,7 @@ console.log(uploadData);
     display:flex;
     flex-direction:column;
     gap:12px;
+    min-width:0;
 }
 
 .info-row{
@@ -362,14 +376,22 @@ console.log(uploadData);
     align-items:center;
     padding:10px 0;
     border-bottom:1px solid #eee;
+    gap:12px;
+    min-width:0;
 }
 
 .info-row span{
     color:#666;
+    flex-shrink:0;
 }
 
 .info-row strong{
     color:#222;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-align:right;
 }
 
 .status-badge{
@@ -382,6 +404,7 @@ console.log(uploadData);
     font-weight:700;
     padding:4px 12px;
     border-radius:999px;
+    flex-shrink:0;
 }
 
 .status-dot{
@@ -431,7 +454,7 @@ console.log(uploadData);
 @media(max-width:900px){
 
 .preview-page{
-    grid-template-columns:1fr;
+    grid-template-columns:minmax(0,1fr);
 }
 
 .preview-image,
@@ -443,6 +466,23 @@ console.log(uploadData);
 
 @media(max-width:600px){
 
+.preview-image,
+.result-image{
+    height:240px;
+}
+
+.info-row{
+    flex-wrap:wrap;
+}
+
+.info-row strong{
+    text-align:left;
+    max-width:100%;
+}
+
+.button-group .btn{
+    min-width:100%;
+}
 
 }
 
