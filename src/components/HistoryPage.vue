@@ -25,17 +25,18 @@ async function loadHistory() {
     const currentUserId = Number(localStorage.getItem("userId"));
 
     const url = `${API_BASE}/history/${currentUserId}`;
-    console.log("Request URL:", url);
-
     const response = await fetch(url);
 
-    console.log("Status:", response.status);
+    if (!response.ok) {
+      throw new Error(`Request gagal: ${response.status}`);
+    }
 
-    const text = await response.text();
-    console.log("Response:", text);
+    const data = await response.json();
 
+    // Jaga-jaga kalau API membungkus hasil dalam { data: [...] } bukan array langsung
+    histories.value = Array.isArray(data) ? data : data.data || [];
   } catch (error) {
-    console.error(error);
+    console.error("Gagal load history:", error);
   }
 }
 

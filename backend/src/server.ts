@@ -1,26 +1,24 @@
-const express = require("express");
-const cors = require("cors");
-const pool = require("./db");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+import express, { Request, Response } from "express";
+import cors from "cors";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import dotenv from "dotenv";
+import pool from "./db";
+import splitImageRouter from "./routes/splitImage.route";
+
+dotenv.config();
 
 const app = express();
 
 const storage = multer.diskStorage({
-
   destination: (req, file, cb) => {
     cb(null, "uploads/");
   },
-
   filename: (req, file, cb) => {
-
     const ext = path.extname(file.originalname);
-
     cb(null, Date.now() + ext);
-
   },
-
 });
 
 const upload = multer({ storage });
@@ -31,9 +29,12 @@ app.use(express.json());
 
 // Serve folder uploads secara statis, supaya gambar bisa diakses lewat
 // http://localhost:3000/uploads/namafile.jpg
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
-app.get("/test-db", async (req, res) => {
+// Route untuk split image (FAL.ai)
+app.use("/", splitImageRouter);
+
+app.get("/test-db", async (req: Request, res: Response) => {
   try {
     const result = await pool.query("SELECT NOW()");
     res.json({
@@ -49,12 +50,11 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
-// Route sederhana
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Backend AI Layer Splitter berjalan");
 });
 
-app.post("/login", async (req, res) => {
+app.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -77,7 +77,6 @@ app.post("/login", async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Terjadi kesalahan pada server",
@@ -85,9 +84,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/save-result", async (req, res) => {
+app.post("/save-result", async (req: Request, res: Response) => {
   try {
-
     const { user_id, image_name, image_url, model } = req.body;
 
     const result = await pool.query(
@@ -102,59 +100,43 @@ app.post("/save-result", async (req, res) => {
       message: "Hasil berhasil disimpan",
       data: result.rows[0],
     });
-
   } catch (error) {
-
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Gagal menyimpan hasil",
     });
-
   }
 });
 
-app.get("/history/:userId", async (req, res) => {
-
+app.get("/history/:userId", async (req: Request, res: Response) => {
   try {
-
     const { userId } = req.params;
 
     const result = await pool.query(
-
       `SELECT *
        FROM results
        WHERE user_id = $1
        ORDER BY created_at DESC`,
-
       [userId]
-
     );
 
     res.json({
       success: true,
       data: result.rows,
     });
-
   } catch (error) {
-
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Gagal mengambil history",
     });
-
   }
-
 });
 
 // Hapus satu history berdasarkan id, sekaligus hapus file gambarnya di disk
-app.delete("/history/:id", async (req, res) => {
-
+app.delete("/history/:id", async (req: Request, res: Response) => {
   try {
-
     const { id } = req.params;
 
     const result = await pool.query(
@@ -172,11 +154,10 @@ app.delete("/history/:id", async (req, res) => {
     const deletedItem = result.rows[0];
 
     // image_url tersimpan seperti "uploads/xxx.jpg"
-    const filePath = path.join(__dirname, deletedItem.image_url);
+    const filePath = path.join(__dirname, "..", deletedItem.image_url);
 
     fs.unlink(filePath, (err) => {
       if (err) {
-        // File mungkin sudah tidak ada, tidak masalah, tetap lanjut
         console.warn("File tidak ditemukan atau gagal dihapus:", filePath);
       }
     });
@@ -186,21 +167,16 @@ app.delete("/history/:id", async (req, res) => {
       message: "History berhasil dihapus",
       data: deletedItem,
     });
-
   } catch (error) {
-
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Gagal menghapus data",
     });
-
   }
-
 });
 
-app.post("/add-credit", async (req, res) => {
+app.post("/add-credit", async (req: Request, res: Response) => {
   try {
     const { user_id, amount } = req.body;
 
@@ -223,10 +199,8 @@ app.post("/add-credit", async (req, res) => {
       success: true,
       credit: result.rows[0].credit,
     });
-
   } catch (error) {
     console.error(error);
-
     res.status(500).json({
       success: false,
       message: "Gagal menambah credit",
@@ -234,7 +208,7 @@ app.post("/add-credit", async (req, res) => {
   }
 });
 
-app.get("/user-credit", async (req, res) => {
+app.get("/user-credit", async (req: Request, res: Response) => {
   try {
     const { user_id } = req.query;
 
@@ -254,7 +228,6 @@ app.get("/user-credit", async (req, res) => {
       success: true,
       credit: result.rows[0].credit,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -264,7 +237,7 @@ app.get("/user-credit", async (req, res) => {
   }
 });
 
-app.post("/deduct-credit", async (req, res) => {
+app.post("/deduct-credit", async (req: Request, res: Response) => {
   try {
     const { user_id, amount } = req.body;
 
@@ -287,7 +260,6 @@ app.post("/deduct-credit", async (req, res) => {
       success: true,
       remaining_credit: result.rows[0].credit,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -297,28 +269,34 @@ app.post("/deduct-credit", async (req, res) => {
   }
 });
 
-app.post("/upload-image", upload.single("image"), (req, res) => {
+app.post(
+  "/upload-image",
+  upload.single("image"),
+  (req: Request, res: Response) => {
+    try {
+      // req.file bisa undefined kalau tidak ada file yang dikirim,
+      // TypeScript wajib kita cek ini dulu sebelum diakses.
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Tidak ada file yang diupload",
+        });
+      }
 
-  try {
-
-    res.json({
-      success: true,
-      filename: req.file.filename,
-      path: "uploads/" + req.file.filename,
-    });
-
-  } catch (error) {
-
-    console.error(error);
-
-    res.status(500).json({
-      success: false,
-      message: "Upload gagal",
-    });
-
+      res.json({
+        success: true,
+        filename: req.file.filename,
+        path: "uploads/" + req.file.filename,
+      });
+     } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Upload gagal",
+      });
+    }
   }
-
-});
+);
 
 // Jalankan server
 const PORT = 3000;

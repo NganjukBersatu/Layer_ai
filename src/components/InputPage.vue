@@ -8,6 +8,7 @@ const imagePreview = ref(null);
 const isDragging = ref(false);
 
 const fileError = ref("");
+const isSplitting = ref(false);
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -171,9 +172,7 @@ function removeImage(event) {
   fileError.value = "";
 }
 
-function handleSplitClick() {
-  // Pengaman tambahan: kalau entah bagaimana tombol ini terklik
-  // tanpa gambar (misal disabled state gagal), tetap dicegah di sini.
+async function handleSplitClick() {
   if (!image.value) {
     alert("Silakan upload gambar terlebih dahulu sebelum split.");
     return;
@@ -184,13 +183,63 @@ function handleSplitClick() {
     return;
   }
 
-  emit("next", {
-    image: image.value,
-    imagePreview: imagePreview.value,
-    model: selectedModel.value,
-    userId: currentUserId,
-    creditAmount: estimatedCredit.value,
-  });
+  if (isSplitting.value) {
+    return;
+  }
+
+  try {
+    isSplitting.value = true;
+
+    console.log("🚀 Mengirim gambar ke backend...");
+    console.log("Model:", selectedModel.value);
+    console.log("User ID:", currentUserId);
+
+    const formData = new FormData();
+
+    formData.append("image", image.value);
+
+    const response = await fetch(
+      "http://localhost:3000/split-image",
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    console.log("📦 Response backend:", data);
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.message || "Gagal memproses gambar."
+      );
+    }
+
+    console.log("✅ Layer berhasil dibuat:", data.layers);
+
+    emit("next", {
+      image: image.value,
+      imagePreview: imagePreview.value,
+      model: selectedModel.value,
+      userId: currentUserId,
+      creditAmount: estimatedCredit.value,
+      layers: data.layers,
+      seed: data.seed,
+    });
+
+  } catch (error) {
+    console.error("❌ Split image gagal:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Gagal memproses gambar."
+    );
+
+  } finally {
+    isSplitting.value = false;
+  }
 }
 </script>
 
@@ -339,19 +388,19 @@ function handleSplitClick() {
     </div>
 
     <button
-      class="split-btn"
-      :disabled="!image || !hasEnoughCredit"
-      :title="
-        !image
-          ? 'Upload gambar terlebih dahulu'
-          : !hasEnoughCredit
-            ? 'Credit tidak cukup'
-            : ''
-      "
-      @click="handleSplitClick"
-    >
-      Split Image
-    </button>
+  class="split-btn"
+  :disabled="!image || !hasEnoughCredit || isSplitting"
+  :title="
+    !image
+      ? 'Upload gambar terlebih dahulu'
+      : !hasEnoughCredit
+        ? 'Credit tidak cukup'
+        : ''
+  "
+  @click="handleSplitClick"
+>
+  {{ isSplitting ? "Memproses..." : "Split Image" }}
+</button>
   </div>
 </template>
 
