@@ -136,29 +136,86 @@ async function runAIProcessing(fromStep = 0) {
   return true;
 }
 
+async function splitImageWithBackend() {
+  if (!props.image) {
+    throw new Error("File gambar tidak tersedia");
+  }
+
+  const formData = new FormData();
+  formData.append("image", props.image);
+
+  const response = await fetch("http://localhost:3000/split-image", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+    throw new Error(
+      data.message || "Gagal memproses gambar"
+    );
+  }
+
+  if (!data.layers || data.layers.length === 0) {
+    throw new Error(
+      "Backend tidak mengembalikan hasil layer"
+    );
+  }
+
+  return data.layers;
+}
+
 async function startProcessing(fromStep = 0) {
   phase.value = "processing";
 
-  const finishedAllSteps = await runAIProcessing(fromStep);
-  if (!finishedAllSteps) return; // sudah di-set ke error-connection / cancelled di dalam runAIProcessing
+  const finishedSteps = await runAIProcessing(fromStep);
 
-  statusText.value = "Memotong credit...";
-  phase.value = "deducting-credit";
+  if (!finishedSteps) return;
 
-  const creditOk = await deductCredit();
-  if (!creditOk) return; // sudah di-set ke error-credit di dalam deductCredit
+  try {
+    statusText.value = "Memproses gambar dengan AI...";
+    progress.value = 70;
 
-  statusText.value = "Selesai!";
-  phase.value = "done";
+    const layers = await splitImageWithBackend();
 
-  emit("complete", {
-    image: props.image,
-    model: props.model,
-    layers: {
-      original: props.imagePreview,
-      result: props.imagePreview,
-    },
-  });
+    statusText.value = "Menyusun hasil...";
+    progress.value = 90;
+
+    await delay(500);
+
+    statusText.value = "Memotong credit...";
+    phase.value = "deducting-credit";
+
+    const creditOk = await deductCredit();
+
+    if (!creditOk) return;
+
+    statusText.value = "Selesai!";
+    progress.value = 100;
+    phase.value = "done";
+
+    emit("complete", {
+      image: props.image,
+      model: props.model,
+      layers: {
+        original: props.imagePreview,
+        result: layers.map(
+          (layer) => `http://localhost:3000/${layer}`
+        ),
+      },
+    });
+
+  } catch (error) {
+  console.error("❌ Gagal split image:", error);
+
+  phase.value = "error-connection";
+
+  statusText.value =
+    error instanceof Error
+      ? error.message
+      : "Gagal memproses gambar";
+}
 }
 
 // --- Retry terpusat, dipakai oleh error koneksi maupun error credit ---

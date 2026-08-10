@@ -2,7 +2,8 @@ import "dotenv/config";
 import express, { Request, Response } from "express";
 import multer from "multer";
 import fs from "fs";
-import { fal } from "@fal-ai/client";
+import path from "path";
+import OpenAI from "openai";
 
 const router = express.Router();
 
@@ -10,30 +11,24 @@ const upload = multer({
   dest: "uploads/",
 });
 
-const falKey = process.env.FAL_KEY?.trim();
+// ================================
+// OPENROUTER
+// ================================
 
-console.log("FAL_KEY ada:", Boolean(falKey));
-console.log("FAL_KEY panjang:", falKey?.length);
-
-// Konfigurasi fal.ai
-fal.config({
-  credentials: falKey,
+const client = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
 });
 
-interface FalLayeredResult {
-  images: {
-    url: string;
-    content_type?: string;
-    width?: number;
-    height?: number;
-  }[];
-  seed: number;
-  has_nsfw_concepts: boolean[];
-}
+console.log(
+  "OPENROUTER_API_KEY ada:",
+  Boolean(process.env.OPENROUTER_API_KEY)
+);
 
 // ================================
 // SPLIT IMAGE
 // ================================
+
 router.post(
   "/split-image",
   upload.single("image"),
@@ -48,66 +43,168 @@ router.post(
 
       console.log("📁 File diterima:", req.file.originalname);
 
+      // ================================
+      // BACA FILE GAMBAR
+      // ================================
+
       const fileBuffer = fs.readFileSync(req.file.path);
 
-      const file = new File(
-        [fileBuffer],
-        req.file.originalname,
-        {
-          type: req.file.mimetype,
-        }
-      );
+      const base64Image = fileBuffer.toString("base64");
 
-      console.log("☁️ Upload gambar ke fal.ai...");
+      console.log("📦 Ukuran gambar:", fileBuffer.length, "bytes");
 
-      const imageUrl = await fal.storage.upload(file);
+      // ================================
+      // KIRIM KE OPENROUTER
+      // ================================
 
-      console.log("✅ Gambar berhasil diupload ke fal.ai");
-      console.log("🔗 URL:", imageUrl);
+      console.log("🤖 Mengirim gambar ke OpenRouter...");
 
-      console.log(
-        "🤖 Memproses gambar dengan Qwen Image Layered..."
-      );
+      const response = await client.chat.completions.create({
+        model: "google/gemini-2.5-flash-image",
 
-      const result = await fal.subscribe(
-        "fal-ai/qwen-image-layered",
-        {
-          input: {
-            image_url: imageUrl,
-            num_layers: 4,
+        max_tokens: 3000,
+
+        messages: [
+          {
+            role: "user",
+
+            content: [
+              {
+                type: "text",
+
+                text: `
+Process this image for an AI Layer Splitter.
+
+Separate the main visual elements of the image into individual layers.
+
+The goal is to create multiple editable visual layers from the original image.
+
+Preserve the original character/object and composition as much as possible.
+
+Remove the background if possible and make it transparent.
+
+Return the processed image.
+                `.trim(),
+              },
+
+              {
+                type: "image_url",
+
+                image_url: {
+                  url: `data:${req.file.mimetype};base64,${base64Image}`,
+                },
+              },
+            ],
           },
-
-          logs: true,
-
-          onQueueUpdate: (update: any) => {
-            if (update.status === "IN_PROGRESS") {
-              update.logs?.forEach((log: any) => {
-                console.log("FAL:", log.message);
-              });
-            }
-          },
-        }
-      );
-
-      const data = result.data as FalLayeredResult;
-
-      console.log("✅ Split image selesai");
-      console.log("Jumlah layer:", data.images.length);
-
-      res.json({
-        success: true,
-        layers: data.images.map((img) => img.url),
-        seed: data.seed,
+        ],
       });
 
-      // Hapus file sementara
+      console.log("✅ Response OpenRouter diterima");
+
+      // ================================
+      // AMBIL HASIL GAMBAR
+      // ================================
+
+      const message = response.choices[0]?.message;
+
+      if (!message) {
+        throw new Error(
+          "Response OpenRouter tidak memiliki message"
+        );
+      }
+
+      const images = (message as any).images;
+
+      if (!images || images.length === 0) {
+        console.error("❌ OpenRouter tidak mengembalikan gambar");
+
+        return res.status(500).json({
+          success: false,
+          message: "OpenRouter tidak mengembalikan gambar hasil",
+        });
+      }
+
+      console.log(
+        "🖼️ Jumlah gambar hasil:",
+        images.length
+      );
+
+      // ================================
+      // SIMPAN HASIL
+      // ================================
+
+      const outputDir = path.join(
+        process.cwd(),
+        "uploads"
+      );
+
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, {
+          recursive: true,
+        });
+      }
+
+      const layers: string[] = [];
+
+      for (let i = 0; i < images.length; i++) {
+        const imageData = images[i]?.image_url?.url;
+
+        if (!imageData) {
+          console.warn(
+            `⚠️ Gambar ${i + 1} tidak memiliki data`
+          );
+
+          continue;
+        }
+
+        const base64Data = imageData.replace(
+          /^data:image\/\w+;base64,/,
+          ""
+        );
+
+        const filename =
+          `openrouter-result-${Date.now()}-${i + 1}.png`;
+
+        const outputPath = path.join(
+          outputDir,
+          filename
+        );
+
+        fs.writeFileSync(
+          outputPath,
+          Buffer.from(base64Data, "base64")
+        );
+
+        console.log(
+          "✅ Layer disimpan:",
+          filename
+        );
+
+        layers.push(
+          `uploads/${filename}`
+        );
+      }
+
+      // ================================
+      // HAPUS FILE INPUT SEMENTARA
+      // ================================
+
       fs.unlink(req.file.path, (err) => {
         if (err) {
           console.warn(
-            "Gagal menghapus file sementara:",
+            "⚠️ Gagal menghapus file sementara:",
             err.message
           );
         }
+      });
+
+      // ================================
+      // RESPONSE KE FRONTEND
+      // ================================
+
+      res.json({
+        success: true,
+        layers,
       });
 
     } catch (error) {
@@ -117,12 +214,20 @@ router.post(
       );
 
       if (error instanceof Error) {
-        console.error("Nama error:", error.name);
-        console.error("Pesan:", error.message);
+        console.error(
+          "Nama error:",
+          error.name
+        );
+
+        console.error(
+          "Pesan:",
+          error.message
+        );
       }
 
       res.status(500).json({
         success: false,
+
         message:
           error instanceof Error
             ? error.message

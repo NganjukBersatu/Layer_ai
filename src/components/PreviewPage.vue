@@ -125,11 +125,23 @@ console.log(uploadData);
       <h2>Original Image</h2>
 
       <div class="preview-image">
-        <img
-          v-if="imagePreview"
-          :src="imagePreview"
-          alt="Original Image"
-        />
+        <div v-if="layers?.result?.length" class="result-layers">
+
+  <img
+    v-for="(layer, index) in layers.result"
+    :key="index"
+    :src="layer"
+    :alt="`Result Layer ${index + 1}`"
+  />
+
+</div>
+
+<div
+  v-else
+  class="empty-result"
+>
+  Result will appear here
+</div>
       </div>
 
       <div class="file-info">
@@ -172,20 +184,26 @@ console.log(uploadData);
 
       <div class="result-image">
 
-        <img
-          v-if="layers?.original"
-          :src="layers.original"
-          alt="Result"
-        />
+  <div
+    v-if="layers?.result?.length"
+    class="result-layers"
+  >
+    <img
+      v-for="(layer, index) in layers.result"
+      :key="index"
+      :src="layer"
+      :alt="`Result Layer ${index + 1}`"
+    />
+  </div>
 
-        <div
-          v-else
-          class="empty-result"
-        >
-          Result will appear here
-        </div>
+  <div
+    v-else
+    class="empty-result"
+  >
+    Result will appear here
+  </div>
 
-      </div>
+</div>
 
 <div class="button-group">
 
