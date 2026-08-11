@@ -68,10 +68,17 @@ function goToProcess({ image, imagePreview, model, userId, creditAmount }) {
 }
 
 function goToPreview({ image, layers, model }) {
+  console.log("✅ MASUK PREVIEW");
+  console.log("Image:", image);
+  console.log("Layers:", layers);
+  console.log("Model:", model);
+
   selectedImage.value = image;
   resultLayers.value = layers;
   selectedModel.value = model;
   currentPage.value = "preview";
+
+  console.log("Current page:", currentPage.value);
 }
 
 function goBack() {
@@ -90,8 +97,13 @@ function deleteResult() {
 }
 
 function goToHistory() {
+  console.log("➡️ Membuka History");
+  console.log("Halaman sebelumnya:", currentPage.value);
+
   historyOrigin.value = currentPage.value;
   currentPage.value = "history";
+
+  console.log("Halaman sekarang:", currentPage.value);
 }
 
 function goBackFromHistory() {
@@ -143,54 +155,52 @@ function goBackFromHistory() {
     </Transition>
   </template>
 
-  <section
-    v-else
-    class="left-panel"
-  >
+  <section v-else class="left-panel">
 
-    <Transition name="page-fade" mode="out-in">
+  <!-- Halaman selain History -->
+  <Transition name="page-fade" mode="out-in">
 
-      <InputPage
-        v-if="currentPage === 'input'"
-        key="input"
-        @next="goToProcess"
-        @history="goToHistory"
-        @logout="logout"
-      />
+    <InputPage
+      v-if="currentPage === 'input'"
+      key="input"
+      @next="goToProcess"
+      @history="goToHistory"
+      @logout="logout"
+    />
 
-      <ProcessPage
-        v-else-if="currentPage === 'process'"
-        key="process"
-        :image="selectedImage"
-        :imagePreview="selectedPreview"
-        :model="selectedModel"
-        :userId="selectedUserId"
-        :creditAmount="selectedCreditAmount"
-        @back="goBack"
-        @complete="goToPreview"
-      />
+    <ProcessPage
+      v-else-if="currentPage === 'process'"
+      key="process"
+      :image="selectedImage"
+      :imagePreview="selectedPreview"
+      :model="selectedModel"
+      :userId="selectedUserId"
+      :creditAmount="selectedCreditAmount"
+      @back="goBack"
+      @complete="goToPreview"
+    />
 
-      <PreviewPage
-        v-else-if="currentPage === 'preview'"
-        key="preview"
-        :image="selectedImage"
-        :imagePreview="selectedPreview"
-        :layers="resultLayers"
-        :model="selectedModel"
-        @restart="restart"
-        @delete-result="deleteResult"
-        @history="goToHistory"
-      />
+    <PreviewPage
+      v-else-if="currentPage === 'preview'"
+      key="preview"
+      :image="selectedImage"
+      :imagePreview="selectedPreview"
+      :layers="resultLayers"
+      :model="selectedModel"
+      @restart="restart"
+      @delete-result="deleteResult"
+      @history="goToHistory"
+    />
 
-      <HistoryPage
-        v-else-if="currentPage === 'history'"
-        key="history"
-        @back="goBackFromHistory"
-      />
+  </Transition>
 
-    </Transition>
+  <!-- Halaman History -->
+  <HistoryPage
+    v-if="currentPage === 'history'"
+    @back="goBackFromHistory"
+  />
 
-  </section>
+</section>
 
 </main>
 

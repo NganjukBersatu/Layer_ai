@@ -6,6 +6,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 import pool from "./db";
 import splitImageRouter from "./routes/splitImage.route";
+import { removeBackground } from "@imgly/background-removal-node";
 
 dotenv.config();
 
@@ -293,6 +294,86 @@ app.post(
       res.status(500).json({
         success: false,
         message: "Upload gagal",
+      });
+    }
+  }
+);
+
+app.post(
+  "/remove-background",
+  upload.single("image"),
+  async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Tidak ada file gambar",
+        });
+      }
+
+      console.log("📁 File diterima:", req.file.originalname);
+
+      console.log("🤖 Memulai background removal...");
+
+      const result = await removeBackground(req.file.path);
+
+      const outputFilename =
+        `layer-${Date.now()}.png`;
+
+      const outputPath = path.join(
+        "uploads",
+        outputFilename
+      );
+
+      const buffer = Buffer.from(
+        await result.arrayBuffer()
+      );
+
+      fs.writeFileSync(outputPath, buffer);
+
+      console.log(
+        "✅ Background berhasil dihapus"
+      );
+
+      console.log(
+        "💾 Hasil disimpan:",
+        outputPath
+      );
+
+      // Hapus file original sementara
+      fs.unlink(req.file.path, (err) => {
+        if (err) {
+          console.warn(
+            "⚠️ Gagal menghapus file sementara:",
+            err.message
+          );
+        }
+      });
+
+      res.json({
+        success: true,
+        message: "Background berhasil dihapus",
+        result: `/uploads/${outputFilename}`,
+      });
+    } catch (error) {
+      console.error(
+        "❌ Background removal gagal:",
+        error
+      );
+
+      if (
+        req.file?.path &&
+        fs.existsSync(req.file.path)
+      ) {
+        fs.unlink(req.file.path, () => {});
+      }
+
+      res.status(500).json({
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : String(error),
       });
     }
   }

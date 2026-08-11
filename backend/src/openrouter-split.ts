@@ -1,7 +1,6 @@
 import "dotenv/config";
 import express, { Request, Response } from "express";
 import multer from "multer";
-import OpenAI from "openai";
 import fs from "fs";
 import path from "path";
 
@@ -9,11 +8,6 @@ const router = express.Router();
 
 const upload = multer({
   dest: "uploads/",
-});
-
-const client = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
 });
 
 router.post(
@@ -36,65 +30,95 @@ router.post(
 
       console.log("🤖 Mengirim gambar ke OpenRouter...");
 
-      const response = await client.chat.completions.create({
-        model: "google/gemini-2.5-flash-image",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `
-Analyze this image and separate its visual elements into layers.
+      const apiKey = process.env.OPENROUTER_API_KEY;
 
-Create an edited image containing the main subject with a transparent background.
+      if (!apiKey) {
+        throw new Error("OPENROUTER_API_KEY tidak ditemukan di .env");
+      }
 
-Keep the main subject recognizable and preserve its appearance.
-Do not change the character or object unnecessarily.
-Only remove the background.
-                `,
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${req.file.mimetype};base64,${base64Image}`,
-                },
-              },
-            ],
+      const response = await fetch(
+        "https://openrouter.ai/api/v1/images",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
           },
-        ],
-      });
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-image",
+
+            prompt: `
+Edit the provided image.
+
+Remove the background completely and keep only the main subject.
+
+The result must:
+- preserve the original subject's appearance
+- preserve the subject's details
+- not change the character or object
+- remove only the background
+- have a transparent background
+- be returned as a PNG image with transparency
+
+Do not create a new character.
+Do not redesign the subject.
+Only isolate the existing subject from the background.
+`,
+
+            input_references: [
+              `data:${req.file.mimetype};base64,${base64Image}`,
+            ],
+
+            output_format: "png",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        throw new Error(
+          `OpenRouter error ${response.status}: ${errorText}`
+        );
+      }
+
+      const result = await response.json();
 
       console.log("✅ Response OpenRouter diterima");
 
-      const message = response.choices[0]?.message;
+      console.log(
+        "📦 Jumlah gambar:",
+        result.data?.length ?? 0
+      );
 
-if (!message) {
-  throw new Error("Response OpenRouter tidak memiliki message");
-}
+      if (!result.data || result.data.length === 0) {
+        throw new Error(
+          "OpenRouter tidak mengembalikan gambar"
+        );
+      }
 
-const images = (message as any).images;
+      const resultDir = path.join(
+        process.cwd(),
+        "uploads"
+      );
 
-if (!images || images.length === 0) {
-  throw new Error("OpenRouter tidak mengembalikan gambar");
-}
-      const resultDir = path.join(process.cwd(), "uploads");
+      if (!fs.existsSync(resultDir)) {
+        fs.mkdirSync(resultDir, {
+          recursive: true,
+        });
+      }
 
       const layerUrls: string[] = [];
 
-      for (let i = 0; i < images.length; i++) {
-  const image = images[i];
+      for (let i = 0; i < result.data.length; i++) {
+        const image = result.data[i];
 
-        const imageUrl = image.image_url?.url;
-
-        if (!imageUrl) {
-          continue;
-        }
-
-        // Ambil bagian base64 dari data URL
-        const base64Data = imageUrl.split(",")[1];
+        const base64Data = image.b64_json;
 
         if (!base64Data) {
+          console.warn(
+            `⚠️ Gambar ${i + 1} tidak memiliki b64_json`
+          );
           continue;
         }
 
@@ -108,7 +132,10 @@ if (!images || images.length === 0) {
           Buffer.from(base64Data, "base64")
         );
 
-        console.log("💾 Layer disimpan:", outputPath);
+        console.log(
+          "💾 Hasil disimpan:",
+          outputPath
+        );
 
         layerUrls.push(
           `/uploads/${path.basename(outputPath)}`
@@ -125,13 +152,26 @@ if (!images || images.length === 0) {
         }
       });
 
+      if (layerUrls.length === 0) {
+        throw new Error(
+          "Tidak ada hasil gambar yang berhasil disimpan"
+        );
+      }
+
       res.json({
         success: true,
         layers: layerUrls,
       });
-
     } catch (error) {
-      console.error("❌ Gagal proses OpenRouter:", error);
+      console.error(
+        "❌ Gagal proses OpenRouter:",
+        error
+      );
+
+      // Hapus file sementara jika masih ada
+      if (req.file?.path && fs.existsSync(req.file.path)) {
+        fs.unlink(req.file.path, () => {});
+      }
 
       res.status(500).json({
         success: false,

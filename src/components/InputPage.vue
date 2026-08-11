@@ -195,11 +195,10 @@ async function handleSplitClick() {
     console.log("User ID:", currentUserId);
 
     const formData = new FormData();
-
     formData.append("image", image.value);
 
     const response = await fetch(
-      "http://localhost:3000/split-image",
+      "http://localhost:3000/remove-background",
       {
         method: "POST",
         body: formData,
@@ -216,7 +215,13 @@ async function handleSplitClick() {
       );
     }
 
-    console.log("✅ Layer berhasil dibuat:", data.layers);
+    console.log(
+      "✅ Background berhasil dihapus:",
+      data.result
+    );
+
+    const resultUrl =
+      `http://localhost:3000${data.result}`;
 
     emit("next", {
       image: image.value,
@@ -224,8 +229,8 @@ async function handleSplitClick() {
       model: selectedModel.value,
       userId: currentUserId,
       creditAmount: estimatedCredit.value,
-      layers: data.layers,
-      seed: data.seed,
+      layers: [resultUrl],
+      result: resultUrl,
     });
 
   } catch (error) {

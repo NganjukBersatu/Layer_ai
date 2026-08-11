@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { loadAI } from "../services/aiService";
 
 const props = defineProps({
   image: { type: Object, required: true },
@@ -35,7 +34,6 @@ const phase = ref("validating");
 const currentStep = ref(0);
 const progress = ref(0);
 const statusText = ref(stepLabels[0]);
-const segmenter = ref(null);
 const isRetrying = ref(false);
 const propsErrorMessage = ref("");
 
@@ -144,26 +142,38 @@ async function splitImageWithBackend() {
   const formData = new FormData();
   formData.append("image", props.image);
 
-  const response = await fetch("http://localhost:3000/split-image", {
-    method: "POST",
-    body: formData,
-  });
+  console.log("📤 Mengirim gambar ke background removal...");
+
+  const response = await fetch(
+    "http://localhost:3000/remove-background",
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
 
   const data = await response.json();
 
+  console.log("📦 Response background removal:", data);
+
   if (!response.ok || !data.success) {
     throw new Error(
-      data.message || "Gagal memproses gambar"
+      data.message || "Gagal menghapus background"
     );
   }
 
-  if (!data.layers || data.layers.length === 0) {
+  if (!data.result) {
     throw new Error(
-      "Backend tidak mengembalikan hasil layer"
+      "Backend tidak mengembalikan hasil gambar"
     );
   }
 
-  return data.layers;
+  console.log(
+    "✅ Hasil background removal:",
+    data.result
+  );
+
+  return [data.result];
 }
 
 async function startProcessing(fromStep = 0) {
@@ -196,15 +206,15 @@ async function startProcessing(fromStep = 0) {
     phase.value = "done";
 
     emit("complete", {
-      image: props.image,
-      model: props.model,
-      layers: {
-        original: props.imagePreview,
-        result: layers.map(
-          (layer) => `http://localhost:3000/${layer}`
-        ),
-      },
-    });
+  image: props.image,
+  model: props.model,
+  layers: {
+    original: props.imagePreview,
+    result: layers.map(
+      (layer) => `http://localhost:3000${layer}`
+    ),
+  },
+});
 
   } catch (error) {
   console.error("❌ Gagal split image:", error);
@@ -250,14 +260,17 @@ async function retryProcessing() {
 // --- 3. Load AI dengan retry, bukan cuma pesan statis ---
 async function loadAIModel() {
   phase.value = "loading-ai";
-  statusText.value = "Loading AI Model...";
+  statusText.value = "Menyiapkan proses...";
+
   try {
-    segmenter.value = await loadAI();
-    startProcessing();
+    await delay(300);
+
+    await startProcessing();
+
   } catch (e) {
     console.error(e);
     phase.value = "error-ai-load";
-    statusText.value = "Gagal memuat AI";
+    statusText.value = "Gagal memulai proses";
   }
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
   image: Object,
@@ -7,6 +7,16 @@ const props = defineProps({
   layers: Object,
   model: String,
 });
+
+const resultLayers = computed(() => {
+  return props.layers?.result || [];
+});
+
+console.log("=== PREVIEW PAGE ===");
+console.log("image:", props.image);
+console.log("imagePreview:", props.imagePreview);
+console.log("layers:", props.layers);
+console.log("model:", props.model);
 
 const emit = defineEmits([
   "restart",
@@ -37,13 +47,15 @@ function formatFileSize(size) {
 }
 
 function downloadLayer() {
-  if (!props.layers?.result) {
+  const result = resultLayers.value[0];
+
+  if (!result) {
     alert("Belum ada hasil yang dapat didownload.");
     return;
   }
 
   const link = document.createElement("a");
-  link.href = props.layers.result;
+  link.href = result;
   link.download = "layer.png";
 
   document.body.appendChild(link);
@@ -118,6 +130,9 @@ console.log(uploadData);
 
 <template>
   <div class="preview-page">
+      </div>
+
+  <div class="preview-page">
 
     <!-- ================= LEFT CARD ================= -->
     <div class="card left-card">
@@ -125,24 +140,16 @@ console.log(uploadData);
       <h2>Original Image</h2>
 
       <div class="preview-image">
-        <div v-if="layers?.result?.length" class="result-layers">
-
   <img
-    v-for="(layer, index) in layers.result"
-    :key="index"
-    :src="layer"
-    :alt="`Result Layer ${index + 1}`"
+    v-if="imagePreview"
+    :src="imagePreview"
+    alt="Original Image"
   />
 
+  <div v-else class="empty-result">
+    Original image not available
+  </div>
 </div>
-
-<div
-  v-else
-  class="empty-result"
->
-  Result will appear here
-</div>
-      </div>
 
       <div class="file-info">
 
@@ -185,23 +192,20 @@ console.log(uploadData);
       <div class="result-image">
 
   <div
-    v-if="layers?.result?.length"
-    class="result-layers"
-  >
-    <img
-      v-for="(layer, index) in layers.result"
-      :key="index"
-      :src="layer"
-      :alt="`Result Layer ${index + 1}`"
-    />
-  </div>
+  v-if="resultLayers.length"
+  class="result-layers"
+>
+  <img
+    v-for="(layer, index) in resultLayers"
+    :key="index"
+    :src="layer"
+    :alt="`Result Layer ${index + 1}`"
+  />
+</div>
 
-  <div
-    v-else
-    class="empty-result"
-  >
-    Result will appear here
-  </div>
+<div v-else class="empty-result">
+  Result will appear here
+</div>
 
 </div>
 
