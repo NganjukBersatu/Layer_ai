@@ -5,7 +5,8 @@ import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import pool from "./db";
-import splitImageRouter from "./routes/splitImage.route";
+// import splitImageRouter from "./routes/splitImage.route";
+import geminiSplitRouter from "./openrouter-split";
 import { removeBackground } from "@imgly/background-removal-node";
 
 dotenv.config();
@@ -33,7 +34,8 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 // Route untuk split image (FAL.ai)
-app.use("/", splitImageRouter);
+// app.use("/", splitImageRouter);
+app.use("/", geminiSplitRouter);
 
 app.get("/test-db", async (req: Request, res: Response) => {
   try {
