@@ -1,7 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["next", "history", "logout"]);
+const { t } = useI18n()
 
 const image = ref(null);
 const imagePreview = ref(null);
@@ -53,11 +55,11 @@ async function fetchRemainingCredits() {
     if (data.success) {
       remainingCredits.value = data.credit;
     } else {
-      creditError.value = "Gagal memuat sisa credit";
+      creditError.value = t('input.creditLoadFailed');
     }
   } catch (error) {
     console.error(error);
-    creditError.value = "Gagal memuat sisa credit";
+    creditError.value = t('input.creditLoadFailed');
   } finally {
     isLoadingCredits.value = false;
   }
@@ -86,13 +88,13 @@ async function addCredit() {
 
     if (data.success) {
       remainingCredits.value = data.credit;
-      alert("Credit berhasil ditambahkan!");
+      alert(t('input.creditAdded'));
     } else {
       alert(data.message);
     }
   } catch (error) {
     console.error(error);
-    alert("Gagal menambah credit.");
+    alert(t('input.creditAddFailed'));
   }
 }
 
@@ -120,13 +122,13 @@ function processFile(file) {
 
   // Cek format file
   if (!ALLOWED_TYPES.includes(file.type)) {
-    fileError.value = "Format gambar harus JPG, PNG, atau WEBP.";
+    fileError.value = t('input.formatError');
     return;
   }
 
   // Cek ukuran file
   if (file.size > MAX_FILE_SIZE) {
-    fileError.value = "Ukuran gambar maksimal 10 MB.";
+    fileError.value = t('input.sizeError');
     return;
   }
 
@@ -174,12 +176,12 @@ function removeImage(event) {
 
 async function handleSplitClick() {
   if (!image.value) {
-    alert("Silakan upload gambar terlebih dahulu sebelum split.");
+    alert(t('input.uploadFirstAlert'));
     return;
   }
 
   if (!hasEnoughCredit.value) {
-    alert("Credit Anda tidak cukup untuk model ini.");
+    alert(t('input.notEnoughCreditAlert'));
     return;
   }
 
@@ -211,8 +213,8 @@ async function handleSplitClick() {
 
     if (!response.ok || !data.success) {
       throw new Error(
-        data.message || "Gagal memproses gambar."
-      );
+    data.message || t('input.processError')
+     );
     }
 
     console.log(
@@ -239,7 +241,7 @@ async function handleSplitClick() {
     alert(
       error instanceof Error
         ? error.message
-        : "Gagal memproses gambar."
+        : t('input.processError')
     );
 
   } finally {
@@ -251,20 +253,20 @@ async function handleSplitClick() {
 <template>
   <div class="input-card">
     <div class="card-header">
-      <h2>Input</h2>
+      <h2>{{ $t('input.title') }}</h2>
 
       <div class="header-actions">
         <span class="credit-info" :class="{ 'credit-error': creditError }">
-          <template v-if="isLoadingCredits">Memuat credit...</template>
-          <template v-else-if="creditError">{{ creditError }}</template>
-          <template v-else>💎 {{ remainingCredits }} Credits</template>
-        </span>
+  <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
+  <template v-else-if="creditError">{{ creditError }}</template>
+  <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
+</span>
 
-        <button class="add-credit-btn" @click="addCredit">+ Add Credit</button>
+        <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
 
-        <button class="history-btn" @click="emit('history')">History</button>
+        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
 
-        <button class="logout-btn" @click="emit('logout')">Logout</button>
+        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
 
         <div class="info">i</div>
       </div>
@@ -282,20 +284,20 @@ async function handleSplitClick() {
 
       <div v-if="isMobileMenuOpen" class="mobile-menu">
         <span class="credit-info" :class="{ 'credit-error': creditError }">
-          <template v-if="isLoadingCredits">Memuat credit...</template>
+          <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
           <template v-else-if="creditError">{{ creditError }}</template>
-          <template v-else>💎 {{ remainingCredits }} Credits</template>
+          <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
         </span>
 
-        <button class="add-credit-btn" @click="addCredit">+ Add Credit</button>
+        <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
 
-        <button class="history-btn" @click="emit('history')">History</button>
+        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
 
-        <button class="logout-btn" @click="emit('logout')">Logout</button>
+        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
       </div>
     </div>
 
-    <label class="label"> Upload Image </label>
+    <label class="label"> {{ $t('input.uploadLabel') }} </label>
 
     <label
       class="upload-box"
@@ -317,8 +319,8 @@ async function handleSplitClick() {
             <i class="fa-regular fa-image"></i>
           </div>
 
-          <p>Click to upload image</p>
-          <p class="upload-subtext">atau drag & drop di sini</p>
+          <p>{{ $t('input.clickUpload') }}</p>
+          <p class="upload-subtext">{{ $t('input.dragDrop') }}</p>
         </template>
 
         <template v-else>
@@ -329,7 +331,7 @@ async function handleSplitClick() {
           <button
             type="button"
             class="remove-image-btn"
-            title="Hapus gambar"
+            :title="$t('input.removeImage')"
             @click="removeImage"
           >
             &times;
@@ -342,22 +344,21 @@ async function handleSplitClick() {
       {{ fileError }}
     </p>
 
-    <label class="label"> AI Model </label>
+    <label class="label"> {{ $t('input.aiModel') }} </label>
 
     <div class="model-info">
-      <span class="badge" title="Model Advanced baru saja ditambahkan">
-        New
+      <span class="badge" :title="$t('input.newBadgeTitle')">
+        {{ $t('input.newBadge') }}
       </span>
 
       <span>
-        <strong>Advanced</strong> model provides better quality but costs more
-        credits
+        <strong>{{ $t('input.advanced') }}</strong> {{ $t('input.advancedDesc') }}
       </span>
     </div>
 
     <p class="credit-estimate" :class="{ warning: !hasEnoughCredit }">
-      Estimasi biaya: <strong>{{ estimatedCredit }} credit</strong>
-      <span v-if="!hasEnoughCredit"> — credit Anda tidak cukup</span>
+      {{ $t('input.estimateCost') }} <strong>{{ estimatedCredit }} {{ $t('input.creditUnit')}}</strong>
+      <span v-if="!hasEnoughCredit"> {{ $t('input.notEnoughCredit') }}</span>
     </p>
 
     <div class="model-dropdown">
@@ -366,7 +367,7 @@ async function handleSplitClick() {
         class="model-dropdown-btn"
         @click="toggleModelDropdown"
       >
-        <span>{{ modelOptions[selectedModel] }}</span>
+        <span>{{ selectedModel === 'basic' ? $t('input.basic') : $t('input.advanced') }}</span>
         <span class="chevron" :class="{ open: isModelDropdownOpen }"
           >&#9662;</span
         >
@@ -378,7 +379,7 @@ async function handleSplitClick() {
           :class="{ active: selectedModel === 'basic' }"
           @click="selectModel('basic')"
         >
-          Basic
+          {{ $t('input.basic') }}
         </div>
 
         <div
@@ -386,8 +387,8 @@ async function handleSplitClick() {
           :class="{ active: selectedModel === 'advanced' }"
           @click="selectModel('advanced')"
         >
-          Advanced
-          <span class="badge badge-small">New</span>
+          {{ $t('input.advanced') }}
+          <span class="badge badge-small">{{ $t('input.newBadge') }}</span>
         </div>
       </div>
     </div>
@@ -397,14 +398,14 @@ async function handleSplitClick() {
   :disabled="!image || !hasEnoughCredit || isSplitting"
   :title="
     !image
-      ? 'Upload gambar terlebih dahulu'
+      ? $t('input.uploadFirstTitle')
       : !hasEnoughCredit
-        ? 'Credit tidak cukup'
+        ? $t('input.notEnoughCreditTitle')
         : ''
   "
   @click="handleSplitClick"
 >
-  {{ isSplitting ? "Memproses..." : "Split Image" }}
+  {{ isSplitting ? $t('input.processing') : $t('input.splitBtn') }}
 </button>
   </div>
 </template>

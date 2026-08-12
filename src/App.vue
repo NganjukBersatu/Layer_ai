@@ -7,6 +7,7 @@ import LoginPage from "./components/LoginPage.vue";
 import HistoryPage from "./components/HistoryPage.vue";
 import ForgotPasswordPage from "./components/ForgotPasswordPage.vue";
 import RegisterPage from "./components/RegisterPage.vue";
+import LanguageSwitcher from "./components/LanguageSwitcher.vue";
 
 const isLoggedIn = ref(
     localStorage.getItem("isLoggedIn") === "true"
@@ -114,6 +115,8 @@ function goBackFromHistory() {
 
 <template>
   <div class="app">
+
+    <LanguageSwitcher />
 
     <!-- Header -->
     <header class="hero">
