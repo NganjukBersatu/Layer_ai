@@ -1,7 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["back"]);
+const { t } = useI18n()
 
 const histories = ref([]);
 const searchQuery = ref("");
@@ -88,7 +90,7 @@ async function downloadImage(item) {
 }
 
 async function deleteHistory(item) {
-  const confirmDelete = confirm(`Hapus "${item.image_name}" dari history?`);
+  const confirmDelete = confirm(t('history.deleteConfirm', { name: item.image_name }));
   if (!confirmDelete) return;
 
   try {
@@ -100,11 +102,11 @@ async function deleteHistory(item) {
     if (data.success) {
       histories.value = histories.value.filter((h) => h.id !== item.id);
     } else {
-      alert("Gagal menghapus history");
+      alert(t('history.deleteFailed'));
     }
   } catch (error) {
     console.error(error);
-    alert("Terjadi kesalahan saat menghapus");
+    alert(t('history.deleteError'));
   }
 }
 
@@ -116,21 +118,21 @@ onMounted(() => {
 <template>
   <div class="history-page">
     <div class="page-header">
-      <button class="back-btn" @click="emit('back')">&larr; Back</button>
-      <h2>History</h2>
+      <button class="back-btn" @click="emit('back')">&larr; {{ $t('history.back') }}</button>
+      <h2>{{ $t('history.title') }}</h2>
     </div>
 
     <div class="search-box">
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Cari nama gambar..."
+        :placeholder="$t('history.searchPlaceholder')"
       />
       <button
         v-if="searchQuery"
         class="clear-btn"
         @click="searchQuery = ''"
-        title="Hapus pencarian"
+        :title="$t('history.clearSearch')"
       >
         &times;
       </button>
@@ -142,21 +144,21 @@ onMounted(() => {
         :class="{ active: modelFilter === 'all' }"
         @click="modelFilter = 'all'"
       >
-        Semua
+        {{ $t('history.filterAll') }}
       </button>
       <button
         class="filter-tab"
         :class="{ active: modelFilter === 'basic' }"
         @click="modelFilter = 'basic'"
       >
-        Basic
+       {{ $t('history.filterBasic') }}
       </button>
       <button
         class="filter-tab"
         :class="{ active: modelFilter === 'advanced' }"
         @click="modelFilter = 'advanced'"
       >
-        Advanced
+        {{ $t('history.filterAdvanced') }}
       </button>
     </div>
 
@@ -180,25 +182,27 @@ onMounted(() => {
               class="model-badge"
               :class="item.model === 'advanced' ? 'advanced' : 'basic'"
             >
-              {{ item.model === "advanced" ? "Advanced" : "Basic" }}
+              {{ item.model === "advanced" ? 
+              $t('history.filterAdvanced')
+              : $t('history.filterBasic') }}
             </span>
           </div>
         </div>
 
         <div class="actions">
           <button class="btn download" @click="downloadImage(item)">
-            Download
+            {{ $t('history.download') }}
           </button>
           <button class="btn delete" @click="deleteHistory(item)">
-            Delete
+            {{ $t('history.delete') }}
           </button>
         </div>
       </div>
     </div>
 
-    <p v-if="histories.length === 0" class="empty">Belum ada history.</p>
+    <p v-if="histories.length === 0" class="empty">{{ $t('history.empty') }}</p>
     <p v-else-if="filteredHistories.length === 0" class="empty">
-      Tidak ada gambar yang cocok dengan filter ini.
+      {{ $t('history.emptyFiltered') }}
     </p>
   </div>
 </template>

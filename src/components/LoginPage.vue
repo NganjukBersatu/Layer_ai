@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
+import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["login", "forgot-password", "register"]);
+const { t } = useI18n()
 
 const username = ref("");
 const password = ref("");
@@ -13,7 +15,7 @@ async function login() {
   error.value = "";
 
   if (!username.value.trim() || !password.value.trim()) {
-    error.value = "Email dan password wajib diisi.";
+    error.value = t('login.requiredFields');
     return;
   }
 
@@ -51,7 +53,7 @@ async function login() {
 
   } catch (err) {
     console.error(err);
-    error.value = "Tidak dapat terhubung ke server.";
+    error.value = t('login.cannotConnect');
   } finally {
     isLoading.value = false;
   }
@@ -71,16 +73,16 @@ function goRegister() {
     <h2>AI Layer Splitter</h2>
 
     <form @submit.prevent="login">
-      <label class="field-label" for="login-email">Email</label>
+      <label class="field-label" for="login-email">{{ $t('login.email') }}</label>
       <input
         id="login-email"
         v-model="username"
         type="email"
-        placeholder="nama@email.com"
+        :placeholder="$t('login.emailPlaceholder')"
         autocomplete="username"
       />
 
-      <label class="field-label" for="login-password">Password</label>
+      <label class="field-label" for="login-password">{{ $t('login.password') }}</label>
       <div class="password-wrapper">
         <input
           id="login-password"
@@ -107,19 +109,21 @@ function goRegister() {
       </div>
 
       <div class="forgot-password-row">
-        <a href="#" class="link" @click.prevent="goForgotPassword">Lupa password?</a>
+          <a href="#" class="link" @click.prevent="goForgotPassword">
+            {{ $t('login.forgotPassword') }}</a>
       </div>
 
       <button type="submit" class="login-btn" :disabled="isLoading">
-        {{ isLoading ? "Logging in..." : "Login" }}
+        {{ isLoading ? $t('login.loggingIn') : $t('login.title') }}
       </button>
     </form>
 
     <p class="error" role="alert" aria-live="polite">{{ error }}</p>
 
     <p class="register-row">
-      Belum punya akun?
-      <a href="#" class="link" @click.prevent="goRegister">Daftar</a>
+      {{ $t('login.noAccount') }}
+      <a href="#" class="link" @click.prevent="goRegister">
+      {{ $t('login.register') }}</a>
     </p>
   </div>
 </template>
