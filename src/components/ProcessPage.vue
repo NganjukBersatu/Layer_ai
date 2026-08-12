@@ -142,10 +142,10 @@ async function splitImageWithBackend() {
   const formData = new FormData();
   formData.append("image", props.image);
 
-  console.log("📤 Mengirim gambar ke background removal...");
+  console.log("📤 Mengirim gambar ke Gemini untuk split...");
 
   const response = await fetch(
-    "http://localhost:3000/remove-background",
+    "http://localhost:3000/split-image-openrouter",   // <- diganti endpoint baru
     {
       method: "POST",
       body: formData,
@@ -154,26 +154,23 @@ async function splitImageWithBackend() {
 
   const data = await response.json();
 
-  console.log("📦 Response background removal:", data);
+  console.log("📦 Response split image:", data);
 
   if (!response.ok || !data.success) {
     throw new Error(
-      data.message || "Gagal menghapus background"
+      data.message || "Gagal memisahkan gambar"
     );
   }
 
-  if (!data.result) {
+  if (!data.layers || data.layers.length === 0) {
     throw new Error(
       "Backend tidak mengembalikan hasil gambar"
     );
   }
 
-  console.log(
-    "✅ Hasil background removal:",
-    data.result
-  );
+  console.log("✅ Hasil split:", data.layers);
 
-  return [data.result];
+  return data.layers;   // <- ini sekarang array berisi 3 URL (head, body, legs)
 }
 
 async function startProcessing(fromStep = 0) {
