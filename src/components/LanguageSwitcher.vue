@@ -13,33 +13,217 @@ function changeLang(lang) {
 
 <template>
   <div class="lang-switcher">
-    <button @click="isOpen = !isOpen">🌐 Bahasa</button>
-    <ul v-if="isOpen" class="lang-dropdown">
-      <li @click="changeLang('id')">Indonesia</li>
-      <li @click="changeLang('en')">English</li>
-    </ul>
+    <!-- Tombol utama -->
+    <button
+      class="lang-button"
+      @click="isOpen = !isOpen"
+      type="button"
+    >
+      <span class="lang-icon">
+        {{ locale === 'id' ? '🇮🇩' : '🇬🇧' }}
+      </span>
+
+      <span class="lang-text">
+        {{ locale === 'id' ? 'Indonesia' : 'English' }}
+      </span>
+
+      <span class="lang-arrow" :class="{ open: isOpen }">
+        ▾
+      </span>
+    </button>
+
+    <!-- Dropdown -->
+    <div v-if="isOpen" class="lang-menu">
+
+      <button
+        type="button"
+        class="lang-option"
+        :class="{ active: locale === 'id' }"
+        @click="changeLang('id')"
+      >
+        <span class="lang-icon">🇮🇩</span>
+        <span>Indonesia</span>
+        <span v-if="locale === 'id'" class="check">✓</span>
+      </button>
+
+      <button
+        type="button"
+        class="lang-option"
+        :class="{ active: locale === 'en' }"
+        @click="changeLang('en')"
+      >
+        <span class="lang-icon">🇬🇧</span>
+        <span>English</span>
+        <span v-if="locale === 'en'" class="check">✓</span>
+      </button>
+
+    </div>
   </div>
 </template>
 
 <style scoped>
 .lang-switcher {
-  position: fixed;
-  top: 16px;
-  right: 16px;
+  position: relative;
+  display: inline-block;
 }
-.lang-dropdown {
-  list-style: none;
-  padding: 8px;
-  margin: 4px 0 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.lang-dropdown li {
-  padding: 8px 12px;
+
+/* =========================
+   MAIN BUTTON
+========================= */
+
+.lang-button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  min-width: 145px;
+  padding: 9px 13px;
+
+  border: 1px solid #e2e5f0;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #25283a;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
   cursor: pointer;
+
+  box-shadow: 0 3px 12px rgba(30, 35, 60, 0.08);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
-.lang-dropdown li:hover {
-  background: #f0f0f0;
+
+.lang-button:hover {
+  border-color: #8b7cf6;
+  box-shadow: 0 5px 16px rgba(80, 70, 160, 0.13);
+  transform: translateY(-1px);
+}
+
+.lang-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.lang-text {
+  flex: 1;
+  text-align: left;
+}
+
+.lang-arrow {
+  font-size: 15px;
+  color: #777b8c;
+
+  transition: transform 0.2s ease;
+}
+
+.lang-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+
+  width: 175px;
+  padding: 6px;
+
+  background: #ffffff;
+
+  border: 1px solid #e8e9f1;
+  border-radius: 13px;
+
+  box-shadow: 0 10px 30px rgba(30, 35, 60, 0.12);
+
+  z-index: 1000;
+
+  animation: dropdownIn 0.18s ease;
+}
+
+@keyframes dropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   OPTIONS
+========================= */
+
+.lang-option {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 11px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #333647;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.lang-option:hover {
+  background: #f4f3ff;
+  color: #6657d9;
+}
+
+.lang-option.active {
+  background: #f0efff;
+  color: #6657d9;
+  font-weight: 600;
+}
+
+.lang-option .check {
+  margin-left: auto;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+  .lang-button {
+    min-width: auto;
+    padding: 8px 10px;
+  }
+
+  .lang-text {
+    display: none;
+  }
+
+  .lang-menu {
+    right: 0;
+  }
 }
 </style>
