@@ -253,49 +253,48 @@ async function handleSplitClick() {
 <template>
   <div class="input-card">
     <div class="card-header">
-      <h2>{{ $t('input.title') }}</h2>
+  <h2>{{ $t('input.title') }}</h2>
 
-      <div class="header-actions">
-        <span class="credit-info" :class="{ 'credit-error': creditError }">
-  <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
-  <template v-else-if="creditError">{{ creditError }}</template>
-  <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
-</span>
+  <!-- Desktop actions (disembunyikan di mobile) -->
+  <div class="header-actions">
+    <span class="credit-info" :class="{ 'credit-error': creditError }">
+      <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
+      <template v-else-if="creditError">{{ creditError }}</template>
+      <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
+    </span>
 
-        <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
+    <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
+    <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
+    <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
+    <div class="info">i</div>
+  </div>
 
-        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
+  <!-- Group khusus mobile: Credit + Hamburger -->
+  <div class="mobile-right">
+    <span class="credit-info mobile-credit" :class="{ 'credit-error': creditError }">
+      <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
+      <template v-else-if="creditError">{{ creditError }}</template>
+      <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
+    </span>
 
-        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
+    <button
+      type="button"
+      class="mobile-menu-btn"
+      @click="isMobileMenuOpen = !isMobileMenuOpen"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
 
-        <div class="info">i</div>
-      </div>
-
-      <!-- Hamburger untuk layar kecil -->
-      <button
-        type="button"
-        class="mobile-menu-btn"
-        @click="isMobileMenuOpen = !isMobileMenuOpen"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <div v-if="isMobileMenuOpen" class="mobile-menu">
-        <span class="credit-info" :class="{ 'credit-error': creditError }">
-          <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
-          <template v-else-if="creditError">{{ creditError }}</template>
-          <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
-        </span>
-
-        <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
-
-        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
-
-        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
-      </div>
-    </div>
+  <!-- Dropdown menu (hanya tombol aksi) -->
+  <div v-if="isMobileMenuOpen" class="mobile-menu">
+    <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
+    <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
+    <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
+  </div>
+</div>
 
     <label class="label"> {{ $t('input.uploadLabel') }} </label>
 
@@ -422,7 +421,7 @@ async function handleSplitClick() {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: hidden; /* jaga-jaga kalau ada child yang tetap melebihi */
+  overflow: hidden;
 }
 
 .upload-content {
@@ -448,8 +447,8 @@ async function handleSplitClick() {
   padding: 0 8px;
   box-sizing: border-box;
 }
-/* ===== End fix responsive ===== */
 
+/* ===== Buttons & general ===== */
 .add-credit-btn {
   border: none;
   background: #16a34a;
@@ -491,6 +490,7 @@ async function handleSplitClick() {
   opacity: 0.7;
 }
 
+/* ===== Header ===== */
 .header-actions {
   display: flex;
   align-items: center;
@@ -523,41 +523,36 @@ async function handleSplitClick() {
 
 .mobile-menu {
   display: none;
-  flex-direction: column;
+}
+
+/* Group credit + hamburger (hanya untuk mobile) */
+.mobile-right {
+  display: none;
+}
+
+/* ===== Model Info ===== */
+.model-info {
+  display: flex;
+  align-items: flex-start;
   gap: 10px;
-  margin-top: 12px;
-  padding: 14px;
-  background: #f9f9fc;
-  border: 1px solid #eee;
-  border-radius: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-.mobile-menu .credit-info,
-.mobile-menu .add-credit-btn,
-.mobile-menu .history-btn,
-.mobile-menu .logout-btn {
-  width: 100%;
-  text-align: center;
+.model-info .badge {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-@media (max-width: 600px) {
-  .header-actions {
-    display: none;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .mobile-menu {
-    display: flex;
-  }
-
-  .preview-img {
-    max-height: 200px;
-  }
+.model-info span:last-child {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.45;
+  font-size: 14px;
+  color: #4b5563;
 }
 
+/* ===== Credit badge ===== */
 .credit-info {
   font-size: 13px;
   font-weight: 600;
@@ -572,6 +567,7 @@ async function handleSplitClick() {
   background: #fee2e2;
 }
 
+/* ===== Badge ===== */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -597,6 +593,7 @@ async function handleSplitClick() {
   color: #7c3aed;
 }
 
+/* ===== Credit estimate ===== */
 .credit-estimate {
   margin-top: 10px;
   font-size: 13px;
@@ -608,6 +605,7 @@ async function handleSplitClick() {
   font-weight: 600;
 }
 
+/* ===== History & Logout ===== */
 .history-btn {
   border: none;
   background: #ede9fe;
@@ -640,6 +638,7 @@ async function handleSplitClick() {
   opacity: 0.85;
 }
 
+/* ===== Model Dropdown ===== */
 .model-dropdown {
   position: relative;
   margin-top: 12px;
@@ -707,10 +706,11 @@ async function handleSplitClick() {
   color: #fff;
 }
 
-/* Hover effect untuk area upload gambar */
+/* ===== Upload box hover ===== */
 .upload-box {
   transition: border-color 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .upload-box:hover {
@@ -735,10 +735,6 @@ async function handleSplitClick() {
   margin-top: 4px;
 }
 
-.upload-box {
-  position: relative;
-}
-
 .remove-image-btn {
   position: absolute;
   top: 10px;
@@ -760,5 +756,106 @@ async function handleSplitClick() {
 
 .remove-image-btn:hover {
   background: #dc2626;
+}
+
+/* =========================================
+   MOBILE STYLES
+========================================= */
+@media (max-width: 600px) {
+  /* Sembunyikan header-actions desktop */
+  .header-actions {
+    display: none !important;
+  }
+
+  /* Tampilkan group credit + hamburger */
+  .mobile-right {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;                    /* <-- atur jarak credit ↔ toggle di sini */
+    margin-left: auto;
+  }
+
+  .mobile-credit {
+    display: inline-flex !important;
+    margin: 0 !important;
+    font-size: 12px;
+    padding: 5px 10px;
+    white-space: nowrap;
+  }
+
+  .mobile-menu-btn {
+    display: flex !important;
+    margin: 0 !important;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  /* Header layout */
+  .card-header {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    position: relative;
+    gap: 0 !important;
+  }
+
+  .card-header h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+    font-size: 22px !important;
+    text-align: left !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* Dropdown menu */
+  .mobile-menu {
+    display: flex !important;
+    flex-direction: column;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 180px;
+    margin-top: 0 !important;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 50;
+    gap: 8px;
+  }
+
+  .mobile-menu .add-credit-btn,
+  .mobile-menu .history-btn,
+  .mobile-menu .logout-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Model info di mobile */
+  .model-info {
+    flex-wrap: nowrap;
+  }
+
+  .model-info span:last-child {
+    font-size: 12.5px;
+    white-space: normal;
+  }
+
+  .model-info .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+
+  .preview-img {
+    max-height: 200px;
+  }
 }
 </style>

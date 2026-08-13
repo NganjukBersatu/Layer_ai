@@ -450,16 +450,6 @@ RESPONSIVE - MOBILE
     padding: 16px;
   }
 
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .card-header h2 {
-    font-size: 22px;
-  }
-
   .upload-box {
     height: 220px;
   }
