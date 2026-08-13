@@ -209,20 +209,23 @@ onMounted(() => {
 
 <style scoped>
 .history-page {
-  max-width: 1000px;
-  margin: 30px auto;
-  padding: 0 16px;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important; 
+  padding: 16px clamp(20px, 6vw, 100px) !important;
+  box-sizing: border-box;
 }
 
 .page-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .history-page h2 {
   margin: 0;
+  font-size: 22px;
 }
 
 .back-btn {
@@ -231,10 +234,10 @@ onMounted(() => {
   color: #4f46e5;
   font-weight: 600;
   font-size: 14px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 8px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  white-space: nowrap;
 }
 
 .back-btn:hover {
@@ -243,18 +246,17 @@ onMounted(() => {
 
 .search-box {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .search-box input {
   width: 100%;
-  padding: 12px 40px 12px 16px;
+  padding: 11px 40px 11px 14px;
   border: 1px solid #d6d6d6;
   border-radius: 10px;
   font-size: 14px;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.15s;
 }
 
 .search-box input:focus {
@@ -270,19 +272,15 @@ onMounted(() => {
   background: none;
   color: #999;
   font-size: 20px;
-  line-height: 1;
   cursor: pointer;
   padding: 4px;
-}
-
-.clear-btn:hover {
-  color: #4f46e5;
 }
 
 .filter-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .filter-tab {
@@ -291,15 +289,9 @@ onMounted(() => {
   color: #555;
   font-weight: 600;
   font-size: 13px;
-  padding: 8px 18px;
+  padding: 7px 14px;
   border-radius: 999px;
   cursor: pointer;
-  transition: 0.15s;
-}
-
-.filter-tab:hover {
-  border-color: #7c3aed;
-  color: #7c3aed;
 }
 
 .filter-tab.active {
@@ -308,17 +300,79 @@ onMounted(() => {
   color: #fff;
 }
 
+/* ===== GRID ===== */
 .history-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 
+/* Tablet */
+@media (max-width: 900px) {
+  .history-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .history-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    padding: 12px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+  }
+
+  .page-header {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .history-page h2 {
+    font-size: 20px;
+  }
+
+  .history-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .meta {
+    padding: 8px 10px 2px;
+  }
+
+  .image-name {
+    font-size: 12px;
+  }
+
+  .date {
+    font-size: 11px;
+  }
+
+  .model-badge {
+    font-size: 9px;
+    padding: 2px 7px;
+  }
+
+  .actions {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .btn {
+    padding: 6px 0;
+    font-size: 12px;
+  }
+}
+
+/* ===== Card ===== */
 .history-card {
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
 }
@@ -361,6 +415,7 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   margin-top: 4px;
+  gap: 6px;
 }
 
 .model-badge {
@@ -369,6 +424,7 @@ onMounted(() => {
   padding: 3px 9px;
   border-radius: 999px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .model-badge.basic {
@@ -395,11 +451,6 @@ onMounted(() => {
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.btn:hover {
-  opacity: 0.85;
 }
 
 .btn.download {
