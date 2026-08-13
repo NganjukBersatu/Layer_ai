@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 const emit = defineEmits(["back-to-login"]);
 
@@ -13,7 +15,7 @@ async function sendResetLink() {
   successMessage.value = "";
 
   if (!email.value.trim()) {
-    error.value = "Email wajib diisi.";
+    error.value = t('forgotPassword.errorRequired');
     return;
   }
 
@@ -31,13 +33,13 @@ async function sendResetLink() {
     const data = await response.json();
 
     if (data.success) {
-      successMessage.value = "Link reset password sudah dikirim ke email kamu.";
+      successMessage.value = t('forgotPassword.successSent');
     } else {
-      error.value = data.message || "Gagal mengirim link reset password.";
+      error.value = data.message || t('forgotPassword.errorGeneric');
     }
   } catch (err) {
     console.error(err);
-    error.value = "Tidak dapat terhubung ke server.";
+    error.value = t('forgotPassword.errorConnection');
   } finally {
     isLoading.value = false;
   }
@@ -50,23 +52,23 @@ function backToLogin() {
 
 <template>
   <div class="login-card">
-    <h2>Lupa password</h2>
+    <h2>{{ t('forgotPassword.title') }}</h2>
     <p class="subtitle">
-      Masukkan email kamu, kami akan kirim link untuk reset password.
+      {{ t('forgotPassword.subtitle') }}
     </p>
 
     <form @submit.prevent="sendResetLink">
-      <label class="field-label" for="forgot-email">Email</label>
+      <label class="field-label" for="forgot-email">{{ t('forgotPassword.email') }}</label>
       <input
         id="forgot-email"
         v-model="email"
         type="email"
-        placeholder="nama@email.com"
+        :placeholder="t('forgotPassword.emailPlaceholder')"
         autocomplete="username"
       />
 
       <button type="submit" class="login-btn" :disabled="isLoading">
-        {{ isLoading ? "Mengirim..." : "Kirim link reset" }}
+        {{ isLoading ? t('forgotPassword.sending') : t('forgotPassword.submit') }}
       </button>
     </form>
 
@@ -74,7 +76,7 @@ function backToLogin() {
     <p class="success" role="status" aria-live="polite">{{ successMessage }}</p>
 
     <p class="register-row">
-      <a href="#" class="link" @click.prevent="backToLogin">Kembali ke login</a>
+      <a href="#" class="link" @click.prevent="backToLogin">{{ t('forgotPassword.backToLogin') }}</a>
     </p>
   </div>
 </template>

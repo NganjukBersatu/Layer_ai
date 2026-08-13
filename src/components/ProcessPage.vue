@@ -1,5 +1,7 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 const props = defineProps({
   image: { type: Object, required: true },
@@ -11,12 +13,12 @@ const props = defineProps({
 
 const emit = defineEmits(["back", "complete"]);
 
-const stepLabels = [
-  "Menyiapkan proses...",
-  "Menganalisis gambar...",
-  "Memproses gambar...",
-  "Menyusun hasil...",
-];
+const stepLabels = computed(() => [
+  t('process.step1'),
+  t('process.step2'),
+  t('process.step3'),
+  t('process.step4'),
+]);
 
 // Checkpoint progress per step. Ini masih simulasi (bukan progress asli dari AI),
 // karena aiService belum expose callback progress. Kalau nanti loadAI()/segmenter
@@ -33,7 +35,7 @@ const phase = ref("validating");
 
 const currentStep = ref(0);
 const progress = ref(0);
-const statusText = ref(stepLabels[0]);
+const statusText = ref(stepLabels.value[0]);
 const isRetrying = ref(false);
 const propsErrorMessage = ref("");
 
@@ -62,7 +64,7 @@ function validateProps() {
 
   if (missing.length > 0) {
     propsErrorMessage.value =
-      "Data tidak lengkap dari halaman sebelumnya (" + missing.join(", ") + "). Kembali dan coba lagi.";
+      t('process.errorPropsMissing', { fields: missing.join(", ") })
     phase.value = "error-props";
     return false;
   }
@@ -74,7 +76,7 @@ function validateProps() {
 async function deductCredit() {
   if (!navigator.onLine) {
     phase.value = "error-credit";
-    statusText.value = "Koneksi terputus saat memotong credit";
+    statusText.value = t('process.errorCreditConnection')
     return false;
   }
 
@@ -94,7 +96,7 @@ async function deductCredit() {
       // Credit tidak cukup / gagal di sisi server: berhenti, jangan lanjut ke hasil
       // supaya user tidak dapat hasil tanpa credit-nya benar-benar terpotong.
       phase.value = "error-credit";
-      statusText.value = data.message || "Gagal memotong credit";
+      statusText.value = data.message || data.message || t('process.errorCreditGeneric')
       return false;
     }
 
@@ -102,14 +104,14 @@ async function deductCredit() {
   } catch (error) {
     console.error("Gagal menghubungi server saat memotong credit:", error);
     phase.value = "error-credit";
-    statusText.value = "Tidak bisa menghubungi server untuk memotong credit";
+    statusText.value = t('process.errorCreditServer')
     return false;
   }
 }
 
 // --- 5. Proses AI, dipisah supaya gampang diganti ke progress asli nanti ---
 async function runAIProcessing(fromStep = 0) {
-  for (let step = fromStep; step < stepLabels.length; step++) {
+  for (let step = fromStep; step < stepLabels.value.length; step++) {
     if (!navigator.onLine) {
       currentStep.value = step;
       phase.value = "error-connection";
@@ -118,7 +120,7 @@ async function runAIProcessing(fromStep = 0) {
     if (isCancelled()) return false;
 
     currentStep.value = step;
-    statusText.value = stepLabels[step];
+    statusText.value = stepLabels.value[step];
     progress.value = stepProgress[step];
 
     if (stepDelay[step] > 0) {
@@ -136,7 +138,7 @@ async function runAIProcessing(fromStep = 0) {
 
 async function splitImageWithBackend() {
   if (!props.image) {
-    throw new Error("File gambar tidak tersedia");
+    throw new Error(t('process.errorNoImage'));
   }
 
   const formData = new FormData();
@@ -157,15 +159,13 @@ async function splitImageWithBackend() {
   console.log("📦 Response split image:", data);
 
   if (!response.ok || !data.success) {
-    throw new Error(
-      data.message || "Gagal memisahkan gambar"
-    );
+    throw new Error
+    (data.message || t('process.errorSplitGeneric'));
   }
 
   if (!data.layers || data.layers.length === 0) {
-    throw new Error(
-      "Backend tidak mengembalikan hasil gambar"
-    );
+    throw new 
+    Error(t('process.errorNoLayers'));
   }
 
   console.log("✅ Hasil split:", data.layers);
@@ -181,24 +181,24 @@ async function startProcessing(fromStep = 0) {
   if (!finishedSteps) return;
 
   try {
-    statusText.value = "Memproses gambar dengan AI...";
+    statusText.value = t('process.processingAI')
     progress.value = 70;
 
     const layers = await splitImageWithBackend();
 
-    statusText.value = "Menyusun hasil...";
+    statusText.value = t('process.composingResult')
     progress.value = 90;
 
     await delay(500);
 
-    statusText.value = "Memotong credit...";
+    statusText.value = t('process.deductingCredit')
     phase.value = "deducting-credit";
 
     const creditOk = await deductCredit();
 
     if (!creditOk) return;
 
-    statusText.value = "Selesai!";
+    statusText.value = t('process.done')
     progress.value = 100;
     phase.value = "done";
 
@@ -221,7 +221,7 @@ async function startProcessing(fromStep = 0) {
   statusText.value =
     error instanceof Error
       ? error.message
-      : "Gagal memproses gambar";
+    :  t('process.errorProcessingGeneric')
 }
 }
 
@@ -233,12 +233,12 @@ async function retryProcessing() {
   try {
     if (phase.value === "error-credit") {
       // Step AI sudah selesai sebelumnya, tinggal ulangi potong credit saja
-      statusText.value = "Memotong credit...";
+      statusText.value = t('process.deductingCredit');
       phase.value = "deducting-credit";
       const creditOk = await deductCredit();
       if (!creditOk) return;
 
-      statusText.value = "Selesai!";
+      statusText.value = t('process.done');
       phase.value = "done";
       emit("complete", {
         image: props.image,
@@ -257,7 +257,7 @@ async function retryProcessing() {
 // --- 3. Load AI dengan retry, bukan cuma pesan statis ---
 async function loadAIModel() {
   phase.value = "loading-ai";
-  statusText.value = "Menyiapkan proses...";
+  statusText.value = t('process.step1')
 
   try {
     await delay(300);
@@ -267,7 +267,7 @@ async function loadAIModel() {
   } catch (e) {
     console.error(e);
     phase.value = "error-ai-load";
-    statusText.value = "Gagal memulai proses";
+    statusText.value = t('process.errorAiLoadGeneric')
   }
 }
 
@@ -283,7 +283,7 @@ function handleOnline() {
 function cancelProcessing() {
   if (isCancelled() || isDone() || isErrorPhase()) return;
   phase.value = "cancelled";
-  statusText.value = "Proses dibatalkan";
+  statusText.value = t('process.cancelled')
 }
 
 function backToInput() {
@@ -309,30 +309,30 @@ onBeforeUnmount(() => {
 <template>
   <div class="input-card">
     <div class="card-header">
-      <h2>Processing</h2>
+      <h2>{{ t('process.title') }}</h2>
     </div>
 
     <!-- Error: props tidak lengkap, tidak ada apapun untuk diproses -->
     <template v-if="phase === 'error-props'">
-      <p class="label label-error">Tidak bisa memulai proses</p>
+      <p class="label label-error">{{ t('process.errorPropsTitle') }}</p>
       <p class="sublabel-error">{{ propsErrorMessage }}</p>
     </template>
 
     <!-- Error: gagal load model AI -->
     <template v-else-if="phase === 'error-ai-load'">
-      <p class="label label-error">Gagal memuat AI</p>
-      <p class="sublabel-error">Periksa koneksi kamu lalu coba lagi.</p>
+      <p class="label label-error">{{ t('process.errorAiLoadTitle') }}</p>
+      <p class="sublabel-error">{{ t('process.errorAiLoadSub') }}</p>
     </template>
 
     <!-- Error: koneksi terputus saat proses AI -->
     <template v-else-if="phase === 'error-connection'">
-      <p class="label label-error">Processing gagal</p>
-      <p class="sublabel-error">Koneksi internet terputus</p>
+      <p class="label label-error">{{ t('process.errorConnectionTitle') }}</p>
+      <p class="sublabel-error">{{t('process.errorConnectionSub') }}</p>
     </template>
 
     <!-- Error: gagal potong credit -->
     <template v-else-if="phase === 'error-credit'">
-      <p class="label label-error">Gagal memotong credit</p>
+      <p class="label label-error">{{ t('process.errorCreditTitle') }}</p>
       <p class="sublabel-error">{{ statusText }}</p>
     </template>
 
@@ -369,15 +369,13 @@ onBeforeUnmount(() => {
 
     <!-- Kotak penjelasan untuk tiap jenis error -->
     <div v-if="phase === 'error-connection'" class="error-box">
-      Koneksi internet kamu terputus saat gambar sedang diproses.
-      Progres tidak hilang, kamu bisa coba lagi.
+      {{ t('process.errorBoxConnection') }}
     </div>
     <div v-else-if="phase === 'error-credit'" class="error-box">
-      Gambar sudah selesai diproses, tapi credit kamu belum berhasil dipotong.
-      Coba lagi untuk menyelesaikan.
+      {{ t('process.errorBoxCredit') }}
     </div>
     <div v-else-if="phase === 'error-ai-load'" class="error-box">
-      Model AI gagal dimuat, kemungkinan karena koneksi tidak stabil.
+      {{ t('process.errorBoxAiLoad') }}
     </div>
 
     <div v-if="imagePreview" class="preview-box" style="margin-top:20px">
@@ -394,7 +392,7 @@ onBeforeUnmount(() => {
         class="split-btn secondary"
         @click="cancelProcessing"
       >
-        Batal
+       {{ t('process.cancel') }}
       </button>
 
       <!-- Coba lagi: untuk semua jenis error yang recoverable -->
@@ -404,11 +402,11 @@ onBeforeUnmount(() => {
         :disabled="isRetrying"
         @click="phase === 'error-ai-load' ? loadAIModel() : retryProcessing()"
       >
-        {{ isRetrying ? "Mencoba lagi..." : "Coba lagi" }}
+        {{ isRetrying ? t('process.retrying') : t('process.retry') }}
       </button>
 
       <button class="split-btn secondary" @click="backToInput">
-        Back
+        {{ t('process.back') }}
       </button>
     </div>
   </div>
