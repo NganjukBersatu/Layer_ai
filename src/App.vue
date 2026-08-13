@@ -116,7 +116,11 @@ function goBackFromHistory() {
 <template>
   <div class="app">
 
+  <div class="language-container">
     <LanguageSwitcher />
+  </div>
+
+  <!-- Header -->
 
     <!-- Header -->
     <header class="hero">
@@ -211,6 +215,14 @@ function goBackFromHistory() {
 </template>
 
 <style>
+
+.language-container {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  z-index: 1000;
+}
+
 .page-fade-enter-active,
 .page-fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -225,4 +237,18 @@ function goBackFromHistory() {
   opacity: 0;
   transform: translateY(-8px);
 }
+
+@media (max-width: 600px) {
+  .language-container {
+    top: 12px;
+    right: 12px;
+  }
+
+  .language-container .lang-button {
+    min-width: 105px;
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+}
+
 </style>
