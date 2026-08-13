@@ -19,12 +19,12 @@ function changeLang(lang) {
       @click="isOpen = !isOpen"
       type="button"
     >
-      <span class="lang-icon">
-        {{ locale === 'id' ? '🇮🇩' : '🇬🇧' }}
-      </span>
+    <span class="lang-icon">
+        {{ locale === 'id' ? '🇮🇩' : locale === 'ja' ? '🇯🇵' : locale === 'ko' ? '🇰🇷' : 'EN' }}
+    </span>
 
       <span class="lang-text">
-        {{ locale === 'id' ? 'Indonesia' : 'English' }}
+        {{ locale === 'id' ? 'Indonesia' : locale === 'ja' ? '日本語' : locale === 'ko' ? '한국어' : 'English' }}
       </span>
 
       <span class="lang-arrow" :class="{ open: isOpen }">
@@ -52,9 +52,31 @@ function changeLang(lang) {
         :class="{ active: locale === 'en' }"
         @click="changeLang('en')"
       >
-        <span class="lang-icon">🇬🇧</span>
+        <span class="lang-icon">EN</span>
         <span>English</span>
         <span v-if="locale === 'en'" class="check">✓</span>
+      </button>
+
+      <button
+        type="button"
+        class="lang-option"
+        :class="{ active: locale === 'ja' }"
+        @click="changeLang('ja')"
+      >
+        <span class="lang-icon">🇯🇵</span>
+        <span>日本語</span>
+        <span v-if="locale === 'ja'" class="check">✓</span>
+      </button>
+
+      <button
+        type="button"
+        class="lang-option"
+        :class="{ active: locale === 'ko' }"
+        @click="changeLang('ko')"
+      >
+        <span class="lang-icon">🇰🇷</span>
+        <span>한국어</span>
+        <span v-if="locale === 'ko'" class="check">✓</span>
       </button>
 
     </div>
@@ -106,8 +128,15 @@ function changeLang(lang) {
 }
 
 .lang-icon {
-  font-size: 17px;
+  width: 25px;
+  flex-shrink: 0;
+
+  font-size: 13px;
   line-height: 1;
+  font-family: inherit;
+  font-weight: 500;
+
+  text-align: center;
 }
 
 .lang-text {
@@ -199,7 +228,7 @@ function changeLang(lang) {
 .lang-option.active {
   background: #f0efff;
   color: #6657d9;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .lang-option .check {

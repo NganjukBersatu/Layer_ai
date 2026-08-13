@@ -8,6 +8,9 @@ import HistoryPage from "./components/HistoryPage.vue";
 import ForgotPasswordPage from "./components/ForgotPasswordPage.vue";
 import RegisterPage from "./components/RegisterPage.vue";
 import LanguageSwitcher from "./components/LanguageSwitcher.vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const isLoggedIn = ref(
     localStorage.getItem("isLoggedIn") === "true"
@@ -120,16 +123,13 @@ function goBackFromHistory() {
     <LanguageSwitcher />
   </div>
 
-  <!-- Header -->
 
+  
     <!-- Header -->
     <header class="hero">
-      <h1>AI Layer Splitter</h1>
-      <p>
-        Split your images into separate layers with AI.
-        Upload a single image and generate animation-ready layers instantly.
-      </p>
-    </header>
+  <h1>{{ t('app.title') }}</h1>
+  <p>{{ t('app.subtitle') }}</p>
+</header>
 
     <!-- Workspace -->
 
@@ -240,15 +240,28 @@ function goBackFromHistory() {
 
 @media (max-width: 600px) {
   .language-container {
-    top: 12px;
-    right: 12px;
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
   }
 
-  .language-container .lang-button {
-    min-width: 105px;
-    padding: 7px 9px;
-    font-size: 11px;
-  }
+.language-container .lang-button {
+  min-width: 0;
+  width: auto;
+  padding: 6px;
+  gap: 2px;
+  font-size: 12px;
 }
+
+.language-container .lang-text {
+  display: none;
+}
+
+.language-container .lang-arrow {
+  font-size: 9px;
+}
+}
+
 
 </style>

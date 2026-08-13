@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 const emit = defineEmits(["back-to-login", "registered"]);
 
@@ -13,7 +15,7 @@ async function register() {
   error.value = "";
 
   if (!name.value.trim() || !email.value.trim() || !password.value.trim()) {
-    error.value = "Semua field wajib diisi.";
+    error.value = t('register.errorRequired');
     return;
   }
 
@@ -37,11 +39,11 @@ async function register() {
     if (data.success) {
       emit("registered");
     } else {
-      error.value = data.message || "Gagal mendaftar. Coba lagi.";
+      error.value = data.message || t('register.errorGeneric');
     }
   } catch (err) {
     console.error(err);
-    error.value = "Tidak dapat terhubung ke server.";
+    error.value = t('register.errorConnection');
   } finally {
     isLoading.value = false;
   }
@@ -54,46 +56,46 @@ function backToLogin() {
 
 <template>
   <div class="login-card">
-    <h2>Daftar akun</h2>
+    <h2>{{ t('register.title') }}</h2>
 
     <form @submit.prevent="register">
-      <label class="field-label" for="register-name">Nama</label>
+      <label class="field-label" for="register-name">{{ t('register.name') }}</label>
       <input
         id="register-name"
         v-model="name"
         type="text"
-        placeholder="Nama lengkap"
+        :placeholder="t('register.namePlaceholder')"
         autocomplete="name"
       />
 
-      <label class="field-label" for="register-email">Email</label>
+      <label class="field-label" for="register-email">{{ t('register.email') }}</label>
       <input
         id="register-email"
         v-model="email"
         type="email"
-        placeholder="nama@email.com"
+        :placeholder="t('register.emailPlaceholder')"
         autocomplete="username"
       />
 
-      <label class="field-label" for="register-password">Password</label>
+      <label class="field-label" for="register-password">{{ t('register.password') }}</label>
       <input
         id="register-password"
         v-model="password"
         type="password"
-        placeholder="Password"
+        :placeholder="t('register.passwordPlaceholder')"
         autocomplete="new-password"
       />
 
       <button type="submit" class="login-btn" :disabled="isLoading">
-        {{ isLoading ? "Mendaftar..." : "Daftar" }}
+        {{ isLoading ? t('register.submitting') : t('register.submit') }}
       </button>
     </form>
 
     <p class="error" role="alert" aria-live="polite">{{ error }}</p>
 
     <p class="register-row">
-      Sudah punya akun?
-      <a href="#" class="link" @click.prevent="backToLogin">Login</a>
+      {{ t('register.haveAccount') }}
+      <a href="#" class="link" @click.prevent="backToLogin">{{ t('register.loginLink') }}</a>
     </p>
   </div>
 </template>

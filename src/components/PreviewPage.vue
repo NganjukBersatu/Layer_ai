@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 const props = defineProps({
   image: Object,
@@ -50,7 +52,7 @@ function downloadLayer() {
   const result = resultLayers.value[0];
 
   if (!result) {
-    alert("Belum ada hasil yang dapat didownload.");
+    alert(t('preview.alertNoResult'));
     return;
   }
 
@@ -64,7 +66,7 @@ function downloadLayer() {
 }
 
 function deleteLayer() {
-  if (confirm("Apakah Anda yakin ingin menghapus hasil?")) {
+  if (confirm(t('preview.confirmDelete'))){
     emit("delete-result");
   }
 }
@@ -111,7 +113,7 @@ console.log(uploadData);
 
     if (data.success) {
       hasSaved.value = true;
-      alert("Hasil berhasil disimpan!");
+      alert(t('preview.saveSuccess'));
     } else {
       alert(data.message);
     }
@@ -137,7 +139,7 @@ console.log(uploadData);
     <!-- ================= LEFT CARD ================= -->
     <div class="card left-card">
 
-      <h2>Original Image</h2>
+      <h2>{{ t('preview.originalImage') }}</h2>
 
       <div class="preview-image">
   <img
@@ -147,27 +149,27 @@ console.log(uploadData);
   />
 
   <div v-else class="empty-result">
-    Original image not available
+    {{ t('preview.originalNotAvailable') }}
   </div>
 </div>
 
       <div class="file-info">
 
         <div class="info-row">
-          <span>File Name</span>
+          <span>{{ t('preview.fileName') }}</span>
           <strong :title="props.image?.name || '-'">{{ props.image?.name || "-" }}</strong>
         </div>
 
         <div class="info-row">
-          <span>File Size</span>
+          <span>{{ t('preview.fileSize') }}</span>
           <strong>{{ formatFileSize(props.image?.size) }}</strong>
         </div>
 
         <div class="info-row">
-          <span>Status</span>
+          <span>{{ t('preview.status') }}</span>
           <span class="status-badge">
             <span class="status-dot"></span>
-            Ready
+            {{ t('preview.ready') }}
           </span>
         </div>
 
@@ -180,12 +182,12 @@ console.log(uploadData);
     <div class="card right-card">
 
       <div class="card-title-row">
-        <h2>Result</h2>
+        <h2>{{ t('preview.result') }}</h2>
         <span
           class="model-badge"
           :class="model === 'advanced' ? 'advanced' : 'basic'"
         >
-          {{ model === "advanced" ? "Advanced" : "Basic" }}
+          {{ model === "advanced" ? t('common.advanced') : t('common.basic') }}
         </span>
       </div>
 
@@ -204,7 +206,7 @@ console.log(uploadData);
 </div>
 
 <div v-else class="empty-result">
-  Result will appear here
+  {{ t('preview.resultPlaceholder') }}
 </div>
 
 </div>
@@ -218,7 +220,7 @@ console.log(uploadData);
     @click="saveResult"
   >
     <i class="fa-solid fa-floppy-disk"></i>
-    {{ isSaving ? "Saving..." : "Save" }}
+    {{ isSaving ? t('preview.saving') : t('preview.save') }}
   </button>
 
   <button
@@ -227,7 +229,7 @@ console.log(uploadData);
     :disabled="!layers"
   >
     <i class="fa-solid fa-download"></i>
-    Download Layer
+    {{ t('preview.downloadLayer') }}
   </button>
 
   <!-- Grup 2: navigasi / reset -->
@@ -236,7 +238,7 @@ console.log(uploadData);
     @click="emit('restart')"
   >
     <i class="fa-solid fa-arrow-rotate-left"></i>
-    Upload New Image
+    {{ t('preview.uploadNewImage') }}
   </button>
 
   <button
@@ -244,7 +246,7 @@ console.log(uploadData);
     @click="emit('history')"
   >
     <i class="fa-solid fa-clock-rotate-left"></i>
-    History
+    {{ t('preview.history') }}
   </button>
 
   <!-- Grup 3: destruktif, tetap paling akhir -->
@@ -253,7 +255,7 @@ console.log(uploadData);
     @click="deleteLayer"
   >
     <i class="fa-solid fa-trash"></i>
-    Delete
+    {{ t('preview.delete') }}
   </button>
 
 </div>
