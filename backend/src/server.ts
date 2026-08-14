@@ -87,15 +87,31 @@ app.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// Kategori style gambar yang valid. Kalau kamu tambah kategori baru di
+// frontend, tambahkan juga nilainya di sini supaya validasi tetap sinkron.
+const VALID_CATEGORIES = [
+  "none",
+  "chibi",
+  "anime",
+  "furry",
+  "kawaii",
+  "spyxfamily",
+];
+
 app.post("/save-result", async (req: Request, res: Response) => {
   try {
-    const { user_id, image_name, image_url, model } = req.body;
+    const { user_id, image_name, image_url, model, category } = req.body;
+
+    const safeCategory =
+      typeof category === "string" && VALID_CATEGORIES.includes(category)
+        ? category
+        : "none";
 
     const result = await pool.query(
-      `INSERT INTO results (user_id, image_name, image_url, model)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO results (user_id, image_name, image_url, model, category)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [user_id, image_name, image_url, model || "basic"]
+      [user_id, image_name, image_url, model || "basic", safeCategory]
     );
 
     res.json({

@@ -37,6 +37,7 @@
     "uploadLabel": "Unggah Gambar",
     "clickUpload": "Klik untuk unggah gambar",
     "dragDrop": "atau drag & drop di sini",
+    "uploadFormat": "JPG • PNG • WEBP • Maks. 10 MB",
     "removeImage": "Hapus gambar",
     "aiModel": "Model AI",
     "newBadge": "Baru",
