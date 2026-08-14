@@ -7,6 +7,7 @@ const props = defineProps({
   image: { type: Object, required: true },
   imagePreview: { type: String, required: true },
   model: { type: String, required: true },
+  category: { type: String, default: "none" },
   userId: { type: [Number, String], required: true },
   creditAmount: { type: Number, required: true },
 });
@@ -205,6 +206,7 @@ async function startProcessing(fromStep = 0) {
     emit("complete", {
   image: props.image,
   model: props.model,
+  category: props.category,
   layers: {
     original: props.imagePreview,
     result: layers.map(
@@ -243,6 +245,7 @@ async function retryProcessing() {
       emit("complete", {
         image: props.image,
         model: props.model,
+        category: props.category,
         layers: { original: props.imagePreview, result: props.imagePreview },
       });
     } else {

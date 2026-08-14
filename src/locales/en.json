@@ -37,6 +37,7 @@
     "uploadLabel": "Upload Image",
     "clickUpload": "Click to upload image",
     "dragDrop": "or drag & drop here",
+    "uploadFormat": "JPG • PNG • WEBP • Max. 10 MB",
     "removeImage": "Remove image",
     "aiModel": "AI Model",
     "newBadge": "New",

@@ -7,18 +7,54 @@ const { t } = useI18n()
 
 const histories = ref([]);
 const searchQuery = ref("");
-const modelFilter = ref("all"); // "all" | "basic" | "advanced"
+const modelFilter = ref("all"); // "all" | "basic" | "advanced" | "chibi" | "anime" | "furry" | "kawaii" | "spyxfamily"
 const API_BASE = "http://localhost:3000";
+
+// Kategori "model" (tier AI) -> dicek dari item.model
+const MODEL_TIERS = ["basic", "advanced"];
+
+// Kategori "style" (gaya gambar) -> dari kolom `category` di tabel results
+const FIELD_CANDIDATES = ["category"];
+
+const filterTabs = [
+  { value: "all", label: () => t('history.filterAll') },
+  { value: "basic", label: () => t('history.filterBasic') },
+  { value: "advanced", label: () => t('history.filterAdvanced') },
+  { value: "chibi", label: () => "Chibi" },
+  { value: "anime", label: () => "Anime" },
+  { value: "furry", label: () => "Furry" },
+  { value: "kawaii", label: () => "Kawaii" },
+  { value: "spyxfamily", label: () => "Spy x Family" },
+];
+
+// Ambil nilai kategori style dari item, coba beberapa kemungkinan nama field
+function getItemStyleValue(item) {
+  for (const field of FIELD_CANDIDATES) {
+    if (item[field]) {
+      return String(item[field]).toLowerCase().replace(/[\s_-]/g, "");
+    }
+  }
+  return "";
+}
 
 const filteredHistories = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
+  const filter = modelFilter.value;
 
   return histories.value.filter((item) => {
     const matchesSearch = !q || (item.image_name || "").toLowerCase().includes(q);
-    const matchesModel =
-      modelFilter.value === "all" || item.model === modelFilter.value;
 
-    return matchesSearch && matchesModel;
+    let matchesFilter = true;
+    if (filter !== "all") {
+      if (MODEL_TIERS.includes(filter)) {
+        matchesFilter = item.model === filter;
+      } else {
+        // filter === "chibi" | "anime" | "furry" | "kawaii" | "spyxfamily"
+        matchesFilter = getItemStyleValue(item) === filter;
+      }
+    }
+
+    return matchesSearch && matchesFilter;
   });
 });
 
@@ -110,6 +146,15 @@ async function deleteHistory(item) {
   }
 }
 
+// Label badge untuk kartu (tetap pakai basic/advanced sebagai badge utama,
+// tapi kalau item punya nilai style, tampilkan itu juga)
+function getStyleLabel(item) {
+  const val = getItemStyleValue(item);
+  if (!val) return null;
+  const found = filterTabs.find((t) => t.value === val);
+  return found ? found.label() : val;
+}
+
 onMounted(() => {
   loadHistory();
 });
@@ -140,25 +185,13 @@ onMounted(() => {
 
     <div class="filter-tabs">
       <button
+        v-for="tab in filterTabs"
+        :key="tab.value"
         class="filter-tab"
-        :class="{ active: modelFilter === 'all' }"
-        @click="modelFilter = 'all'"
+        :class="{ active: modelFilter === tab.value }"
+        @click="modelFilter = tab.value"
       >
-        {{ $t('history.filterAll') }}
-      </button>
-      <button
-        class="filter-tab"
-        :class="{ active: modelFilter === 'basic' }"
-        @click="modelFilter = 'basic'"
-      >
-       {{ $t('history.filterBasic') }}
-      </button>
-      <button
-        class="filter-tab"
-        :class="{ active: modelFilter === 'advanced' }"
-        @click="modelFilter = 'advanced'"
-      >
-        {{ $t('history.filterAdvanced') }}
+        {{ tab.label() }}
       </button>
     </div>
 
@@ -178,14 +211,19 @@ onMounted(() => {
           </p>
           <div class="meta-row">
             <p class="date">{{ formatDate(item.created_at) }}</p>
-            <span
-              class="model-badge"
-              :class="item.model === 'advanced' ? 'advanced' : 'basic'"
-            >
-              {{ item.model === "advanced" ? 
-              $t('history.filterAdvanced')
-              : $t('history.filterBasic') }}
-            </span>
+            <div class="badges">
+              <span
+                class="model-badge"
+                :class="item.model === 'advanced' ? 'advanced' : 'basic'"
+              >
+                {{ item.model === "advanced" ?
+                $t('history.filterAdvanced')
+                : $t('history.filterBasic') }}
+              </span>
+              <span v-if="getStyleLabel(item)" class="style-badge">
+                {{ getStyleLabel(item) }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -281,6 +319,8 @@ onMounted(() => {
   gap: 8px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 .filter-tab {
@@ -292,6 +332,7 @@ onMounted(() => {
   padding: 7px 14px;
   border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .filter-tab.active {
@@ -351,7 +392,8 @@ onMounted(() => {
     font-size: 11px;
   }
 
-  .model-badge {
+  .model-badge,
+  .style-badge {
     font-size: 9px;
     padding: 2px 7px;
   }
@@ -418,6 +460,13 @@ onMounted(() => {
   gap: 6px;
 }
 
+.badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .model-badge {
   font-size: 10px;
   font-weight: 700;
@@ -435,6 +484,17 @@ onMounted(() => {
 .model-badge.advanced {
   background: #fef3c7;
   color: #b45309;
+}
+
+.style-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 .actions {

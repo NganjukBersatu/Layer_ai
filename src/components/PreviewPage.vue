@@ -8,6 +8,8 @@ const props = defineProps({
   imagePreview: String,
   layers: Object,
   model: String,
+  category: { type: String, default: "none" },
+  userId: { type: [Number, String], default: 1 },
 });
 
 const resultLayers = computed(() => {
@@ -19,6 +21,7 @@ console.log("image:", props.image);
 console.log("imagePreview:", props.imagePreview);
 console.log("layers:", props.layers);
 console.log("model:", props.model);
+console.log("category:", props.category);
 
 const emit = defineEmits([
   "restart",
@@ -100,10 +103,11 @@ console.log(uploadData);
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user_id: 1,
+        user_id: props.userId || 1,
         image_name: props.image?.name || "gambar.png",
         image_url: uploadData.path,
         model: props.model || "basic",
+        category: props.category || "none",
       }),
     });
 
@@ -183,12 +187,20 @@ console.log(uploadData);
 
       <div class="card-title-row">
         <h2>{{ t('preview.result') }}</h2>
-        <span
-          class="model-badge"
-          :class="model === 'advanced' ? 'advanced' : 'basic'"
-        >
-          {{ model === "advanced" ? t('common.advanced') : t('common.basic') }}
-        </span>
+        <div class="badge-group">
+          <span
+            class="model-badge"
+            :class="model === 'advanced' ? 'advanced' : 'basic'"
+          >
+            {{ model === "advanced" ? t('common.advanced') : t('common.basic') }}
+          </span>
+          <span
+            v-if="category && category !== 'none'"
+            class="style-badge"
+          >
+            {{ category }}
+          </span>
+        </div>
       </div>
 
       <div class="result-image">
@@ -328,6 +340,13 @@ console.log(uploadData);
     margin-bottom:0;
 }
 
+.badge-group{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
 .model-badge{
     font-size:11px;
     font-weight:700;
@@ -344,6 +363,16 @@ console.log(uploadData);
 .model-badge.advanced{
     background:#fef3c7;
     color:#b45309;
+}
+
+.style-badge{
+    font-size:11px;
+    font-weight:700;
+    padding:4px 12px;
+    border-radius:999px;
+    text-transform:uppercase;
+    background:#dbeafe;
+    color:#1d4ed8;
 }
 
 .preview-image{

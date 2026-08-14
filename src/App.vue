@@ -25,6 +25,7 @@ const selectedImage = ref(null);
 const selectedPreview = ref(null);
 const resultLayers = ref(null);
 const selectedModel = ref("basic");
+const selectedCategory = ref("none");
 
 const selectedUserId = ref(null);
 const selectedCreditAmount = ref(0);
@@ -62,24 +63,27 @@ function backToLogin() {
   authView.value = "login";
 }
 
-function goToProcess({ image, imagePreview, model, userId, creditAmount }) {
+function goToProcess({ image, imagePreview, model, category, userId, creditAmount }) {
   selectedImage.value = image;
   selectedPreview.value = imagePreview;
   selectedModel.value = model;
+  selectedCategory.value = category || "none";
   selectedUserId.value = userId;
   selectedCreditAmount.value = creditAmount;
   currentPage.value = "process";
 }
 
-function goToPreview({ image, layers, model }) {
+function goToPreview({ image, layers, model, category }) {
   console.log("✅ MASUK PREVIEW");
   console.log("Image:", image);
   console.log("Layers:", layers);
   console.log("Model:", model);
+  console.log("Category:", category);
 
   selectedImage.value = image;
   resultLayers.value = layers;
   selectedModel.value = model;
+  selectedCategory.value = category || selectedCategory.value || "none";
   currentPage.value = "preview";
 
   console.log("Current page:", currentPage.value);
@@ -93,6 +97,7 @@ function restart() {
   selectedImage.value = null;
   selectedPreview.value = null;
   resultLayers.value = null;
+  selectedCategory.value = "none";
   currentPage.value = "input";
 }
 
@@ -181,6 +186,7 @@ function goBackFromHistory() {
       :image="selectedImage"
       :imagePreview="selectedPreview"
       :model="selectedModel"
+      :category="selectedCategory"
       :userId="selectedUserId"
       :creditAmount="selectedCreditAmount"
       @back="goBack"
@@ -194,6 +200,8 @@ function goBackFromHistory() {
       :imagePreview="selectedPreview"
       :layers="resultLayers"
       :model="selectedModel"
+      :category="selectedCategory"
+      :userId="selectedUserId"
       @restart="restart"
       @delete-result="deleteResult"
       @history="goToHistory"

@@ -25,6 +25,28 @@ const modelOptions = {
   advanced: "Advanced",
 };
 
+// ===== Kategori style gambar (pilihan user) =====
+const selectedCategory = ref("none");
+const isCategoryDropdownOpen = ref(false);
+
+const categoryOptions = {
+  none: "Tidak ada / Umum",
+  chibi: "Chibi",
+  anime: "Anime",
+  furry: "Furry",
+  kawaii: "Kawaii",
+  spyxfamily: "Spy x Family",
+};
+
+function toggleCategoryDropdown() {
+  isCategoryDropdownOpen.value = !isCategoryDropdownOpen.value;
+}
+
+function selectCategory(value) {
+  selectedCategory.value = value;
+  isCategoryDropdownOpen.value = false;
+}
+
 // Biaya credit per model. Harus SAMA dengan amount yang nanti dikirim
 // ke endpoint /deduct-credit di backend.
 const creditCost = {
@@ -194,6 +216,7 @@ async function handleSplitClick() {
 
     console.log("🚀 Mengirim gambar ke backend...");
     console.log("Model:", selectedModel.value);
+    console.log("Kategori:", selectedCategory.value);
     console.log("User ID:", currentUserId);
 
     const formData = new FormData();
@@ -229,6 +252,7 @@ async function handleSplitClick() {
       image: image.value,
       imagePreview: imagePreview.value,
       model: selectedModel.value,
+      category: selectedCategory.value,
       userId: currentUserId,
       creditAmount: estimatedCredit.value,
       layers: [resultUrl],
@@ -319,7 +343,8 @@ async function handleSplitClick() {
           </div>
 
           <p>{{ $t('input.clickUpload') }}</p>
-          <p class="upload-subtext">{{ $t('input.dragDrop') }}</p>
+<p class="upload-subtext">{{ $t('input.dragDrop') }}</p>
+<p class="upload-format">{{ $t('input.uploadFormat') }}</p>
         </template>
 
         <template v-else>
@@ -388,6 +413,34 @@ async function handleSplitClick() {
         >
           {{ $t('input.advanced') }}
           <span class="badge badge-small">{{ $t('input.newBadge') }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Pilihan Kategori Style Gambar ===== -->
+    <label class="label category-label">Kategori Gaya Gambar</label>
+
+    <div class="model-dropdown category-dropdown">
+      <button
+        type="button"
+        class="model-dropdown-btn category-dropdown-btn"
+        @click="toggleCategoryDropdown"
+      >
+        <span>{{ categoryOptions[selectedCategory] }}</span>
+        <span class="chevron" :class="{ open: isCategoryDropdownOpen }"
+          >&#9662;</span
+        >
+      </button>
+
+      <div v-if="isCategoryDropdownOpen" class="model-dropdown-menu">
+        <div
+          v-for="(label, value) in categoryOptions"
+          :key="value"
+          class="model-dropdown-item"
+          :class="{ active: selectedCategory === value }"
+          @click="selectCategory(value)"
+        >
+          {{ label }}
         </div>
       </div>
     </div>
@@ -706,6 +759,26 @@ async function handleSplitClick() {
   color: #fff;
 }
 
+/* ===== Kategori Style Dropdown ===== */
+.category-label {
+  margin-top: 4px;
+}
+
+.category-dropdown-btn {
+  background: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.category-dropdown .model-dropdown-menu {
+  border-color: #4f46e5;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.category-dropdown .model-dropdown-item.active {
+  background: #4f46e5;
+}
+
 /* ===== Upload box hover ===== */
 .upload-box {
   transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -733,6 +806,13 @@ async function handleSplitClick() {
   font-size: 12px;
   color: #9ca3af;
   margin-top: 4px;
+}
+
+.upload-format {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .remove-image-btn {
