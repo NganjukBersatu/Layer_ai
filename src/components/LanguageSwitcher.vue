@@ -20,7 +20,7 @@ function changeLang(lang) {
       type="button"
     >
     <span class="lang-icon">
-        {{ locale === 'id' ? '🇮🇩' : locale === 'ja' ? '🇯🇵' : locale === 'ko' ? '🇰🇷' : 'EN' }}
+        {{ locale === 'id' ? '🇮🇩' : locale === 'ja' ? '🇯🇵' : locale === 'ko' ? '🇰🇷' : '🇪🇳' }}
     </span>
 
       <span class="lang-text">
@@ -52,7 +52,7 @@ function changeLang(lang) {
         :class="{ active: locale === 'en' }"
         @click="changeLang('en')"
       >
-        <span class="lang-icon">EN</span>
+        <span class="lang-icon">🇪🇳</span>
         <span>English</span>
         <span v-if="locale === 'en'" class="check">✓</span>
       </button>
@@ -133,7 +133,6 @@ function changeLang(lang) {
 
   font-size: 13px;
   line-height: 1;
-  font-family: inherit;
   font-weight: 500;
 
   text-align: center;
