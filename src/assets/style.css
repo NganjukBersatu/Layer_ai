@@ -430,6 +430,7 @@ RESPONSIVE - MOBILE
 
   .app {
     padding: 16px;
+    padding-bottom: 260px;
   }
 
   .hero h1 {
@@ -490,6 +491,7 @@ body {
 @media (max-width: 768px) {
   .app {
     padding: 20px 16px;
+    padding-bottom: 260px;
   }
 
   .hero h1 {
@@ -520,6 +522,7 @@ body {
 @media (max-width: 480px) {
   .app {
     padding: 16px 12px;
+    padding-bottom: 260px;
   }
 
   .hero h1 {

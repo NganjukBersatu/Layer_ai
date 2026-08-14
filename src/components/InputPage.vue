@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["next", "history", "logout"]);
@@ -38,8 +38,21 @@ const categoryOptions = {
   spyxfamily: "Spy x Family",
 };
 
+const availableCategories = computed(() =>
+  Object.entries(categoryOptions).filter(
+    ([value]) => value !== selectedCategory.value
+  )
+);
+
 function toggleCategoryDropdown() {
   isCategoryDropdownOpen.value = !isCategoryDropdownOpen.value;
+
+  if (isCategoryDropdownOpen.value) {
+    nextTick(() => {
+      const menu = document.querySelector(".category-dropdown .model-dropdown-menu");
+      menu?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
 }
 
 function selectCategory(value) {
@@ -275,57 +288,57 @@ async function handleSplitClick() {
 </script>
 
 <template>
-  <div class="input-card">
+  <div class="input-card" :class="{ 'category-open': isCategoryDropdownOpen }">
     <div class="card-header">
-  <h2>{{ $t('input.title') }}</h2>
+      <h2>{{ $t('input.title') }}</h2>
 
-  <!-- Desktop actions (disembunyikan di mobile) -->
-  <div class="header-actions">
-    <span class="credit-info" :class="{ 'credit-error': creditError }">
-      <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
-      <template v-else-if="creditError">{{ creditError }}</template>
-      <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
-    </span>
+      <!-- Desktop actions (disembunyikan di mobile) -->
+      <div class="header-actions">
+        <span class="credit-info" :class="{ 'credit-error': creditError }">
+          <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
+          <template v-else-if="creditError">{{ creditError }}</template>
+          <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
+        </span>
 
-    <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
-    <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
-    <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
-    <div class="info">i</div>
-  </div>
+        <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
+        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
+        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
+        <div class="info">i</div>
+      </div>
 
-  <!-- Group khusus mobile: Credit + Hamburger -->
-  <div class="mobile-right">
-    <span class="credit-info mobile-credit" :class="{ 'credit-error': creditError }">
-      <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
-      <template v-else-if="creditError">{{ creditError }}</template>
-      <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
-    </span>
+      <!-- Group khusus mobile: Credit + Hamburger -->
+      <div class="mobile-right">
+        <span class="credit-info mobile-credit" :class="{ 'credit-error': creditError }">
+          <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
+          <template v-else-if="creditError">{{ creditError }}</template>
+          <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
+        </span>
 
-    <button
-      type="button"
-      class="add-credit-btn mobile-add-credit-btn"
-      @click="addCredit"
-    >
-      {{ $t('input.addCredit') }}
-    </button>
+        <button
+          type="button"
+          class="add-credit-btn mobile-add-credit-btn"
+          @click="addCredit"
+        >
+          {{ $t('input.addCredit') }}
+        </button>
 
-    <button
-      type="button"
-      class="mobile-menu-btn"
-      @click="isMobileMenuOpen = !isMobileMenuOpen"
-    >
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </div>
+        <button
+          type="button"
+          class="mobile-menu-btn"
+          @click="isMobileMenuOpen = !isMobileMenuOpen"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
 
-  <!-- Dropdown menu (hanya tombol aksi) -->
-  <div v-if="isMobileMenuOpen" class="mobile-menu">
-    <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
-    <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
-  </div>
-</div>
+      <!-- Dropdown menu (hanya tombol aksi) -->
+      <div v-if="isMobileMenuOpen" class="mobile-menu">
+        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
+        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
+      </div>
+    </div>
 
     <label class="label"> {{ $t('input.uploadLabel') }} </label>
 
@@ -350,8 +363,8 @@ async function handleSplitClick() {
           </div>
 
           <p>{{ $t('input.clickUpload') }}</p>
-<p class="upload-subtext">{{ $t('input.dragDrop') }}</p>
-<p class="upload-format">{{ $t('input.uploadFormat') }}</p>
+          <p class="upload-subtext">{{ $t('input.dragDrop') }}</p>
+          <p class="upload-format">{{ $t('input.uploadFormat') }}</p>
         </template>
 
         <template v-else>
@@ -396,6 +409,7 @@ async function handleSplitClick() {
       <button
         type="button"
         class="model-dropdown-btn"
+        :class="{ 'is-open': isModelDropdownOpen }"
         @click="toggleModelDropdown"
       >
         <span>{{ selectedModel === 'basic' ? $t('input.basic') : $t('input.advanced') }}</span>
@@ -406,16 +420,16 @@ async function handleSplitClick() {
 
       <div v-if="isModelDropdownOpen" class="model-dropdown-menu">
         <div
+          v-if="selectedModel !== 'basic'"
           class="model-dropdown-item"
-          :class="{ active: selectedModel === 'basic' }"
           @click="selectModel('basic')"
         >
           {{ $t('input.basic') }}
         </div>
 
         <div
+          v-if="selectedModel !== 'advanced'"
           class="model-dropdown-item"
-          :class="{ active: selectedModel === 'advanced' }"
           @click="selectModel('advanced')"
         >
           {{ $t('input.advanced') }}
@@ -431,6 +445,7 @@ async function handleSplitClick() {
       <button
         type="button"
         class="model-dropdown-btn category-dropdown-btn"
+        :class="{ 'is-open': isCategoryDropdownOpen }"
         @click="toggleCategoryDropdown"
       >
         <span>{{ categoryOptions[selectedCategory] }}</span>
@@ -441,10 +456,9 @@ async function handleSplitClick() {
 
       <div v-if="isCategoryDropdownOpen" class="model-dropdown-menu">
         <div
-          v-for="(label, value) in categoryOptions"
+          v-for="[value, label] in availableCategories"
           :key="value"
           class="model-dropdown-item"
-          :class="{ active: selectedCategory === value }"
           @click="selectCategory(value)"
         >
           {{ label }}
@@ -453,19 +467,19 @@ async function handleSplitClick() {
     </div>
 
     <button
-  class="split-btn"
-  :disabled="!image || !hasEnoughCredit || isSplitting"
-  :title="
-    !image
-      ? $t('input.uploadFirstTitle')
-      : !hasEnoughCredit
-        ? $t('input.notEnoughCreditTitle')
-        : ''
-  "
-  @click="handleSplitClick"
->
-  {{ isSplitting ? $t('input.processing') : $t('input.splitBtn') }}
-</button>
+      class="split-btn"
+      :disabled="!image || !hasEnoughCredit || isSplitting"
+      :title="
+        !image
+          ? $t('input.uploadFirstTitle')
+          : !hasEnoughCredit
+            ? $t('input.notEnoughCreditTitle')
+            : ''
+      "
+      @click="handleSplitClick"
+    >
+      {{ isSplitting ? $t('input.processing') : $t('input.splitBtn') }}
+    </button>
   </div>
 </template>
 
@@ -736,15 +750,25 @@ async function handleSplitClick() {
 
 .model-dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
+  margin-top: -2px;
   left: 0;
   right: 0;
   background: #fff;
   border: 2px solid #7c3aed;
-  border-radius: 12px;
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
   overflow: hidden;
   z-index: 10;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.model-dropdown-btn.is-open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .model-dropdown-item {
@@ -782,8 +806,9 @@ async function handleSplitClick() {
   overflow-y: auto;
 }
 
-.category-dropdown .model-dropdown-item.active {
-  background: #4f46e5;
+.input-card.category-open {
+  margin-bottom: 120px;
+  transition: margin-bottom 0.15s ease;
 }
 
 /* ===== Upload box hover ===== */
