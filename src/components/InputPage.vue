@@ -303,6 +303,14 @@ async function handleSplitClick() {
 
     <button
       type="button"
+      class="add-credit-btn mobile-add-credit-btn"
+      @click="addCredit"
+    >
+      {{ $t('input.addCredit') }}
+    </button>
+
+    <button
+      type="button"
       class="mobile-menu-btn"
       @click="isMobileMenuOpen = !isMobileMenuOpen"
     >
@@ -314,7 +322,6 @@ async function handleSplitClick() {
 
   <!-- Dropdown menu (hanya tombol aksi) -->
   <div v-if="isMobileMenuOpen" class="mobile-menu">
-    <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
     <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
     <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
   </div>
@@ -861,6 +868,27 @@ async function handleSplitClick() {
     font-size: 12px;
     padding: 5px 10px;
     white-space: nowrap;
+  }
+
+  .mobile-add-credit-btn {
+    width: 26px !important;
+    height: 26px !important;
+    padding: 0 !important;
+    border-radius: 6px !important;   /* <-- diubah dari 50% jadi 6px */
+    font-size: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mobile-add-credit-btn::after {
+    content: "+";
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    display: block;
+    color: #fff;
   }
 
   .mobile-menu-btn {
