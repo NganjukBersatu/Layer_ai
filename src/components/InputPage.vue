@@ -29,17 +29,17 @@ const modelOptions = {
 const selectedCategory = ref("none");
 const isCategoryDropdownOpen = ref(false);
 
-const categoryOptions = {
-  none: "Tidak ada / Umum",
-  chibi: "Chibi",
-  anime: "Anime",
-  furry: "Furry",
-  kawaii: "Kawaii",
-  spyxfamily: "Spy x Family",
-};
+const categoryOptions = computed(() => ({
+  none: t('input.categoryNone'),
+  chibi: t('input.categoryChibi'),
+  anime: t('input.categoryAnime'),
+  furry: t('input.categoryFurry'),
+  kawaii: t('input.categoryKawaii'),
+  spyxfamily: t('input.categorySpyxfamily'),
+}));
 
 const availableCategories = computed(() =>
-  Object.entries(categoryOptions).filter(
+  Object.entries(categoryOptions.value).filter(
     ([value]) => value !== selectedCategory.value
   )
 );
@@ -439,7 +439,7 @@ async function handleSplitClick() {
     </div>
 
     <!-- ===== Pilihan Kategori Style Gambar ===== -->
-    <label class="label category-label">Kategori Gaya Gambar</label>
+    <label class="label category-label">{{ $t('input.categoryLabel') }}</label>
 
     <div class="model-dropdown category-dropdown">
       <button
