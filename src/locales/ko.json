@@ -36,6 +36,7 @@
     "logout": "로그아웃",
     "uploadLabel": "이미지 업로드",
     "clickUpload": "클릭하여 이미지 업로드",
+    "uploadFormat": "JPG • PNG • WEBP • 최대 10MB",
     "dragDrop": "또는 여기로 드래그 앤 드롭",
     "categoryLabel": "이미지 스타일 카테고리",
 "categoryNone": "없음 / 일반",
