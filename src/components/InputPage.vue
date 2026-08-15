@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["next", "history", "logout"]);
@@ -46,13 +46,6 @@ const availableCategories = computed(() =>
 
 function toggleCategoryDropdown() {
   isCategoryDropdownOpen.value = !isCategoryDropdownOpen.value;
-
-  if (isCategoryDropdownOpen.value) {
-    nextTick(() => {
-      const menu = document.querySelector(".category-dropdown .model-dropdown-menu");
-      menu?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-  }
 }
 
 function selectCategory(value) {

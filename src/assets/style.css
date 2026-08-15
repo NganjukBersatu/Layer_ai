@@ -472,6 +472,17 @@ body {
   overflow-x: hidden;
 }
 
+/* Paksa scrollbar vertikal SELALU tampil (bukan cuma muncul saat perlu).
+   Ini mencegah lebar viewport berubah saat tinggi halaman berubah
+   (mis. saat dropdown kategori dibuka lalu halaman jadi lebih tinggi
+   dari layar) — perubahan lebar viewport itulah yang membuat .app
+   (di-center pakai margin: auto) terlihat "bergeser" horizontal.
+   overflow-y: scroll dipakai langsung (bukan scrollbar-gutter) supaya
+   kompatibel di semua browser tanpa perlu deteksi dukungan fitur. */
+html {
+  overflow-y: scroll;
+}
+
 .app {
   width: 100%;
   max-width: 1350px;
