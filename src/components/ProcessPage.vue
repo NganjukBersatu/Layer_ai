@@ -431,6 +431,16 @@ onBeforeUnmount(() => {
   --proc-border: #ddd;
 }
 
+:global([data-theme="dark"]) .input-card {
+  --proc-accent-bg: #2a2440;
+  --proc-danger-bg: #3a1f1f;
+  --proc-text-muted: var(--text-secondary);
+  --proc-text-body: var(--text-secondary);
+  --proc-neutral-bg: var(--bg-hover);
+  --proc-neutral-track: var(--border-color);
+  --proc-border: var(--border-color);
+}
+
 .progress-track{
   width:100%;
   height:10px;
@@ -473,11 +483,11 @@ onBeforeUnmount(() => {
 .step.active{
   background:var(--proc-accent-bg);
   font-weight:600;
-  color:#1e1b4b;
+  color: var(--text-primary);
 }
 
 .step.done{
-  color:#1e1b4b;
+  color: var(--text-primary);
 }
 
 .step.error{
@@ -490,7 +500,7 @@ onBeforeUnmount(() => {
   width:15px;
   height:15px;
   border-radius:50%;
-  background:#d1d5db;
+  background: var(--border-color);
 }
 
 .step.active .dot{ background:var(--proc-accent); }
@@ -536,12 +546,12 @@ onBeforeUnmount(() => {
   padding:10px 18px;
   border-radius:10px;
   cursor:pointer;
-  color:#000;
+  color: var(--text-primary);
   font-weight:600;
 }
 
 .split-btn.danger{
-  background:#fff;
+  background: var(--bg-card);
   border:1px solid var(--proc-danger);
   padding:10px 18px;
   border-radius:10px;

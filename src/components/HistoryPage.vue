@@ -268,8 +268,8 @@ onMounted(() => {
 
 .back-btn {
   border: none;
-  background: #ede9fe;
-  color: #4f46e5;
+  background: var(--bg-accent-soft); 
+  color: var(--accent-color);
   font-weight: 600;
   font-size: 14px;
   padding: 8px 14px;
@@ -290,7 +290,7 @@ onMounted(() => {
 .search-box input {
   width: 100%;
   padding: 11px 40px 11px 14px;
-  border: 1px solid #d6d6d6;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 14px;
   outline: none;
@@ -298,7 +298,7 @@ onMounted(() => {
 }
 
 .search-box input:focus {
-  border-color: #7c3aed;
+  border-color: var(--accent-color);
 }
 
 .clear-btn {
@@ -308,7 +308,7 @@ onMounted(() => {
   transform: translateY(-50%);
   border: none;
   background: none;
-  color: #999;
+  color: var(--text-secondary);
   font-size: 20px;
   cursor: pointer;
   padding: 4px;
@@ -331,9 +331,9 @@ onMounted(() => {
 }
 
 .filter-tab {
-  border: 1px solid #ddd;
-  background: #fff;
-  color: #555;
+  border: 1px solid var(--border-color); 
+  background: var(--bg-card); 
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 13px;
   padding: 7px 14px;
@@ -343,8 +343,8 @@ onMounted(() => {
 }
 
 .filter-tab.active {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: var(--accent-color); 
+  border-color: var(--accent-color); 
   color: #fff;
 }
 
@@ -418,7 +418,7 @@ onMounted(() => {
 
 /* ===== Card ===== */
 .history-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
@@ -429,7 +429,7 @@ onMounted(() => {
 .thumbnail {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: #f2f2f2;
+  background: var(--bg-accent-soft);
   overflow: hidden;
 }
 
@@ -455,7 +455,7 @@ onMounted(() => {
 
 .date {
   font-size: 12px;
-  color: #777;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -521,7 +521,7 @@ onMounted(() => {
 }
 
 .btn.download {
-  background: #4f46e5;
+  background: var(--accent-color); 
   color: white;
 }
 
@@ -532,7 +532,7 @@ onMounted(() => {
 
 .empty {
   text-align: center;
-  color: #999;
+  color: var(--text-secondary);
   margin-top: 40px;
 }
 </style>

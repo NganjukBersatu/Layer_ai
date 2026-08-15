@@ -123,11 +123,11 @@ function changeLang(lang) {
   min-width: 145px;
   padding: 9px 13px;
 
-  border: 1px solid #e2e5f0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
 
-  background: #ffffff;
-  color: #25283a;
+  background: var(--bg-card);
+  color: var(--text-primary);
 
   font-family: inherit;
   font-size: 14px;

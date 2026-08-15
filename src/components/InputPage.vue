@@ -482,6 +482,14 @@ async function handleSplitClick() {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.label {
+  color: var(--text-primary);
 }
 
 .upload-box {
@@ -572,9 +580,9 @@ async function handleSplitClick() {
   gap: 5px;
   width: 36px;
   height: 36px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #fff;
+  background: var(--bg-card);
   cursor: pointer;
   padding: 0;
 }
@@ -583,7 +591,7 @@ async function handleSplitClick() {
   display: block;
   width: 18px;
   height: 2px;
-  background: #4f46e5;
+  background: var(--accent-color);
   margin: 0 auto;
   border-radius: 2px;
 }
@@ -616,22 +624,22 @@ async function handleSplitClick() {
   min-width: 0;
   line-height: 1.45;
   font-size: 14px;
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 /* ===== Credit badge ===== */
 .credit-info {
   font-size: 13px;
   font-weight: 600;
-  color: #4f46e5;
-  background: #ede9fe;
+  color: var(--accent-color);
+  background: var(--bg-accent-soft);
   padding: 6px 12px;
   border-radius: 8px;
 }
 
 .credit-info.credit-error {
-  color: #dc2626;
-  background: #fee2e2;
+  color: #f87171;
+  background: var(--bg-error-soft);
 }
 
 /* ===== Badge ===== */
@@ -664,7 +672,7 @@ async function handleSplitClick() {
 .credit-estimate {
   margin-top: 10px;
   font-size: 13px;
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 .credit-estimate.warning {
@@ -675,8 +683,8 @@ async function handleSplitClick() {
 /* ===== History & Logout ===== */
 .history-btn {
   border: none;
-  background: #ede9fe;
-  color: #4f46e5;
+  background: var(--bg-accent-soft);
+  color: var(--accent-color);
   font-weight: 600;
   font-size: 13px;
   padding: 6px 14px;
@@ -690,9 +698,9 @@ async function handleSplitClick() {
 }
 
 .logout-btn {
-  border: 1px solid #fca5a5;
-  background: #fff;
-  color: #dc2626;
+  border: 1px solid #dc2626;
+  background: var(--bg-error-soft);
+  color: #f87171;
   font-weight: 600;
   font-size: 13px;
   padding: 6px 14px;
@@ -800,8 +808,22 @@ async function handleSplitClick() {
 }
 
 .input-card.category-open {
-  margin-bottom: 120px;
+  margin-bottom: 40px;
   transition: margin-bottom 0.15s ease;
+}
+
+.upload-icon {
+  color: var(--text-secondary);
+  font-size: 32px;
+}
+
+.upload-content p {
+  color: var(--text-primary);
+}
+
+.upload-content .upload-subtext,
+.upload-content .upload-format {
+  color: var(--text-secondary);
 }
 
 /* ===== Upload box hover ===== */
@@ -812,8 +834,8 @@ async function handleSplitClick() {
 }
 
 .upload-box:hover {
-  border-color: #7c3aed;
-  background-color: #f5f3ff;
+  border-color: var(--accent-color);
+  background-color: var(--bg-hover);
 }
 
 .upload-box:hover .upload-icon {
@@ -822,8 +844,8 @@ async function handleSplitClick() {
 }
 
 .upload-box.is-dragging {
-  border-color: #7c3aed;
-  background-color: #f5f3ff;
+  border-color: var(--accent-color);
+  background-color: var(--bg-hover);
   transform: scale(1.01);
 }
 
@@ -950,10 +972,10 @@ async function handleSplitClick() {
     width: 180px;
     margin-top: 0 !important;
     padding: 12px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 24px var(--shadow-color);
     z-index: 50;
     gap: 8px;
   }
@@ -983,5 +1005,14 @@ async function handleSplitClick() {
   .preview-img {
     max-height: 200px;
   }
+}
+
+/* ===== Penyesuaian warna khusus dark mode ===== */
+:global([data-theme="dark"]) .add-credit-btn {
+  background: #15803d;
+}
+
+:global([data-theme="dark"]) .badge {
+  background: #8b7cf6;
 }
 </style>
