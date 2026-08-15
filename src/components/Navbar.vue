@@ -129,10 +129,10 @@ onMounted(() => {
   right: 0;
   width: 150px;
   padding: 6px;
-  background: #ffffff;
-  border: 1px solid #e8e9f1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 13px;
-  box-shadow: 0 10px 30px rgba(30, 35, 60, 0.12);
+  box-shadow: 0 10px 30px var(--shadow-color);
   z-index: 1000;
 }
 
@@ -145,19 +145,20 @@ onMounted(() => {
   border: none;
   border-radius: 9px;
   background: transparent;
+  color: var(--text-primary);
   font-size: 13px;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .theme-option:hover {
-  background: #f4f3ff;
-  color: #6657d9;
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  color: var(--accent-color);
 }
 
 .theme-option.active {
-  background: #f0efff;
-  color: #6657d9;
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  color: var(--accent-color);
   font-weight: 500;
 }
 
