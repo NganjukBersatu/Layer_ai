@@ -72,7 +72,7 @@ max-width:100%;
 
 line-height:1.8;
 
-color:#6b7280;
+color: var(--text-secondary);
 
 }
 
@@ -243,7 +243,7 @@ INPUT CARD
 
     font-size:28px;
 
-    color:#251b8c;
+    color:var(--accent-color);
 
 }
 

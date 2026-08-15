@@ -306,7 +306,7 @@ console.log(uploadData);
 }
 
 .card{
-    background:#ffffff;
+    background: var(--bg-card);
     border-radius:20px;
     padding:24px;
     box-shadow:0 8px 25px rgba(0,0,0,.08);
@@ -325,7 +325,7 @@ console.log(uploadData);
 .card h2{
     font-size:22px;
     font-weight:700;
-    color:#222;
+    color: var(--text-primary);
     margin-bottom:20px;
 }
 
@@ -379,13 +379,13 @@ console.log(uploadData);
     width:100%;
     max-width:100%;
     height:420px;
-    background:#f5f5f5;
+    background: var(--bg-accent-soft);
     border-radius:16px;
     display:flex;
     justify-content:center;
     align-items:center;
     overflow:hidden;
-    border:2px dashed #dddddd;
+    border: 2px dashed var(--border-color);
     box-sizing:border-box;
 }
 
@@ -393,13 +393,13 @@ console.log(uploadData);
     width:100%;
     max-width:100%;
     height:420px;
-    background:linear-gradient(135deg, #f5f3ff 0%, #fdfcff 50%, #f5f3ff 100%);
+    background: var(--bg-accent-soft);
     border-radius:16px;
     display:flex;
     justify-content:center;
     align-items:center;
     overflow:hidden;
-    border:2px dashed #dddddd;
+    border: 2px dashed var(--border-color);
     box-sizing:border-box;
 }
 
@@ -411,7 +411,7 @@ console.log(uploadData);
 }
 
 .empty-result{
-    color:#888;
+    color: var(--text-secondary);
     font-size:15px;
 }
 
@@ -428,18 +428,18 @@ console.log(uploadData);
     justify-content:space-between;
     align-items:center;
     padding:10px 0;
-    border-bottom:1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     gap:12px;
     min-width:0;
 }
 
 .info-row span{
-    color:#666;
+    color: var(--text-secondary);
     flex-shrink:0;
 }
 
 .info-row strong{
-    color:#222;
+    color: var(--text-primary);
     min-width:0;
     overflow:hidden;
     text-overflow:ellipsis;
@@ -474,8 +474,8 @@ console.log(uploadData);
     padding:14px;
     border:none;
     border-radius:12px;
-    background:#7c3aed;
-    color:white;
+    background: var(--accent-color); 
+    color: white;
     font-size:15px;
     font-weight:600;
     cursor:pointer;

@@ -8,6 +8,7 @@ import HistoryPage from "./components/HistoryPage.vue";
 import ForgotPasswordPage from "./components/ForgotPasswordPage.vue";
 import RegisterPage from "./components/RegisterPage.vue";
 import LanguageSwitcher from "./components/LanguageSwitcher.vue";
+import Navbar from "./components/Navbar.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -122,113 +123,154 @@ function goBackFromHistory() {
 </script>
 
 <template>
+  <!-- Navbar -->
+  <Navbar />
+
   <div class="app">
 
-  <div class="language-container">
-    <LanguageSwitcher />
-  </div>
-
-
-  
     <!-- Header -->
     <header class="hero">
-  <h1>{{ t('app.title') }}</h1>
-  <p>{{ t('app.subtitle') }}</p>
-</header>
+      <p>{{ t('app.subtitle') }}</p>
+    </header>
 
     <!-- Workspace -->
 
- <main class="workspace">
+    <main class="workspace">
 
-  <template v-if="!isLoggedIn">
-    <Transition name="page-fade" mode="out-in">
+      <template v-if="!isLoggedIn">
+        <Transition name="page-fade" mode="out-in">
 
-      <LoginPage
-        v-if="authView === 'login'"
-        key="login"
-        @login="loginSuccess"
-        @forgot-password="goToForgotPassword"
-        @register="goToRegister"
-      />
+          <LoginPage
+            v-if="authView === 'login'"
+            key="login"
+            @login="loginSuccess"
+            @forgot-password="goToForgotPassword"
+            @register="goToRegister"
+          />
 
-      <ForgotPasswordPage
-        v-else-if="authView === 'forgot-password'"
-        key="forgot-password"
-        @back-to-login="backToLogin"
-      />
+          <ForgotPasswordPage
+            v-else-if="authView === 'forgot-password'"
+            key="forgot-password"
+            @back-to-login="backToLogin"
+          />
 
-      <RegisterPage
-        v-else-if="authView === 'register'"
-        key="register"
-        @back-to-login="backToLogin"
-        @registered="backToLogin"
-      />
+          <RegisterPage
+            v-else-if="authView === 'register'"
+            key="register"
+            @back-to-login="backToLogin"
+            @registered="backToLogin"
+          />
 
-    </Transition>
-  </template>
+        </Transition>
+      </template>
 
-  <section v-else class="left-panel">
+      <section v-else class="left-panel">
 
-  <!-- Halaman selain History -->
-  <Transition name="page-fade" mode="out-in">
+        <!-- Halaman selain History -->
+        <Transition name="page-fade" mode="out-in">
 
-    <InputPage
-      v-if="currentPage === 'input'"
-      key="input"
-      @next="goToProcess"
-      @history="goToHistory"
-      @logout="logout"
-    />
+          <InputPage
+            v-if="currentPage === 'input'"
+            key="input"
+            @next="goToProcess"
+            @history="goToHistory"
+            @logout="logout"
+          />
 
-    <ProcessPage
-      v-else-if="currentPage === 'process'"
-      key="process"
-      :image="selectedImage"
-      :imagePreview="selectedPreview"
-      :model="selectedModel"
-      :category="selectedCategory"
-      :userId="selectedUserId"
-      :creditAmount="selectedCreditAmount"
-      @back="goBack"
-      @complete="goToPreview"
-    />
+          <ProcessPage
+            v-else-if="currentPage === 'process'"
+            key="process"
+            :image="selectedImage"
+            :imagePreview="selectedPreview"
+            :model="selectedModel"
+            :category="selectedCategory"
+            :userId="selectedUserId"
+            :creditAmount="selectedCreditAmount"
+            @back="goBack"
+            @complete="goToPreview"
+          />
 
-    <PreviewPage
-      v-else-if="currentPage === 'preview'"
-      key="preview"
-      :image="selectedImage"
-      :imagePreview="selectedPreview"
-      :layers="resultLayers"
-      :model="selectedModel"
-      :category="selectedCategory"
-      :userId="selectedUserId"
-      @restart="restart"
-      @delete-result="deleteResult"
-      @history="goToHistory"
-    />
+          <PreviewPage
+            v-else-if="currentPage === 'preview'"
+            key="preview"
+            :image="selectedImage"
+            :imagePreview="selectedPreview"
+            :layers="resultLayers"
+            :model="selectedModel"
+            :category="selectedCategory"
+            :userId="selectedUserId"
+            @restart="restart"
+            @delete-result="deleteResult"
+            @history="goToHistory"
+          />
 
-  </Transition>
+        </Transition>
 
-  <!-- Halaman History -->
-  <HistoryPage
-    v-if="currentPage === 'history'"
-    @back="goBackFromHistory"
-  />
-
-</section>
-
-</main>
-
+        <!-- Halaman History -->
+        <HistoryPage
+          v-if="currentPage === 'history'"
+          @back="goBackFromHistory"
+        />
+      </section>
+      
+    </main>
+    
   </div>
 </template>
 
 <style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
 
-.language-container {
-  position: absolute;
-  top: 30px;
-  right: 40px;
-  z-index: 1000;
+#app {
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Variabel Tema (Light & Dark) ===== */
+:root {
+  --bg-primary: #f5f6fa;
+  --bg-card: #ffffff;
+  --bg-hover: #f4f3ff;
+  --text-primary: #25283a;
+  --text-secondary: #6b7280;
+  --border-color: #e2e5f0;
+  --accent-color: #4f46e5;
+  --shadow-color: rgba(30, 35, 60, 0.08);
+  --bg-accent-soft: #ede9fe;
+  --bg-error-soft: #fee2e2;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #14151f;
+  --bg-card: #1e2030;
+  --bg-hover: #2a2c3f;
+  --text-primary: #f0f0f5;
+  --text-secondary: #9ca3af;
+  --border-color: #33354a;
+  --accent-color: #8b7cf6;
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --bg-accent-soft: #352b5c;
+  --bg-error-soft: #4a2020;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html {
+  background: var(--bg-primary);
+}
+
+.app {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .page-fade-enter-active,
@@ -245,31 +287,4 @@ function goBackFromHistory() {
   opacity: 0;
   transform: translateY(-8px);
 }
-
-@media (max-width: 600px) {
-  .language-container {
-    position: static;
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
-  }
-
-.language-container .lang-button {
-  min-width: 0;
-  width: auto;
-  padding: 6px;
-  gap: 2px;
-  font-size: 12px;
-}
-
-.language-container .lang-text {
-  display: none;
-}
-
-.language-container .lang-arrow {
-  font-size: 9px;
-}
-}
-
-
 </style>
