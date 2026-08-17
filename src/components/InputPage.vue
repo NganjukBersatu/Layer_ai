@@ -755,7 +755,7 @@ async function handleSplitClick() {
   margin-top: -2px;
   left: 0;
   right: 0;
-  background: #fff;
+  background: var(--bg-card);
   border: 2px solid #7c3aed;
   border-top: none;
   border-top-left-radius: 0;
@@ -764,7 +764,7 @@ async function handleSplitClick() {
   border-bottom-right-radius: 12px;
   overflow: hidden;
   z-index: 10;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px var(--shadow-color);;
 }
 
 .model-dropdown-btn.is-open {
@@ -777,13 +777,13 @@ async function handleSplitClick() {
   text-align: center;
   font-size: 15px;
   font-weight: 600;
-  color: #7c3aed;
+  color: var(--accent-color);
   cursor: pointer;
   transition: 0.2s;
 }
 
 .model-dropdown-item:hover {
-  background: #f5f3ff;
+  background: var(--bg-hover);
 }
 
 .model-dropdown-item.active {

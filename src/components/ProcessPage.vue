@@ -429,16 +429,9 @@ onBeforeUnmount(() => {
   --proc-neutral-bg: #f7f7fc;
   --proc-neutral-track: #e5e7eb;
   --proc-border: #ddd;
-}
 
-:global([data-theme="dark"]) .input-card {
-  --proc-accent-bg: #2a2440;
-  --proc-danger-bg: #3a1f1f;
-  --proc-text-muted: var(--text-secondary);
-  --proc-text-body: var(--text-secondary);
-  --proc-neutral-bg: var(--bg-hover);
-  --proc-neutral-track: var(--border-color);
-  --proc-border: var(--border-color);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .progress-track{
