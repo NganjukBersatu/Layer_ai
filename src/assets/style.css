@@ -431,6 +431,7 @@ RESPONSIVE - MOBILE
   .app {
     padding: 16px;
     padding-bottom: 40px;
+    padding-top: 90px;
   }
 
   .hero h1 {
@@ -487,6 +488,7 @@ html {
   width: 100%;
   max-width: 1350px;
   margin: 0 auto;
+  padding-top: 90px;
 }
 
 .hero p {
@@ -503,6 +505,7 @@ html {
   .app {
     padding: 20px 16px;
     padding-bottom: 40px;
+    padding-top: 90px;
   }
 
   .hero h1 {
@@ -534,6 +537,7 @@ html {
   .app {
     padding: 16px 12px;
     padding-bottom: 40px;
+    padding-top: 90px;
   }
 
   .hero h1 {
@@ -557,8 +561,6 @@ html {
 
 body {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
 }
 
 #app {

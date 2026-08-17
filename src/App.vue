@@ -271,6 +271,7 @@ html {
   background: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.2s ease, color 0.2s ease;
+  padding-top: 125px;
 }
 
 .page-fade-enter-active,

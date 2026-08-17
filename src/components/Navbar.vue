@@ -82,8 +82,10 @@ onMounted(() => {
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 2px 10px var(--shadow-color);
 
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 900;
 }
 
