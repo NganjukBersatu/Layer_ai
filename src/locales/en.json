@@ -25,7 +25,10 @@
     "deleteFailed": "Failed to delete history",
     "deleteError": "An error occurred while deleting",
     "empty": "No history yet.",
-    "emptyFiltered": "No images match this filter."
+    "emptyFiltered": "No images match this filter.",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "imagesFound": "images found"
   },
   "input": {
     "title": "Input",

@@ -90,9 +90,10 @@ onMounted(() => {
 }
 
 .navbar-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
   color: var(--accent-color);
+  letter-spacing: -0.3px;
 }
 
 .navbar-actions {
@@ -170,7 +171,7 @@ onMounted(() => {
   }
 
   .navbar-title {
-    font-size: 16px;
+    font-size: 19px;
   }
 }
 </style>

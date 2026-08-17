@@ -25,7 +25,10 @@
     "deleteFailed": "히스토리 삭제에 실패했습니다",
     "deleteError": "삭제 중 오류가 발생했습니다",
     "empty": "아직 히스토리가 없습니다.",
-    "emptyFiltered": "이 필터와 일치하는 이미지가 없습니다."
+    "emptyFiltered": "이 필터와 일치하는 이미지가 없습니다.",
+    "sortNewest": "최신순",
+    "sortOldest": "오래된순",
+    "imagesFound": "개의 이미지 발견"
   },
   "input": {
     "title": "입력",

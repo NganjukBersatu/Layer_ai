@@ -25,7 +25,10 @@
     "deleteFailed": "Gagal menghapus history",
     "deleteError": "Terjadi kesalahan saat menghapus",
     "empty": "Belum ada history.",
-    "emptyFiltered": "Tidak ada gambar yang cocok dengan filter ini."
+    "emptyFiltered": "Tidak ada gambar yang cocok dengan filter ini.",
+    "sortNewest": "Terbaru",
+    "sortOldest": "Terlama",
+    "imagesFound": "gambar ditemukan"
   },
   "input": {
     "title": "Input",
