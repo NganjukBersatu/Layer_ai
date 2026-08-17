@@ -155,9 +155,11 @@
     "errorConnection": "Tidak dapat terhubung ke server."
   },
   "app": {
-  "title": "AI Layer Splitter",
-  "subtitle": "Pisahkan gambar kamu menjadi layer terpisah dengan AI. Unggah satu gambar dan hasilkan layer siap animasi secara instan."
-  },
+  "subtitle": "Pisahkan gambar kamu menjadi layer terpisah dengan AI. Unggah satu gambar dan hasilkan layer siap animasi secara instan.",
+  "featureFast": "Proses Instan",
+  "featureCategory": "5+ Kategori Gaya",
+  "featureAi": "Didukung AI Advanced"
+},
   "common": {
     "basic": "Basic",
     "advanced": "Advanced"

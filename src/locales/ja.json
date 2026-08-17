@@ -154,9 +154,12 @@
     "errorConnection": "サーバーに接続できません。"
   },
   "app": {
-    "title": "AI Layer Splitter",
-    "subtitle": "AIで画像をレイヤーごとに分割。1枚の画像をアップロードするだけで、アニメーション対応レイヤーを瞬時に生成します。"
-  },
+  "title": "AI Layer Splitter",
+  "subtitle": "AIで画像をレイヤーごとに分割。1枚の画像をアップロードするだけで、アニメーション対応レイヤーを瞬時に生成します。",
+  "featureFast": "即時処理",
+  "featureCategory": "5種類以上のスタイル",
+  "featureAi": "高度なAI対応"
+},
   "common": {
     "basic": "Basic",
     "advanced": "Advanced"
