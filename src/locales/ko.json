@@ -155,7 +155,10 @@
   },
   "app": {
     "title": "AI Layer Splitter",
-    "subtitle": "AI로 이미지를 레이어별로 분할하세요. 이미지 한 장만 업로드하면 애니메이션용 레이어를 즉시 생성합니다."
+    "subtitle": "AI로 이미지를 레이어별로 분할하세요. 이미지 한 장만 업로드하면 애니메이션용 레이어를 즉시 생성합니다.",
+  "featureFast": "즉시 처리",
+  "featureCategory": "5개 이상 스타일",
+  "featureAi": "고급 AI 지원"
   },
   "common": {
     "basic": "Basic",

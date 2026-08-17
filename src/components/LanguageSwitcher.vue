@@ -187,6 +187,8 @@ function changeLang(lang) {
 
   width: 175px;
   padding: 6px;
+  max-height: 260px;
+  overflow-y: auto;
 
   background: var(--bg-card);
   border: 1px solid var(--border-color);

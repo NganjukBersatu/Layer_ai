@@ -131,6 +131,12 @@ function goBackFromHistory() {
     <!-- Header -->
     <header class="hero">
       <p>{{ t('app.subtitle') }}</p>
+
+  <div class="hero-features">
+    <span class="hero-feature">⚡ {{ t('app.featureFast') }}</span>
+    <span class="hero-feature">🎨 {{ t('app.featureCategory') }}</span>
+    <span class="hero-feature">🤖 {{ t('app.featureAi') }}</span>
+  </div>
     </header>
 
     <!-- Workspace -->
@@ -288,4 +294,48 @@ html {
   opacity: 0;
   transform: translateY(-8px);
 }
+
+.hero-features {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 7px 14px;
+  border-radius: 999px;
+}
+
+@media (max-width: 600px) {
+  .hero-features {
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 0 4px 4px;
+  }
+
+  .hero-feature {
+    font-size: 11px;
+    padding: 6px 10px;
+    flex-shrink: 0;
+  }
+}
+
+:global([data-theme="dark"]) .hero-feature {
+  background: #363954;
+  border-color: #5a5e80;
+  color: #d5d7e5;
+}
+
 </style>

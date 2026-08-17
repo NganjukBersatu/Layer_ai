@@ -156,7 +156,10 @@
   },
   "app": {
     "title": "AI 图层拆分器",
-    "subtitle": "使用 AI 将您的图片拆分为独立图层。上传一张图片，即可快速生成可用于动画的图层。"
+    "subtitle": "使用 AI 将您的图片拆分为独立图层。上传一张图片，即可快速生成可用于动画的图层。",
+    "featureFast": "即时处理",
+  "featureCategory": "5种以上风格",
+  "featureAi": "先进AI支持"
   },
   "common": {
     "basic": "Basic",

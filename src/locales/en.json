@@ -155,7 +155,10 @@
   },
   "app": {
     "title": "AI Layer Splitter",
-    "subtitle": "Split your images into separate layers with AI. Upload a single image and generate animation-ready layers instantly."
+    "subtitle": "Split your images into separate layers with AI. Upload a single image and generate animation-ready layers instantly.",
+    "featureFast": "Instant processing",
+  "featureCategory": "5+ style categories",
+  "featureAi": "Advanced AI powered"
   },
   "common": {
     "basic": "Basic",

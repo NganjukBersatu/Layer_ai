@@ -72,11 +72,11 @@ const filterTabs = [
   { value: "all", label: () => t('history.filterAll') },
   { value: "basic", label: () => t('history.filterBasic') },
   { value: "advanced", label: () => t('history.filterAdvanced') },
-  { value: "chibi", label: () => "Chibi" },
-  { value: "anime", label: () => "Anime" },
-  { value: "furry", label: () => "Furry" },
-  { value: "kawaii", label: () => "Kawaii" },
-  { value: "spyxfamily", label: () => "Spy x Family" },
+  { value: "chibi", label: () => t('input.categoryChibi') },
+  { value: "anime", label: () => t('input.categoryAnime') },
+  { value: "furry", label: () => t('input.categoryFurry') },
+  { value: "kawaii", label: () => t('input.categoryKawaii') },
+  { value: "spyxfamily", label: () => t('input.categorySpyxfamily') },
 ];
 
 // Ambil nilai kategori style dari item, coba beberapa kemungkinan nama field
