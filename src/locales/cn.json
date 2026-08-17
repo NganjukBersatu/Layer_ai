@@ -25,7 +25,10 @@
     "deleteFailed": "删除历史记录失败",
     "deleteError": "删除时发生错误",
     "empty": "暂无历史记录。",
-    "emptyFiltered": "没有符合此筛选条件的图片。"
+    "emptyFiltered": "没有符合此筛选条件的图片。",
+    "sortNewest": "最新",
+    "sortOldest": "最早",
+    "imagesFound": "张图片"
   },
   "input": {
     "title": "上传",
