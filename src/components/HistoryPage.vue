@@ -295,6 +295,8 @@ onMounted(() => {
   font-size: 14px;
   outline: none;
   box-sizing: border-box;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .search-box input:focus {
