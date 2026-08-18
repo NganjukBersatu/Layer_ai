@@ -5,6 +5,12 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
+const emit = defineEmits([
+  'catalog',
+  'split',
+  'history'
+])
+
 const theme = ref(localStorage.getItem('theme') || 'system')
 const isThemeMenuOpen = ref(false)
 
@@ -35,6 +41,33 @@ onMounted(() => {
     <div class="navbar-title">{{ t('app.title') }}</div>
 
     <div class="navbar-actions">
+
+<div class="nav-links">
+  <button
+    type="button"
+    class="nav-link"
+    @click="emit('catalog')"
+  >
+    Catalog
+  </button>
+
+  <button
+    type="button"
+    class="nav-link"
+    @click="emit('split')"
+  >
+    Split Gambar
+  </button>
+
+  <button
+    type="button"
+    class="nav-link"
+    @click="emit('history')"
+  >
+    History
+  </button>
+</div>
+
       <div class="theme-switcher">
         <button class="theme-button" type="button" @click="isThemeMenuOpen = !isThemeMenuOpen">
           <svg v-if="theme === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -94,6 +127,30 @@ onMounted(() => {
   font-weight: 800;
   color: var(--accent-color);
   letter-spacing: -0.3px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+  background: var(--bg-accent-soft);
 }
 
 .navbar-actions {
