@@ -14,7 +14,8 @@
     "jimp": "^1.6.1",
     "onnxruntime-web": "^1.27.0",
     "vue": "^3.5.40",
-    "vue-i18n": "^9.14.5"
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
