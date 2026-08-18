@@ -1,43 +1,17 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
 
-const emit = defineEmits(["split"]);
+onMounted(() => {
+  fetchCatalog();
+});
 
 const selectedCategory = ref("all");
-
-const catalogItems = [
-  {
-    name: "Rain Hagwell",
-    category: "Anime",
-    image: "/catalog/Rain.jpg",
-  },
-  {
-    name: "Marin Kitagawa",
-    category: "Anime",
-    image: "/catalog/marin.jpg",
-  },
-  {
-    name: "Kurumi Tokisaki",
-    category: "Furry",
-    image: "/catalog/kurumi.jpg",
-  },
-  {
-    name: "Anya Forget",
-    category: "Kawaii",
-    image: "/catalog/anya.jpg",
-  },
-  {
-    name: "Zero Two",
-    category: "Anime",
-    image: "/catalog/zerotwo.png",
-  },
-];
 
 const filteredItems = computed(() => {
   if (selectedCategory.value === "all") {
     return catalogItems;
   }
-
   return catalogItems.filter(
     (item) => item.category === selectedCategory.value
   );
@@ -93,25 +67,20 @@ const filteredItems = computed(() => {
 
     <div class="catalog-grid">
 
-      <div
+      <router-link
         v-for="item in filteredItems"
-        :key="item.name"
+        :key="item.id"
+        :to="'/catalog/' + item.id"
         class="catalog-card"
       >
-
         <div class="image-container">
-          <img
-            :src="item.image"
-            :alt="item.name"
-          />
+          <img :src="item.image" :alt="item.name" />
         </div>
-
         <div class="catalog-info">
           <h3>{{ item.name }}</h3>
           <span>{{ item.category }}</span>
         </div>
-
-      </div>
+      </router-link>
 
     </div>
 
@@ -173,6 +142,10 @@ const filteredItems = computed(() => {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 3px 12px var(--shadow-color);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
 }
 
 .image-container {
