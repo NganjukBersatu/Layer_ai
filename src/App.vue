@@ -37,6 +37,14 @@ function logout() {
   router.push("/login");
 }
 
+function goToCatalog() {
+  currentPage.value = "catalog";
+}
+
+function goToInput() {
+  currentPage.value = "input";
+}
+
 function goToForgotPassword() { router.push("/forgot-password"); }
 function goToRegister() { router.push("/register"); }
 function backToLogin() { router.push("/login"); }

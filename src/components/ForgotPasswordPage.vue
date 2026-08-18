@@ -82,24 +82,25 @@ function backToLogin() {
 </template>
 
 <style scoped>
+
 .login-card {
   width: 400px;
   margin: 80px auto;
   padding: 35px;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px var(--shadow-color);
   text-align: center;
 }
 
 .login-card h2 {
-  color: #2e2fa2;
+  color: var(--accent-color);
   font-size: 32px;
   margin-bottom: 8px;
 }
 
 .subtitle {
-  color: #6b6b6b;
+  color: var(--text-secondary);
   font-size: 14px;
   margin-bottom: 8px;
   line-height: 1.5;
@@ -110,7 +111,7 @@ function backToLogin() {
   text-align: left;
   font-size: 13px;
   font-weight: 600;
-  color: #4b4b4b;
+  color: var(--text-secondary);
   margin: 14px 0 6px;
 }
 
@@ -118,15 +119,17 @@ function backToLogin() {
   width: 100%;
   padding: 14px;
   margin: 0;
-  border: 1px solid #d6d6d6;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .login-card input:focus {
-  border-color: #7b3ff2;
+  border-color: var(--accent-color);
 }
 
 .login-btn {
@@ -169,11 +172,11 @@ function backToLogin() {
 .register-row {
   margin-top: 18px;
   font-size: 14px;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .link {
-  color: #7b3ff2;
+  color: var(--accent-color);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;

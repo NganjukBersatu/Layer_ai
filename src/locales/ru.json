@@ -1,4 +1,8 @@
 {
+  "nav": {
+  "catalog": "Каталог",
+  "split": "Разделить изображение"
+},
   "login": {
     "title": "Вход",
     "loggingIn": "Выполняется вход...",
@@ -160,6 +164,25 @@
   "featureCategory": "5+ категорий стилей",
   "featureAi": "Поддержка продвинутого ИИ"
   },
+  "catalog": {
+  "title": "Каталог",
+  "subtitle": "Посмотрите различные работы, созданные с помощью AI Layer Splitter.",
+  "filterAll": "Все",
+  "filterAnime": "Аниме",
+  "filterChibi": "Чиби",
+  "filterFurry": "Фурри",
+  "filterKawaii": "Кавай",
+  "categories": {
+    "anime": "Аниме", "chibi": "Чиби", "furry": "Фурри", "kawaii": "Кавай"
+  },
+  "items": {
+    "rain": { "name": "Рейн Хагвелл" },
+    "marin": { "name": "Марин Китагава" },
+    "kurumi": { "name": "Куруми Токисаки" },
+    "anya": { "name": "Аня Форджер" },
+    "zerotwo": { "name": "Зеро Ту" }
+  }
+},
   "common": {
     "basic": "Basic",
     "advanced": "Advanced"

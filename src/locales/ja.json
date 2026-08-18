@@ -1,4 +1,8 @@
 {
+  "nav": {
+  "catalog": "カタログ",
+  "split": "画像分割"
+},
   "login": {
     "title": "ログイン",
     "loggingIn": "ログイン中...",
@@ -159,6 +163,25 @@
   "featureFast": "即時処理",
   "featureCategory": "5種類以上のスタイル",
   "featureAi": "高度なAI対応"
+},
+"catalog": {
+  "title": "カタログ",
+  "subtitle": "AI Layer Splitterで作成されたさまざまな作品をご覧ください。",
+  "filterAll": "すべて",
+  "filterAnime": "アニメ",
+  "filterChibi": "チビ",
+  "filterFurry": "ファーリー",
+  "filterKawaii": "カワイイ",
+  "categories": {
+    "anime": "アニメ", "chibi": "チビ", "furry": "ファーリー", "kawaii": "カワイイ"
+  },
+  "items": {
+    "rain": { "name": "レイン・ハグウェル" },
+    "marin": { "name": "マリン・キタガワ" },
+    "kurumi": { "name": "クルミ・トキサキ" },
+    "anya": { "name": "アーニャ・フォージャー" },
+    "zerotwo": { "name": "ゼロツー" }
+  }
 },
   "common": {
     "basic": "Basic",

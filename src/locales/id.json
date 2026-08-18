@@ -1,4 +1,8 @@
 {
+  "nav": {
+  "catalog": "Catalog",
+  "split": "Split Gambar"
+},
   "login": {
     "title": "Masuk",
     "loggingIn": "Sedang masuk...",
@@ -159,6 +163,25 @@
   "featureFast": "Proses Instan",
   "featureCategory": "5+ Kategori Gaya",
   "featureAi": "Didukung AI Advanced"
+},
+"catalog": {
+  "title": "Catalog",
+  "subtitle": "Lihat berbagai hasil karya yang dibuat dengan AI Layer Splitter.",
+  "filterAll": "Semua",
+  "filterAnime": "Anime",
+  "filterChibi": "Chibi",
+  "filterFurry": "Furry",
+  "filterKawaii": "Kawaii",
+  "categories": {
+    "anime": "Anime", "chibi": "Chibi", "furry": "Furry", "kawaii": "Kawaii"
+  },
+  "items": {
+    "rain": { "name": "Rain Hagwell" },
+    "marin": { "name": "Marin Kitagawa" },
+    "kurumi": { "name": "Kurumi Tokisaki" },
+    "anya": { "name": "Anya Forget" },
+    "zerotwo": { "name": "Zero Two" }
+  }
 },
   "common": {
     "basic": "Basic",

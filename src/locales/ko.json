@@ -1,4 +1,8 @@
 {
+  "nav": {
+    "catalog": "카탈로그",
+    "split": "이미지 분할"
+  },
   "login": {
     "title": "로그인",
     "loggingIn": "로그인 중...",
@@ -160,6 +164,25 @@
   "featureCategory": "5개 이상 스타일",
   "featureAi": "고급 AI 지원"
   },
+  "catalog": {
+  "title": "카탈로그",
+  "subtitle": "AI로 이미지를 레이어별로 만든 다양한 작품을 확인해보세요.",
+  "filterAll": "전체",
+  "filterAnime": "애니메",
+  "filterChibi": "치비",
+  "filterFurry": "퍼리",
+  "filterKawaii": "카와이",
+  "categories": {
+    "anime": "애니메", "chibi": "치비", "furry": "퍼리", "kawaii": "카와이"
+  },
+  "items": {
+    "rain": { "name": "레인 해그웰" },
+    "marin": { "name": "마린 기타가와" },
+    "kurumi": { "name": "쿠루미 토키사키" },
+    "anya": { "name": "아냐 포저" },
+    "zerotwo": { "name": "제로투" }
+  }
+},
   "common": {
     "basic": "Basic",
     "advanced": "Advanced"
