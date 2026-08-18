@@ -1,67 +1,46 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getItemById, fetchItemById, updateItem, deleteItem } from "../data/catalogStore.js";
+import { fetchItemById } from "../data/catalogStore.js";
 
 const route = useRoute();
 const router = useRouter();
 
 const item = ref(null);
-const title = ref("");
-const category = ref("");
-const description = ref("");
-
-function goBackToCatalog() {
-  router.push({ name: 'Catalog' });
-}
+const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
 
 onMounted(async () => {
   item.value = await fetchItemById(route.params.id);
-  if (item.value) {
-    title.value = item.value.name;
-    category.value = item.value.category;
-    description.value = item.value.description;
-  }
 });
 
-async function handleUpload() {
-  await updateItem(route.params.id, {
-    name: title.value,
-    category: category.value,
-    description: description.value,
-  });
-  router.push({ name: 'Catalog' });
+function goBackToCatalog() {
+  router.push({ name: "Catalog" });
 }
 
-async function handleDelete() {
-  await deleteItem(route.params.id);
-  router.push({ name: 'Catalog' });
+function goToEdit() {
+  router.push({ name: "CatalogEdit", params: { id: route.params.id } });
 }
-
 </script>
 
 <template>
-  <div class="detail-page" v-if="item">
-    <div class="detail-image">
-      <div class="detail-image">
-        <button class="btn-back" @click="goBackToCatalog">← Kembali</button>
+  <div class="description-page" v-if="item">
+    <button class="btn-back" @click="goBackToCatalog">← Kembali</button>
+
+    <div class="description-content">
+      <div class="description-image">
         <img :src="item.image" :alt="item.name" />
       </div>
-    </div>
 
-    <div class="detail-form">
-      <label>Judul</label>
-      <input v-model="title" type="text" />
+      <div class="description-info">
+        <h1>{{ item.name }}</h1>
 
-      <label>Kategori</label>
-      <input v-model="category" type="text" />
+        <div class="category-tags">
+          <span v-for="cat in item.category" :key="cat" class="tag">{{ cat }}</span>
+        </div>
 
-      <label>Deskripsi</label>
-      <textarea v-model="description" rows="5"></textarea>
+        <p class="description-text">{{ item.description || 'Belum ada deskripsi.' }}</p>
 
-      <div class="detail-actions">
-        <button class="btn-delete" @click="handleDelete">Hapus</button>
-        <button class="btn-upload" @click="handleUpload">Upload</button>
+        <button v-if="isAdmin" class="btn-edit" @click="goToEdit">Edit</button>
       </div>
     </div>
   </div>
@@ -72,54 +51,13 @@ async function handleDelete() {
 </template>
 
 <style scoped>
-.detail-page {
+.description-page {
   max-width: 900px;
   margin: 0 auto;
   padding: 30px 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
 }
-
-.detail-image img {
-  width: 100%;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-.detail-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.detail-form label {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 12px 0 4px;
-}
-
-.detail-form input,
-.detail-form textarea {
-  padding: 8px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-}
-
-.detail-actions {
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding-top: 20px;
-}
-
 .btn-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   padding: 8px 14px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -127,27 +65,48 @@ async function handleDelete() {
   color: var(--text-primary);
   cursor: pointer;
 }
-
-.btn-delete {
-  background: #fff0f0;
-  color: #e04343;
-  border: 1px solid #f3caca;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
+.description-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
-
-.btn-upload {
+.description-image img {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.description-info h1 {
+  margin: 0 0 10px;
+}
+.category-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.tag {
+  background: var(--bg-accent-soft);
+  color: var(--accent-color);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.description-text {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.btn-edit {
   background: var(--accent-color);
   color: white;
   border: none;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
 }
-
 @media (max-width: 700px) {
-  .detail-page {
+  .description-content {
     grid-template-columns: 1fr;
   }
 }

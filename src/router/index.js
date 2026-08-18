@@ -3,7 +3,8 @@ import LoginPage from '../components/LoginPage.vue'
 import ForgotPasswordPage from '../components/ForgotPasswordPage.vue'
 import RegisterPage from '../components/RegisterPage.vue'
 import CatalogPage from '../components/CatalogPage.vue'
-import CatalogDetailPage from '../components/CatalogDetailPage.vue'
+import CatalogDetailPage from '../components/CatalogDetailPage.vue' // halaman DESKRIPSI (baru)
+import CatalogEditPage from '../components/CatalogEditPage.vue'     // halaman EDIT (dulunya CatalogDetailPage)
 import InputPage from '../components/InputPage.vue'
 import ProcessPage from '../components/ProcessPage.vue'
 import PreviewPage from '../components/PreviewPage.vue'
@@ -15,6 +16,7 @@ const routes = [
   { path: '/register', name: 'Register', component: RegisterPage, meta: { public: true } },
   { path: '/', name: 'Catalog', component: CatalogPage },
   { path: '/catalog/:id', name: 'CatalogDetail', component: CatalogDetailPage },
+  { path: '/catalog/:id/edit', name: 'CatalogEdit', component: CatalogEditPage },
   { path: '/split-gambar', name: 'SplitGambar', component: InputPage },
   { path: '/process', name: 'Process', component: ProcessPage },
   { path: '/preview', name: 'Preview', component: PreviewPage },

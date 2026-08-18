@@ -44,6 +44,7 @@ async function login() {
   localStorage.setItem("userId", data.user.id);
   localStorage.setItem("userName", data.user.name);
   localStorage.setItem("userEmail", data.user.email);
+  localStorage.setItem("isAdmin", data.user.is_admin ? "true" : "false");
 
   emit("login");
 

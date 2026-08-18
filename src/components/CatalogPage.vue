@@ -9,12 +9,8 @@ onMounted(() => {
 const selectedCategory = ref("all");
 
 const filteredItems = computed(() => {
-  if (selectedCategory.value === "all") {
-    return catalogItems;
-  }
-  return catalogItems.filter(
-    (item) => item.category === selectedCategory.value
-  );
+  if (selectedCategory.value === "all") return catalogItems;
+  return catalogItems.filter((item) => item.category?.includes(selectedCategory.value));
 });
 </script>
 
