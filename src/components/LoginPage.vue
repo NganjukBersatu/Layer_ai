@@ -164,6 +164,8 @@ function goRegister() {
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .login-card input:focus {

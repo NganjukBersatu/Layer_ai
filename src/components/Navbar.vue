@@ -8,7 +8,7 @@ const { t } = useI18n()
 const emit = defineEmits([
   'catalog',
   'split',
-  'history'
+
 ])
 
 const theme = ref(localStorage.getItem('theme') || 'system')
@@ -44,28 +44,22 @@ onMounted(() => {
 
 <div class="nav-links">
   <button
-    type="button"
-    class="nav-link"
-    @click="emit('catalog')"
-  >
-    Catalog
-  </button>
+  type="button"
+  class="nav-link"
+  @click="emit('catalog')"
+>
+  {{ t('nav.catalog') }}
+</button>
 
-  <button
-    type="button"
-    class="nav-link"
-    @click="emit('split')"
-  >
-    Split Gambar
-  </button>
+<button
+  type="button"
+  class="nav-link"
+  @click="emit('split')"
+>
+  {{ t('nav.split') }}
+</button>
 
-  <button
-    type="button"
-    class="nav-link"
-    @click="emit('history')"
-  >
-    History
-  </button>
+
 </div>
 
       <div class="theme-switcher">

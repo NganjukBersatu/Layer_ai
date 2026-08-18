@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
+
+const { t } = useI18n();
 
 onMounted(() => {
   fetchCatalog();
@@ -18,46 +21,46 @@ const filteredItems = computed(() => {
   <div class="catalog-page">
 
     <div class="catalog-header">
-      <h1>Catalog</h1>
-      <p>
-        Lihat berbagai hasil karya yang dibuat dengan AI Layer Splitter.
-      </p>
-    </div>
+  <h1>{{ t('catalog.title') }}</h1>
+  <p>
+    {{ t('catalog.subtitle') }}
+  </p>
+</div>
 
     <div class="category-filter">
       <button
         :class="{ active: selectedCategory === 'all' }"
         @click="selectedCategory = 'all'"
       >
-        Semua
+        {{ t('catalog.filterAll') }}
       </button>
 
       <button
         :class="{ active: selectedCategory === 'Anime' }"
         @click="selectedCategory = 'Anime'"
       >
-        Anime
+        {{ t('catalog.filterAnime') }}
       </button>
 
       <button
         :class="{ active: selectedCategory === 'Chibi' }"
         @click="selectedCategory = 'Chibi'"
       >
-        Chibi
+        {{ t('catalog.filterChibi') }}
       </button>
 
       <button
         :class="{ active: selectedCategory === 'Furry' }"
         @click="selectedCategory = 'Furry'"
       >
-        Furry
+        {{ t('catalog.filterFurry') }}
       </button>
 
       <button
         :class="{ active: selectedCategory === 'Kawaii' }"
         @click="selectedCategory = 'Kawaii'"
       >
-        Kawaii
+        {{ t('catalog.filterKawaii') }}
       </button>
     </div>
 
@@ -72,9 +75,10 @@ const filteredItems = computed(() => {
         <div class="image-container">
           <img :src="item.image" :alt="item.name" />
         </div>
+        
         <div class="catalog-info">
-          <h3>{{ item.name }}</h3>
-          <span>{{ item.category }}</span>
+           <h3>{{ item.name }}</h3>
+            <span>{{ item.category }}</span>
         </div>
       </router-link>
 

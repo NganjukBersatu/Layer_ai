@@ -1,4 +1,8 @@
 {
+  "nav": {
+  "catalog": "Catalog",
+  "split": "Split Image"
+},
   "login": {
     "title": "Login",
     "loggingIn": "Logging in...",
@@ -160,6 +164,25 @@
   "featureCategory": "5+ style categories",
   "featureAi": "Advanced AI powered"
   },
+  "catalog": {
+  "title": "Catalog",
+  "subtitle": "See various works created with AI Layer Splitter.",
+  "filterAll": "All",
+  "filterAnime": "Anime",
+  "filterChibi": "Chibi",
+  "filterFurry": "Furry",
+  "filterKawaii": "Kawaii",
+  "categories": {
+    "anime": "Anime", "chibi": "Chibi", "furry": "Furry", "kawaii": "Kawaii"
+  },
+  "items": {
+    "rain": { "name": "Rain Hagwell" },
+    "marin": { "name": "Marin Kitagawa" },
+    "kurumi": { "name": "Kurumi Tokisaki" },
+    "anya": { "name": "Anya Forget" },
+    "zerotwo": { "name": "Zero Two" }
+  }
+},
   "common": {
     "basic": "Basic",
     "advanced": "Advanced"
