@@ -10,6 +10,7 @@ import RegisterPage from "./components/RegisterPage.vue";
 import LanguageSwitcher from "./components/LanguageSwitcher.vue";
 import Navbar from "./components/Navbar.vue";
 import { useI18n } from "vue-i18n";
+import CatalogPage from "./components/CatalogPage.vue";
 
 const { t } = useI18n();
 
@@ -20,7 +21,7 @@ const isLoggedIn = ref(
 // Halaman yang ditampilkan sebelum login: "login" | "forgot-password" | "register"
 const authView = ref("login");
 
-const currentPage = ref("input"); // "input" | "process" | "preview" | "history"
+const currentPage = ref("catalog"); // "input" | "process" | "preview" | "history"
 const historyOrigin = ref("input");
 const selectedImage = ref(null);
 const selectedPreview = ref(null);
@@ -34,7 +35,8 @@ const selectedCreditAmount = ref(0);
 function loginSuccess() {
   isLoggedIn.value = true;
   localStorage.setItem("isLoggedIn", "true");
-  authView.value = "login"; // reset untuk sesi berikutnya (setelah logout)
+  authView.value = "login";
+  currentPage.value = "catalog";
 }
 
 function logout() {
@@ -91,7 +93,7 @@ function goToPreview({ image, layers, model, category }) {
 }
 
 function goBack() {
-  currentPage.value = "input";
+  currentPage.value = "catalog";
 }
 
 function restart() {
@@ -124,7 +126,11 @@ function goBackFromHistory() {
 
 <template>
   <!-- Navbar -->
-  <Navbar />
+  <Navbar
+  @catalog="goToCatalog"
+  @split="goToInput"
+  @history="goToHistory"
+/>
 
   <div class="app">
 
@@ -173,50 +179,60 @@ function goBackFromHistory() {
       <section v-else class="left-panel">
 
         <!-- Halaman selain History -->
-        <Transition name="page-fade" mode="out-in">
+        
+           <Transition name="page-fade" mode="out-in">
 
-          <InputPage
-            v-if="currentPage === 'input'"
-            key="input"
-            @next="goToProcess"
-            @history="goToHistory"
-            @logout="logout"
-          />
+  <CatalogPage
+    v-if="currentPage === 'catalog'"
+    key="catalog"
+    @split="goToInput"
+    @history="goToHistory"
+    @logout="logout"
+  />
 
-          <ProcessPage
-            v-else-if="currentPage === 'process'"
-            key="process"
-            :image="selectedImage"
-            :imagePreview="selectedPreview"
-            :model="selectedModel"
-            :category="selectedCategory"
-            :userId="selectedUserId"
-            :creditAmount="selectedCreditAmount"
-            @back="goBack"
-            @complete="goToPreview"
-          />
+  <InputPage
+    v-else-if="currentPage === 'input'"
+    key="input"
+    @next="goToProcess"
+    @history="goToHistory"
+    @logout="logout"
+  />
 
-          <PreviewPage
-            v-else-if="currentPage === 'preview'"
-            key="preview"
-            :image="selectedImage"
-            :imagePreview="selectedPreview"
-            :layers="resultLayers"
-            :model="selectedModel"
-            :category="selectedCategory"
-            :userId="selectedUserId"
-            @restart="restart"
-            @delete-result="deleteResult"
-            @history="goToHistory"
-          />
+  <ProcessPage
+    v-else-if="currentPage === 'process'"
+    key="process"
+    :image="selectedImage"
+    :imagePreview="selectedPreview"
+    :model="selectedModel"
+    :category="selectedCategory"
+    :userId="selectedUserId"
+    :creditAmount="selectedCreditAmount"
+    @back="goBack"
+    @complete="goToPreview"
+  />
 
-        </Transition>
+  <PreviewPage
+    v-else-if="currentPage === 'preview'"
+    key="preview"
+    :image="selectedImage"
+    :imagePreview="selectedPreview"
+    :layers="resultLayers"
+    :model="selectedModel"
+    :category="selectedCategory"
+    :userId="selectedUserId"
+    @restart="restart"
+    @delete-result="deleteResult"
+    @history="goToHistory"
+  />
+
+</Transition>
 
         <!-- Halaman History -->
         <HistoryPage
           v-if="currentPage === 'history'"
           @back="goBackFromHistory"
         />
+
       </section>
       
     </main>
