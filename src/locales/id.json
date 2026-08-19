@@ -1,6 +1,6 @@
 {
-  "nav": {
-  "catalog": "Catalog",
+"nav": {
+  "catalog": "Katalog",  
   "split": "Split Gambar"
 },
   "login": {
@@ -9,6 +9,9 @@
     "email": "Email",
     "emailPlaceholder": "nama@email.com",
     "password": "Kata Sandi",
+    "passwordPlaceholder": "Password",
+    "hidePassword": "Sembunyikan password",
+    "showPassword": "Tampilkan password",
     "forgotPassword": "Lupa password?",
     "noAccount": "Belum punya akun?",
     "register": "Daftar",
@@ -165,7 +168,7 @@
   "featureAi": "Didukung AI Advanced"
 },
 "catalog": {
-  "title": "Catalog",
+  "title": "Katalog",
   "subtitle": "Lihat berbagai hasil karya yang dibuat dengan AI Layer Splitter.",
   "filterAll": "Semua",
   "filterAnime": "Anime",

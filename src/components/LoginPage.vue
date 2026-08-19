@@ -85,19 +85,20 @@ function goRegister() {
 
       <label class="field-label" for="login-password">{{ $t('login.password') }}</label>
       <div class="password-wrapper">
-        <input
-          id="login-password"
-          v-model="password"
-          :type="showPassword ? 'text' : 'password'"
-          placeholder="Password"
-          autocomplete="current-password"
-        />
-        <button
-          type="button"
-          class="toggle-password"
-          :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
-          @click="showPassword = !showPassword"
-        >
+  <input
+    id="login-password"
+    v-model="password"
+    :type="showPassword ? 'text' : 'password'"
+    :placeholder="$t('login.passwordPlaceholder')"
+    autocomplete="current-password"
+  />
+  <button
+    type="button"
+    class="toggle-password"
+    :aria-label="showPassword ? $t('login.hidePassword') : $t('login.showPassword')"
+    @click="showPassword = !showPassword"
+  >
+  
           <svg v-if="!showPassword" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
             <circle cx="12" cy="12" r="3" />

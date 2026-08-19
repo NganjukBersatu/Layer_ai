@@ -295,8 +295,7 @@ async function handleSplitClick() {
 
         <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
         <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
-        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
-        <div class="info">i</div>
+
       </div>
 
       <!-- Group khusus mobile: Credit + Hamburger -->
@@ -307,23 +306,7 @@ async function handleSplitClick() {
           <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
         </span>
 
-        <button
-          type="button"
-          class="add-credit-btn mobile-add-credit-btn"
-          @click="addCredit"
-        >
-          {{ $t('input.addCredit') }}
-        </button>
-
-        <button
-          type="button"
-          class="mobile-menu-btn"
-          @click="isMobileMenuOpen = !isMobileMenuOpen"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        
       </div>
 
       <!-- Dropdown menu (hanya tombol aksi) -->

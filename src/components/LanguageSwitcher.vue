@@ -20,12 +20,12 @@ function changeLang(lang) {
       type="button"
     >
     <span class="lang-icon">
-        {{ locale === 'id' ? '🇮🇩' : locale === 'en' ? '🇪🇳' : locale === 'ja' ? '🇯🇵' : locale === 'ko' ? '🇰🇷' : locale === 'ru' ? '🇷🇺' : '🇨🇳' }}
-    </span>
+    {{ locale === 'id' ? '🇮🇩' : locale === 'en' ? '🇪🇳' : locale === 'ja' ? '🇯🇵' : '🇰🇷' }}
+</span>
 
       <span class="lang-text">
-        {{ locale === 'id' ? 'Indonesia' : locale === 'en' ? 'English' : locale === 'ja' ? '日本語' : locale === 'ko' ? '한국어' : locale === 'ru' ? 'Русский' : '中文' }}
-      </span>
+  {{ locale === 'id' ? 'Indonesia' : locale === 'en' ? 'English' : locale === 'ja' ? '日本語' : '한국어' }}
+</span>
 
       <span class="lang-arrow" :class="{ open: isOpen }">
         ▾
@@ -79,30 +79,8 @@ function changeLang(lang) {
         <span v-if="locale === 'ko'" class="check">✓</span>
       </button>
 
-        <button
-          type="button"
-          class="lang-option"
-          :class="{ active: locale === 'ru' }"
-          @click="changeLang('ru')"
-          >
-  <span class="lang-icon">🇷🇺</span>
-  <span>Русский</span>
-  <span v-if="locale === 'ru'" class="check">✓</span>
-</button>
-
-      <button
-        type="button"
-        class="lang-option"
-        :class="{ active: locale === 'cn' }"
-        @click="changeLang('cn')"
-        >
-         <span class="lang-icon">🇨🇳</span>
-        <span>中文</span>
-        <span v-if="locale === 'cn'" class="check">✓</span>
-        </button>
-
-    </div>
-  </div>
+</div>
+</div>
 </template>
 
 <style scoped>

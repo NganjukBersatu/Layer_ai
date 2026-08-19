@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import Navbar from "./components/Navbar.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();   // ← tambahkan baris baru ini
 
 const isLoggedIn = ref(localStorage.getItem("isLoggedIn") === "true");
 
@@ -96,10 +97,11 @@ function goBackFromHistory() { router.push("/split-gambar"); }
     @catalog="goToCatalogRoute"
     @split="goToInputRoute"
     @history="goToHistoryRoute"
+    @logout="logout"
   />
 
   <div class="app">
-    <header class="hero">
+    <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== '/login'">
       <p>{{ t('app.subtitle') }}</p>
       <div class="hero-features">
         <span class="hero-feature">⚡ {{ t('app.featureFast') }}</span>

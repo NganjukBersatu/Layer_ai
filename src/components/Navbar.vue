@@ -8,6 +8,7 @@ const { t } = useI18n()
 const emit = defineEmits([
   'catalog',
   'split',
+  'logout',
 
 ])
 
@@ -58,6 +59,15 @@ onMounted(() => {
 >
   {{ t('nav.split') }}
 </button>
+
+<button
+   type="button"
+   class="nav-link logout-link" 
+   @click="emit('logout')">
+   
+    {{ t('input.logout') }}
+  </button>
+
 
 
 </div>
@@ -145,6 +155,15 @@ onMounted(() => {
 .nav-link:hover {
   color: var(--accent-color);
   background: var(--bg-accent-soft);
+}
+
+.logout-link {
+  color: #f87171;
+}
+
+.logout-link:hover {
+  color: #fff;
+  background: #dc2626;
 }
 
 .navbar-actions {
