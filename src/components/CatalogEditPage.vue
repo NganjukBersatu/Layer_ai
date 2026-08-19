@@ -78,7 +78,7 @@ async function handleDelete() {
 
         <div class="edit-actions">
           <button class="btn-delete" @click="handleDelete">Hapus</button>
-          <button class="btn-upload" @click="handleUpload">Upload</button>
+          <button class="btn-upload" @click="handleUpload">Simpan</button>
         </div>
       </div>
     </div>

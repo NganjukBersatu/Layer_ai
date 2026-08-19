@@ -9,12 +9,14 @@ import InputPage from '../components/InputPage.vue'
 import ProcessPage from '../components/ProcessPage.vue'
 import PreviewPage from '../components/PreviewPage.vue'
 import HistoryPage from '../components/HistoryPage.vue'
+import CatalogUploadPage from '../components/CatalogUploadPage.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginPage, meta: { public: true } },
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPasswordPage, meta: { public: true } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { public: true } },
   { path: '/', name: 'Catalog', component: CatalogPage },
+  { path: '/catalog/new', name: 'CatalogNew', component: CatalogUploadPage },
   { path: '/catalog/:id', name: 'CatalogDetail', component: CatalogDetailPage },
   { path: '/catalog/:id/edit', name: 'CatalogEdit', component: CatalogEditPage },
   { path: '/split-gambar', name: 'SplitGambar', component: InputPage },
