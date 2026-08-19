@@ -27,6 +27,11 @@ function toggleCategory(cat) {
   else selectedCategories.value.splice(idx, 1);
 }
 
+// Fungsi untuk kembali ke halaman sebelumnya / utama
+function goBack() {
+  router.back();
+}
+
 async function handleSubmit() {
   if (!imageFile.value || !name.value) {
     errorMsg.value = "Gambar dan judul wajib diisi.";
@@ -64,7 +69,17 @@ async function handleSubmit() {
 
 <template>
   <div class="upload-page">
-    <h1>Tambah Katalog Baru</h1>
+    <!-- Bagian Header dengan Tombol Kembali -->
+    <div class="header-section">
+      <button class="back-btn" @click="goBack">
+        <svg class="back-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5" />
+          <path d="M12 19l-7-7 7-7" />
+        </svg>
+        Kembali
+      </button>
+      <h1>Tambah Katalog Baru</h1>
+    </div>
 
     <div class="upload-form">
       <label class="file-drop" :class="{ 'has-image': previewUrl }">
@@ -112,6 +127,57 @@ async function handleSubmit() {
   margin: 0 auto;
   padding: 30px 20px 60px;
   box-sizing: border-box;
+}
+
+/* Style untuk Header dan Tombol Kembali */
+.header-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.header-section h1 {
+  margin: 0;
+}
+
+.back-btn {
+  padding: 9px 16px 9px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-icon {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.back-btn:hover {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+.back-btn:hover .back-icon {
+  transform: translateX(-2px);
+}
+
+.back-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .upload-form {
