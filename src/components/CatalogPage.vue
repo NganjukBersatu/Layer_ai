@@ -5,6 +5,8 @@ import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
 
 const { t } = useI18n();
 
+const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
+
 onMounted(() => {
   fetchCatalog();
 });
@@ -21,11 +23,20 @@ const filteredItems = computed(() => {
   <div class="catalog-page">
 
     <div class="catalog-header">
-  <h1>{{ t('catalog.title') }}</h1>
-  <p>
-    {{ t('catalog.subtitle') }}
-  </p>
-</div>
+      <div class="catalog-header-top">
+        <h1>{{ t('catalog.title') }}</h1>
+        <router-link
+          v-if="isAdmin"
+          to="/catalog/new"
+          class="add-catalog-btn"
+        >
+          +
+        </router-link>
+      </div>
+      <p>
+        {{ t('catalog.subtitle') }}
+      </p>
+    </div>
 
     <div class="category-filter">
       <button
@@ -62,6 +73,20 @@ const filteredItems = computed(() => {
       >
         {{ t('catalog.filterKawaii') }}
       </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Jujutsu Kaisen' }"
+        @click="selectedCategory = 'Jujutsu Kaisen'"
+      > 
+        {{ t('catalog.filterJujutsuKaisen') }}
+      </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Spy X Family' }"
+        @click="selectedCategory = 'Spy X Family'"
+      > 
+        {{ t('catalog.filterSpyXFamily') }}
+      </button>
     </div>
 
     <div class="catalog-grid">
@@ -77,8 +102,16 @@ const filteredItems = computed(() => {
         </div>
         
         <div class="catalog-info">
-           <h3>{{ item.name }}</h3>
-            <span>{{ item.category }}</span>
+          <h3>{{ item.name }}</h3>
+          <div class="tag-list">
+            <span
+              v-for="tag in item.category"
+              :key="tag"
+              class="tag-badge"
+            >
+              {{ tag }}
+            </span>
+          </div>
         </div>
       </router-link>
 
@@ -96,6 +129,32 @@ const filteredItems = computed(() => {
 
 .catalog-header {
   margin-bottom: 20px;
+}
+
+.catalog-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-catalog-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  text-decoration: none;
+  line-height: 1;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.add-catalog-btn:hover {
+  transform: scale(1.08);
+  opacity: 0.9;
 }
 
 .catalog-header h1 {
@@ -146,13 +205,16 @@ const filteredItems = computed(() => {
   color: inherit;
   display: block;
   cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.image-container {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  background: #f1f1f1;
+.catalog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.catalog-card:hover .image-container img {
+  transform: scale(1.05);
 }
 
 .image-container img {
@@ -160,6 +222,7 @@ const filteredItems = computed(() => {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.35s ease;
 }
 
 .catalog-info {
@@ -171,9 +234,20 @@ const filteredItems = computed(() => {
   font-size: 14px;
 }
 
-.catalog-info span {
-  font-size: 12px;
-  color: var(--text-secondary);
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.tag-badge {
+  font-size: 11px;
+  color: var(--accent-color);
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 @media (max-width: 800px) {

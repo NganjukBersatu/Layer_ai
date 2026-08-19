@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
-import multer from "multer";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";
 import pool from "./db";
+import multer from "multer";
 // import splitImageRouter from "./routes/splitImage.route";
 import geminiSplitRouter from "./openrouter-split";
 import { removeBackground } from "@imgly/background-removal-node";
@@ -99,6 +99,7 @@ const VALID_CATEGORIES = [
   "furry",
   "kawaii",
   "spyxfamily",
+  "jujutsukaisen",
 ];
 
 app.post("/save-result", async (req: Request, res: Response) => {
