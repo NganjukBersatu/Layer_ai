@@ -1,12 +1,14 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Navbar from "./components/Navbar.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 const router = useRouter();
-const route = useRoute();   // ← tambahkan baris baru ini
+const route = useRoute();
+
+const showHero = computed(() => route.path === "/split-gambar");
 
 const isLoggedIn = ref(localStorage.getItem("isLoggedIn") === "true");
 
