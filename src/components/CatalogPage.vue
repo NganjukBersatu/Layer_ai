@@ -193,6 +193,9 @@ const filteredItems = computed(() => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+  /* Membuat semua item grid setinggi item tertinggi di barisnya,
+     supaya .catalog-card bisa "stretch" mengisi penuh (lihat di bawah) */
+  align-items: stretch;
 }
 
 .catalog-card {
@@ -203,7 +206,12 @@ const filteredItems = computed(() => {
   box-shadow: 0 3px 12px var(--shadow-color);
   text-decoration: none;
   color: inherit;
-  display: block;
+  /* Sebelumnya: display: block (tinggi mengikuti konten/gambar asli). 
+     Diubah jadi flex-column supaya .catalog-info konsisten menempel 
+     di bawah gambar, dan card sama tinggi antar kolom. */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -217,16 +225,35 @@ const filteredItems = computed(() => {
   transform: scale(1.05);
 }
 
+/* KUNCI PERBAIKAN: sebelumnya .image-container tidak punya tinggi/rasio
+   tetap, sehingga tingginya mengikuti ukuran asli tiap gambar (yang
+   berbeda-beda), membuat card jadi tidak seragam. Dengan aspect-ratio,
+   semua .image-container sekarang punya proporsi yang sama persis,
+   dan img di dalamnya (object-fit: cover) otomatis menyesuaikan/crop. */
+.image-container {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--bg-accent-soft);
+}
+
 .image-container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
   display: block;
   transition: transform 0.35s ease;
 }
 
 .catalog-info {
   padding: 12px;
+  /* Mendorong info menempel ke bawah kalau ada card dengan jumlah tag
+     berbeda-beda, supaya tinggi card tetap konsisten */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .catalog-info h3 {
