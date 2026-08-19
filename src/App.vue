@@ -83,7 +83,12 @@ function restart() {
 
 function deleteResult() { resultLayers.value = null; }
 
-function goBackFromHistory() { router.back(); }
+// PENTING: fungsi ini hanya akan terpanggil kalau HistoryPage.vue
+// meng-emit event bernama "back-from-history". Pastikan di HistoryPage.vue
+// tombol Kembali menggunakan: emit('back-from-history'), BUKAN emit('back').
+// Jika masih emit('back'), yang akan terpanggil justru goBack() di bawah,
+// yang mengarah ke halaman Catalog ("/").
+function goBackFromHistory() { router.push("/split-gambar"); }
 </script>
 
 <template>
