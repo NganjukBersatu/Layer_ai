@@ -2,7 +2,13 @@
 import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
-const emit = defineEmits(["back"]);
+// PERBAIKAN: nama event diubah dari "back" menjadi "back-from-history"
+// supaya cocok dengan listener @back-from-history="goBackFromHistory"
+// yang ada di App.vue. Sebelumnya nama event ini "back", yang ternyata
+// "nabrak" dengan listener @back="goBack" milik halaman lain, sehingga
+// tombol Kembali di halaman History malah memanggil goBack() dan
+// mengarah ke halaman Catalog.
+const emit = defineEmits(["back-from-history"]);
 const { t } = useI18n()
 
 const histories = ref([]);
@@ -27,6 +33,23 @@ function handleClickOutsideSort(event) {
   }
 }
 const API_BASE = "http://localhost:3000";
+
+// Item yang sedang ditampilkan di modal preview. null = modal tertutup.
+const previewItem = ref(null);
+
+function openPreview(item) {
+  // Jangan buka modal kalau gambar belum berhasil dimuat / gagal
+  if (imageStatus[item.id] !== "loaded") return;
+  previewItem.value = item;
+}
+
+function closePreview() {
+  previewItem.value = null;
+}
+
+function handlePreviewKeydown(event) {
+  if (event.key === "Escape") closePreview();
+}
 
 // Loading state utama saat fetch daftar history dari API
 const isLoadingList = ref(true);
@@ -224,17 +247,19 @@ function getStyleLabel(item) {
 onMounted(() => {
   loadHistory();
   document.addEventListener("click", handleClickOutsideSort);
+  document.addEventListener("keydown", handlePreviewKeydown);
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutsideSort);
+  document.removeEventListener("keydown", handlePreviewKeydown);
 });
 </script>
 
 <template>
   <div class="history-page">
     <div class="page-header">
-      <button class="back-btn" @click="emit('back')">&larr; {{ $t('history.back') }}</button>
+      <button class="back-btn" @click="emit('back-from-history')">&larr; {{ $t('history.back') }}</button>
       <h2>{{ $t('history.title') }}</h2>
     </div>
 
@@ -315,7 +340,11 @@ onUnmounted(() => {
         :key="item.id"
         class="history-card"
       >
-        <div class="thumbnail">
+        <div
+          class="thumbnail"
+          :class="{ clickable: imageStatus[item.id] === 'loaded' }"
+          @click="openPreview(item)"
+        >
           <!-- Overlay spinner selama gambar masih dimuat -->
           <div v-if="imageStatus[item.id] !== 'loaded' && imageStatus[item.id] !== 'error'" class="thumb-loading">
             <span class="spinner"></span>
@@ -324,6 +353,14 @@ onUnmounted(() => {
           <!-- Fallback kalau gambar gagal dimuat -->
           <div v-else-if="imageStatus[item.id] === 'error'" class="thumb-error">
             <span>{{ $t('history.imageFailed') || 'Gagal memuat gambar' }}</span>
+          </div>
+
+          <!-- Ikon kaca pembesar saat hover, menandakan gambar bisa diperbesar -->
+          <div v-if="imageStatus[item.id] === 'loaded'" class="thumb-zoom-hint">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="7" stroke="white" stroke-width="2" />
+              <path d="M21 21L16.65 16.65" stroke="white" stroke-width="2" stroke-linecap="round" />
+            </svg>
           </div>
 
           <img
@@ -372,6 +409,78 @@ onUnmounted(() => {
     <p v-else-if="!isLoadingList && filteredHistories.length === 0" class="empty">
       {{ $t('history.emptyFiltered') }}
     </p>
+
+    <!-- ===== Modal Preview ===== -->
+    <Transition name="modal-fade">
+      <div
+        v-if="previewItem"
+        class="preview-overlay"
+        @click.self="closePreview"
+      >
+        <div class="preview-modal">
+          <button class="preview-close" @click="closePreview" :title="$t('history.close') || 'Tutup'">
+            &times;
+          </button>
+
+          <div class="preview-body">
+            <div class="preview-image-wrap">
+              <img
+                :src="getImageUrl(previewItem.image_url)"
+                :alt="previewItem.image_name"
+                class="preview-image"
+              />
+            </div>
+
+            <div class="preview-info">
+              <h3 class="preview-name" :title="previewItem.image_name">
+                {{ previewItem.image_name }}
+              </h3>
+
+              <div class="preview-badges">
+                <span
+                  class="model-badge"
+                  :class="previewItem.model === 'advanced' ? 'advanced' : 'basic'"
+                >
+                  {{ previewItem.model === "advanced"
+                    ? $t('history.filterAdvanced')
+                    : $t('history.filterBasic') }}
+                </span>
+                <span v-if="getStyleLabel(previewItem)" class="style-badge">
+                  {{ getStyleLabel(previewItem) }}
+                </span>
+              </div>
+
+              <dl class="preview-meta-list">
+                <div class="preview-meta-row">
+                  <dt>{{ $t('history.createdAt') || 'Tanggal dibuat' }}</dt>
+                  <dd>{{ formatDate(previewItem.created_at) }}</dd>
+                </div>
+                <div v-if="previewItem.width && previewItem.height" class="preview-meta-row">
+                  <dt>{{ $t('history.dimensions') || 'Dimensi' }}</dt>
+                  <dd>{{ previewItem.width }} &times; {{ previewItem.height }} px</dd>
+                </div>
+                <div v-if="previewItem.file_size" class="preview-meta-row">
+                  <dt>{{ $t('history.fileSize') || 'Ukuran file' }}</dt>
+                  <dd>{{ (previewItem.file_size / 1024).toFixed(1) }} KB</dd>
+                </div>
+              </dl>
+
+              <div class="preview-actions">
+                <button class="btn download" @click="downloadImage(previewItem)">
+                  {{ $t('history.download') }}
+                </button>
+                <button
+                  class="btn delete"
+                  @click="deleteHistory(previewItem); closePreview()"
+                >
+                  {{ $t('history.delete') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -670,11 +779,40 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+.thumbnail.clickable {
+  cursor: zoom-in;
+}
+
 .thumbnail img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
   display: block;
+  transition: transform 0.25s ease;
+}
+
+.thumbnail.clickable:hover img {
+  transform: scale(1.05);
+}
+
+/* Ikon kaca pembesar yang muncul saat hover di atas thumbnail */
+.thumb-zoom-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.thumbnail.clickable:hover .thumb-zoom-hint {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* Overlay spinner ketika gambar sedang dimuat */
@@ -841,5 +979,186 @@ onUnmounted(() => {
   text-align: center;
   color: var(--text-secondary);
   margin-top: 40px;
+}
+
+/* ===== Modal Preview ===== */
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.65);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 2000;
+}
+
+.preview-modal {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  background: var(--bg-card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  display: flex;
+}
+
+.preview-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.preview-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.preview-body {
+  display: flex;
+  width: 100%;
+  max-height: 90vh;
+}
+
+.preview-image-wrap {
+  flex: 1.4;
+  min-width: 0;
+  background: var(--bg-accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  display: block;
+}
+
+.preview-info {
+  flex: 1;
+  min-width: 260px;
+  max-width: 340px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.preview-name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.preview-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.preview-meta-list {
+  margin: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.preview-meta-row dt {
+  color: var(--text-secondary);
+}
+
+.preview-meta-row dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-align: right;
+}
+
+.preview-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+/* Transisi buka/tutup modal */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-fade-enter-active .preview-modal,
+.modal-fade-leave-active .preview-modal {
+  transition: transform 0.2s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .preview-modal,
+.modal-fade-leave-to .preview-modal {
+  transform: scale(0.96);
+}
+
+/* Tablet & mobile: gambar di atas, info di bawah, bisa di-scroll */
+@media (max-width: 720px) {
+  .preview-overlay {
+    padding: 0;
+  }
+
+  .preview-modal {
+    max-height: 100vh;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .preview-body {
+    flex-direction: column;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .preview-image-wrap {
+    flex: none;
+    height: 45vh;
+  }
+
+  .preview-info {
+    max-width: none;
+    flex: none;
+  }
 }
 </style>
