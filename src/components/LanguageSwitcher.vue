@@ -87,6 +87,7 @@ function changeLang(lang) {
 .lang-switcher {
   position: relative;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 /* =========================
@@ -141,6 +142,7 @@ function changeLang(lang) {
 .lang-text {
   flex: 1;
   text-align: left;
+  white-space: nowrap;
 }
 
 .lang-arrow {
@@ -245,15 +247,37 @@ function changeLang(lang) {
 @media (max-width: 600px) {
   .lang-button {
     min-width: auto;
-    padding: 8px 10px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+    border-radius: 9px;
   }
 
   .lang-text {
     display: none;
   }
 
+  .lang-arrow {
+    display: none;
+  }
+
+  .lang-icon {
+    width: auto;
+    font-size: 15px;
+  }
+
   .lang-menu {
     right: 0;
+    width: 160px;
+  }
+}
+
+@media (max-width: 360px) {
+  .lang-button {
+    width: 28px;
+    height: 28px;
   }
 }
 </style>

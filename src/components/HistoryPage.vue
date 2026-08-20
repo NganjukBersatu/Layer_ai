@@ -325,7 +325,7 @@ onUnmounted(() => {
 
     <!-- Skeleton grid saat daftar history awal masih di-fetch -->
     <div v-if="isLoadingList" class="history-grid">
-      <div v-for="n in 8" :key="'skeleton-' + n" class="history-card skeleton-card">
+      <div v-for="n in 10" :key="'skeleton-' + n" class="history-card skeleton-card">
         <div class="thumbnail skeleton-shimmer"></div>
         <div class="meta">
           <div class="skeleton-line skeleton-shimmer" style="width: 70%"></div>
@@ -687,8 +687,15 @@ onUnmounted(() => {
 /* ===== GRID ===== */
 .history-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+/* Layar besar/menengah, sebelum tablet */
+@media (max-width: 1100px) {
+  .history-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Tablet */
@@ -756,7 +763,7 @@ onUnmounted(() => {
   }
 
   .btn {
-    padding: 6px 0;
+    height: 30px;
     font-size: 12px;
   }
 }
@@ -769,6 +776,23 @@ onUnmounted(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
+  height: 100%;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.history-card:active {
+  transform: scale(1.05);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+.history-card .actions {
+  cursor: default;
 }
 
 .thumbnail {
@@ -886,12 +910,13 @@ onUnmounted(() => {
 }
 
 .meta {
-  padding: 12px 14px 4px;
+  padding: 10px 12px 4px;
+  flex: 1;
 }
 
 .image-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   margin: 0 0 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -899,7 +924,7 @@ onUnmounted(() => {
 }
 
 .date {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
   margin: 0;
 }
@@ -920,9 +945,9 @@ onUnmounted(() => {
 }
 
 .model-badge {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 3px 9px;
+  padding: 3px 8px;
   border-radius: 999px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -939,9 +964,9 @@ onUnmounted(() => {
 }
 
 .style-badge {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 3px 9px;
+  padding: 3px 8px;
   border-radius: 999px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -952,27 +977,36 @@ onUnmounted(() => {
 .actions {
   display: flex;
   gap: 8px;
-  padding: 12px 14px;
+  padding: 10px 12px;
+  flex-shrink: 0;
 }
 
 .btn {
   flex: 1;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 8px;
-  padding: 8px 0;
-  font-size: 13px;
+  height: 34px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1;
   font-weight: 600;
   cursor: pointer;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn.download {
   background: var(--accent-color); 
   color: white;
+  border-color: var(--accent-color);
 }
 
 .btn.delete {
   background: #fee2e2;
   color: #dc2626;
+  border-color: #fee2e2;
 }
 
 .empty {

@@ -150,6 +150,7 @@ onMounted(() => {
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -174,6 +175,7 @@ onMounted(() => {
 
 .theme-switcher {
   position: relative;
+  flex-shrink: 0;
 }
 
 .theme-button {
@@ -189,6 +191,7 @@ onMounted(() => {
   cursor: pointer;
   box-shadow: 0 3px 12px var(--shadow-color);
   transition: border-color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
 }
 
 .theme-button:hover {
@@ -235,13 +238,68 @@ onMounted(() => {
   font-weight: 500;
 }
 
+/* =========================================
+   MOBILE: navbar dibuat 2 baris supaya tidak
+   ada elemen yang terdorong keluar/terpotong
+   (termasuk LanguageSwitcher).
+========================================= */
 @media (max-width: 600px) {
   .navbar {
-    padding: 12px 16px;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 10px 12px;
   }
 
   .navbar-title {
-    font-size: 19px;
+    font-size: 17px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .navbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .nav-links {
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 11.5px;
+    flex-shrink: 0;
+  }
+
+  .theme-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+
+  .theme-button svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 360px) {
+  .navbar-title {
+    font-size: 15px;
+  }
+
+  .nav-link {
+    padding: 5px 6px;
+    font-size: 10.5px;
   }
 }
 </style>

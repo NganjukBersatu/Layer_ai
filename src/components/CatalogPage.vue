@@ -191,8 +191,8 @@ const filteredItems = computed(() => {
 
 .catalog-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
   /* Membuat semua item grid setinggi item tertinggi di barisnya,
      supaya .catalog-card bisa "stretch" mengisi penuh (lihat di bawah) */
   align-items: stretch;
@@ -247,7 +247,7 @@ const filteredItems = computed(() => {
 }
 
 .catalog-info {
-  padding: 12px;
+  padding: 10px;
   /* Mendorong info menempel ke bawah kalau ada card dengan jumlah tag
      berbeda-beda, supaya tinggi card tetap konsisten */
   flex: 1;
@@ -258,7 +258,7 @@ const filteredItems = computed(() => {
 
 .catalog-info h3 {
   margin: 0 0 5px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .tag-list {
@@ -269,12 +269,18 @@ const filteredItems = computed(() => {
 }
 
 .tag-badge {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--accent-color);
   background: color-mix(in srgb, var(--accent-color) 12%, transparent);
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 999px;
   white-space: nowrap;
+}
+
+@media (max-width: 1000px) {
+  .catalog-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 800px) {
