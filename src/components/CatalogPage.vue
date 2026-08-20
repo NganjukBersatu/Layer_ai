@@ -87,6 +87,41 @@ const filteredItems = computed(() => {
       > 
         {{ t('catalog.filterSpyXFamily') }}
       </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Naruto' }"
+        @click="selectedCategory = 'Naruto'"
+      >
+        {{ t('catalog.filterNaruto') }}
+      </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Waifu' }"
+        @click="selectedCategory = 'Waifu'"
+      >
+        {{ t('catalog.filterWaifu') }}
+      </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Husbando' }"
+        @click="selectedCategory = 'Husbando'"
+      >
+        {{ t('catalog.filterHusbando') }}
+      </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Black Butler' }"
+        @click="selectedCategory = 'Black Butler'"
+      >
+        {{ t('catalog.filterBlack Butler') }}
+      </button>
+
+      <button
+        :class="{ active: selectedCategory === 'Detective Conan' }"
+        @click="selectedCategory = 'Detective Conan'"
+      >
+        {{ t('catalog.filterDetective Conan') }}
+      </button>
     </div>
 
     <div class="catalog-grid">
@@ -138,17 +173,22 @@ const filteredItems = computed(() => {
 }
 
 .add-catalog-btn {
-  width: 36px;
-  height: 36px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--accent-color);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 32px;
   text-decoration: none;
   line-height: 1;
+  box-shadow: 0 4px 14px var(--shadow-color);
+  z-index: 100;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 

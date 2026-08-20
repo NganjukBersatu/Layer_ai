@@ -12,7 +12,7 @@ const selectedCategories = ref([]);
 const isSubmitting = ref(false);
 const errorMsg = ref("");
 
-const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen"];
+const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan"];
 
 function handleFileChange(e) {
   const file = e.target.files[0];

@@ -175,6 +175,11 @@
   "filterChibi": "Chibi",
   "filterFurry": "Furry",
   "filterKawaii": "Kawaii",
+  "filterNaruto": "Naruto",
+  "filterWaifu": "Waifu",
+  "filterHusbando": "Husbando",
+  "filterBlackButler": "Black Butler",
+  "filterDetectiveConan": "Detective Conan",
   "categories": {
     "anime": "Anime", "chibi": "Chibi", "furry": "Furry", "kawaii": "Kawaii"
   },
