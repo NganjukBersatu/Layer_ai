@@ -175,6 +175,13 @@
   "filterChibi": "チビ",
   "filterFurry": "ファーリー",
   "filterKawaii": "カワイイ",
+  "filterJujutsuKaisen": "呪術廻戦",
+"filterSpyXFamily": "スパイファミリー",
+"filterNaruto": "ナルト",
+"filterWaifu": "嫁",
+"filterHusbando": "夫",
+"filterBlackButler": "黒執事",
+"filterDetectiveConan": "名探偵コナン",
   "categories": {
     "anime": "アニメ", "chibi": "チビ", "furry": "ファーリー", "kawaii": "カワイイ"
   },
@@ -185,6 +192,36 @@
     "anya": { "name": "アーニャ・フォージャー" },
     "zerotwo": { "name": "ゼロツー" }
   }
+},
+
+"catalogDetail": {
+  "back": "戻る",
+  "edit": "編集",
+  "notFound": "アイテムが見つかりません。",
+  "noDescription": "説明はまだありません。"
+},
+"catalogEdit": {
+  "back": "戻る",
+  "title": "タイトル",
+  "titlePlaceholder": "キャラクタータイトル",
+  "category": "カテゴリー",
+  "categoryHint": "複数選択可能",
+  "description": "説明",
+  "descriptionPlaceholder": "キャラクターの説明を書いてください...",
+  "delete": "削除",
+  "save": "保存",
+  "notFound": "アイテムが見つかりません。"
+},
+"catalogNew": {
+  "back": "戻る",
+  "title": "新しいカタログを追加",
+  "clickToChoose": "クリックして画像を選択",
+  "namePlaceholder": "キャラクタータイトル",
+  "descriptionPlaceholder": "簡単な説明",
+  "requiredFields": "画像とタイトルは必須です。",
+  "saveError": "カタログの保存中にエラーが発生しました。",
+  "saving": "保存中...",
+  "submit": "カタログを保存"
 },
   "common": {
     "basic": "Basic",

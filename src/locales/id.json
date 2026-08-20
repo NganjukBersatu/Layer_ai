@@ -175,6 +175,8 @@
   "filterChibi": "Chibi",
   "filterFurry": "Furry",
   "filterKawaii": "Kawaii",
+  "filterJujutsuKaisen": "Jujutsu Kaisen",
+  "filterSpyXFamily": "Spy x Family",
   "filterNaruto": "Naruto",
   "filterWaifu": "Waifu",
   "filterHusbando": "Husbando",
@@ -189,7 +191,36 @@
     "kurumi": { "name": "Kurumi Tokisaki" },
     "anya": { "name": "Anya Forget" },
     "zerotwo": { "name": "Zero Two" }
-  }
+},
+  "catalogDetail" : {
+  "back": "Kembali",
+  "edit": "Edit",
+  "notFound": "Item tidak ditemukan.",
+  "noDescription": "Belum ada deskripsi."
+}
+},
+"catalogEdit": {
+  "back": "Kembali",
+  "title": "Judul",
+  "titlePlaceholder": "Judul karakter",
+  "category": "Kategori",
+  "categoryHint": "bisa pilih lebih dari satu",
+  "description": "Deskripsi",
+  "descriptionPlaceholder": "Tulis deskripsi karakter...",
+  "delete": "Hapus",
+  "save": "Simpan",
+  "notFound": "Item tidak ditemukan."
+},
+"catalogNew": {
+  "back": "Kembali",
+  "title": "Tambah Katalog Baru",
+  "clickToChoose": "Klik untuk pilih gambar",
+  "namePlaceholder": "Judul karakter",
+  "descriptionPlaceholder": "Deskripsi singkat",
+  "requiredFields": "Gambar dan judul wajib diisi.",
+  "saveError": "Terjadi kesalahan saat menyimpan katalog.",
+  "saving": "Menyimpan...",
+  "submit": "Simpan Katalog"
 },
   "common": {
     "basic": "Basic",
