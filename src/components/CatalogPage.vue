@@ -21,6 +21,7 @@ const filteredItems = computed(() => {
 
 <template>
   <div class="catalog-page">
+    <div class="aurora-bg"></div>
 
     <div class="catalog-header">
       <div class="catalog-header-top">
@@ -346,5 +347,38 @@ const filteredItems = computed(() => {
   .catalog-info h3 {
     font-size: 12px;
   }
+}
+.catalog-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(140, 100, 255, 0.25) 40%,
+    rgba(100, 200, 255, 0.25) 55%,
+    transparent 75%
+  );
+  filter: blur(40px);
+  animation: auroraSweep 8s ease-in-out infinite;
+}
+@keyframes auroraSweep {
+  0%   { transform: translateX(-40%); opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { transform: translateX(20%); opacity: 1; }
+  85%  { opacity: 0; }
+  100% { transform: translateX(60%); opacity: 0; }
+}
+.catalog-header,
+.category-filter,
+.catalog-grid {
+  position: relative;
+  z-index: 1;
 }
 </style>

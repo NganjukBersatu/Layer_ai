@@ -95,7 +95,7 @@ async function handleSubmit() {
           v-model="description"
           placeholder="Deskripsi singkat"
           class="text-input"
-          rows="3"
+          rows="10"
         ></textarea>
 
         <div class="category-select">
@@ -230,6 +230,12 @@ async function handleSubmit() {
   background: var(--bg-card);
   color: var(--text-primary);
   font-family: inherit;
+}
+
+textarea.text-input {
+  min-height: 220px;
+  resize: vertical;
+  line-height: 1.5;
 }
 
 .category-select {
