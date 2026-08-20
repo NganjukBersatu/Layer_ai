@@ -235,6 +235,12 @@ async function handleSubmit() {
   font-family: inherit;
 }
 
+textarea.text-input {
+  min-height: 220px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
 .category-select {
   display: flex;
   gap: 8px;
