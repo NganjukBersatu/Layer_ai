@@ -180,6 +180,8 @@
   "filterHusbando": "Husbando",
   "filterBlackButler": "Black Butler",
   "filterDetectiveConan": "Detective Conan",
+  "filterJujutsuKaisen": "Jujutsu Kaisen",
+  "filterSpyXFamily": "Spy x Family",
   "categories": {
     "anime": "Anime", "chibi": "Chibi", "furry": "Furry", "kawaii": "Kawaii"
   },
@@ -190,6 +192,36 @@
     "anya": { "name": "Anya Forget" },
     "zerotwo": { "name": "Zero Two" }
   }
+},
+
+"catalogDetail": {
+  "back": "Back",
+  "edit": "Edit",
+  "notFound": "Item not found.",
+  "noDescription": "No description yet."
+},
+"catalogEdit": {
+  "back": "Back",
+  "title": "Title",
+  "titlePlaceholder": "Character title",
+  "category": "Category",
+  "categoryHint": "can select more than one",
+  "description": "Description",
+  "descriptionPlaceholder": "Write character description...",
+  "delete": "Delete",
+  "save": "Save",
+  "notFound": "Item not found."
+},
+"catalogNew": {
+  "back": "Back",
+  "title": "Add New Catalog",
+  "clickToChoose": "Click to choose an image",
+  "namePlaceholder": "Character title",
+  "descriptionPlaceholder": "Short description",
+  "requiredFields": "Image and title are required.",
+  "saveError": "An error occurred while saving the catalog.",
+  "saving": "Saving...",
+  "submit": "Save Catalog"
 },
   "common": {
     "basic": "Basic",

@@ -1,10 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { fetchItemById } from "../data/catalogStore.js";
+import { useCategoryLabel } from "../utils/category.js";
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
+const tagLabel = useCategoryLabel();
 
 const item = ref(null);
 const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
@@ -26,7 +30,7 @@ function goToEdit() {
   <div class="description-page" v-if="item">
     <div class="stars-bg"></div>
 
-    <button class="btn-back" @click="goBackToCatalog">← Kembali</button>
+    <button class="btn-back" @click="goBackToCatalog">← {{ t('catalogNew.back') }}</button>
 
     <div class="description-content">
       <div class="description-image">
@@ -37,10 +41,10 @@ function goToEdit() {
         <h1>{{ item.name }}</h1>
 
         <div class="category-tags">
-          <span v-for="cat in item.category" :key="cat" class="tag">{{ cat }}</span>
+          <span v-for="cat in item.category" :key="cat" class="tag">{{ tagLabel(cat) }}</span>
         </div>
 
-        <button v-if="isAdmin" class="btn-edit" @click="goToEdit">Edit</button>
+        <button v-if="isAdmin" class="btn-edit" @click="goToEdit">{{ t('catalogDetail.edit') }}</button>
 
         <p class="description-text">{{ item.description || 'Belum ada deskripsi.' }}</p>
       </div>

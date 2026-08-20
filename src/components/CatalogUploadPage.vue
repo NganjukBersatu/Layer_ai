@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const router = useRouter();
 
@@ -34,7 +37,7 @@ function goBack() {
 
 async function handleSubmit() {
   if (!imageFile.value || !name.value) {
-    errorMsg.value = "Gambar dan judul wajib diisi.";
+    errorMsg.value = t('catalogNew.requiredFields');
     return;
   }
 
@@ -60,7 +63,7 @@ async function handleSubmit() {
 
     router.push("/");
   } catch (err) {
-    errorMsg.value = "Terjadi kesalahan saat menyimpan katalog.";
+    errorMsg.value = t('catalogNew.saveError');
   } finally {
     isSubmitting.value = false;
   }
@@ -72,48 +75,48 @@ async function handleSubmit() {
     <!-- Bagian Header dengan Tombol Kembali -->
     <div class="header-section">
       <button class="back-btn" @click="goBack">
-        <svg class="back-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </svg>
-        Kembali
-      </button>
-      <h1>Tambah Katalog Baru</h1>
-    </div>
+          <svg class="back-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5" />
+              <path d="M12 19l-7-7 7-7" />
+           </svg>
+       {{ t('catalogNew.back') }}
+        </button>
+            <h1>{{ t('catalogNew.title') }}</h1>
+                </div>
 
     <div class="upload-form">
       <label class="file-drop" :class="{ 'has-image': previewUrl }">
         <input type="file" accept="image/*" @change="handleFileChange" hidden />
         <img v-if="previewUrl" :src="previewUrl" alt="preview" />
-        <span v-else>Klik untuk pilih gambar</span>
+        <span v-else>{{ t('catalogNew.clickToChoose') }}</span>
       </label>
 
       <div class="form-fields">
-        <input v-model="name" type="text" placeholder="Judul karakter" class="text-input" />
+        <input v-model="name" type="text" :placeholder="t('catalogNew.namePlaceholder')" class="text-input" />
 
-        <textarea
-          v-model="description"
-          placeholder="Deskripsi singkat"
-          class="text-input"
+          <textarea
+            v-model="description"
+              :placeholder="t('catalogNew.descriptionPlaceholder')"
+            class="text-input"
           rows="3"
-        ></textarea>
+          ></textarea>
 
         <div class="category-select">
           <button
-            v-for="cat in availableCategories"
-            :key="cat"
+           v-for="cat in availableCategories"
+          :key="cat"
             type="button"
-            :class="{ active: selectedCategories.includes(cat) }"
-            @click="toggleCategory(cat)"
-          >
-            {{ cat }}
+          :class="{ active: selectedCategories.includes(cat) }"
+          @click="toggleCategory(cat)"
+        >
+        {{ t(`catalog.filter${cat.replace(/\s+/g, '')}`) }}
           </button>
         </div>
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
         <button class="submit-btn" :disabled="isSubmitting" @click="handleSubmit">
-          {{ isSubmitting ? "Menyimpan..." : "Simpan Katalog" }}
+          {{t('catalogNew.submit')}}
         </button>
       </div>
     </div>

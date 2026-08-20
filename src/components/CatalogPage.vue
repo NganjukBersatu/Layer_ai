@@ -17,6 +17,29 @@ const filteredItems = computed(() => {
   if (selectedCategory.value === "all") return catalogItems;
   return catalogItems.filter((item) => item.category?.includes(selectedCategory.value));
 });
+
+const categoryKeyMap = {
+  anime: "filterAnime",
+  chibi: "filterChibi",
+  furry: "filterFurry",
+  kawaii: "filterKawaii",
+  spyxfamily: "filterSpyXFamily",
+  jujutsukaisen: "filterJujutsuKaisen",
+  naruto: "filterNaruto",
+  waifu: "filterWaifu",
+  husbando: "filterHusbando",
+  blackbutler: "filterBlackButler",
+  detectiveconan: "filterDetectiveConan",
+};
+
+function normalizeTag(tag) {
+  return tag.toLowerCase().replace(/[\s_-]+/g, "");
+}
+
+function tagLabel(tag) {
+  const key = categoryKeyMap[normalizeTag(tag)];
+  return key ? t(`catalog.${key}`) : tag; // fallback tampilkan teks asli kalau tidak ketemu
+}
 </script>
 
 <template>
@@ -110,18 +133,18 @@ const filteredItems = computed(() => {
       </button>
 
       <button
-        :class="{ active: selectedCategory === 'Black Butler' }"
-        @click="selectedCategory = 'Black Butler'"
-      >
-        {{ t('catalog.filterBlack Butler') }}
-      </button>
+  :class="{ active: selectedCategory === 'Black Butler' }"
+  @click="selectedCategory = 'Black Butler'"
+>
+  {{ t('catalog.filterBlackButler') }}
+</button>
 
-      <button
-        :class="{ active: selectedCategory === 'Detective Conan' }"
-        @click="selectedCategory = 'Detective Conan'"
-      >
-        {{ t('catalog.filterDetective Conan') }}
-      </button>
+<button
+  :class="{ active: selectedCategory === 'Detective Conan' }"
+  @click="selectedCategory = 'Detective Conan'"
+>
+  {{ t('catalog.filterDetectiveConan') }}
+</button>
     </div>
 
     <div class="catalog-grid">
@@ -142,10 +165,10 @@ const filteredItems = computed(() => {
             <span
               v-for="tag in item.category"
               :key="tag"
-              class="tag-badge"
-            >
-              {{ tag }}
-            </span>
+                class="tag-badge"
+              >
+            {{ tagLabel(tag) }}
+        </span>
           </div>
         </div>
       </router-link>
