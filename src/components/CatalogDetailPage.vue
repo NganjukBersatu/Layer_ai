@@ -24,6 +24,8 @@ function goToEdit() {
 
 <template>
   <div class="description-page" v-if="item">
+    <div class="stars-bg"></div>
+
     <button class="btn-back" @click="goBackToCatalog">← Kembali</button>
 
     <div class="description-content">
@@ -38,9 +40,9 @@ function goToEdit() {
           <span v-for="cat in item.category" :key="cat" class="tag">{{ cat }}</span>
         </div>
 
-        <p class="description-text">{{ item.description || 'Belum ada deskripsi.' }}</p>
-
         <button v-if="isAdmin" class="btn-edit" @click="goToEdit">Edit</button>
+
+        <p class="description-text">{{ item.description || 'Belum ada deskripsi.' }}</p>
       </div>
     </div>
   </div>
@@ -52,9 +54,10 @@ function goToEdit() {
 
 <style scoped>
 .description-page {
-  max-width: 900px;
+  max-width: 95%;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 30px 40px;
+  box-sizing: border-box;
 }
 .btn-back {
   margin-bottom: 16px;
@@ -65,15 +68,23 @@ function goToEdit() {
   color: var(--text-primary);
   cursor: pointer;
 }
+.btn-back:hover {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
 .description-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(280px, 380px) 1fr;
   gap: 24px;
 }
 .description-image img {
   width: 100%;
+  height: auto;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: contain;
 }
 .description-info h1 {
   margin: 0 0 10px;
@@ -98,16 +109,58 @@ function goToEdit() {
   margin-bottom: 20px;
 }
 .btn-edit {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
   background: var(--accent-color);
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 4px 14px var(--shadow-color);
+  z-index: 100;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.btn-edit:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
 }
 @media (max-width: 700px) {
   .description-content {
     grid-template-columns: 1fr;
   }
+}
+.description-page {
+  position: relative;
+  overflow: hidden;
+}
+.description-content {
+  position: relative;
+  z-index: 1;
+}
+.stars-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(4px 4px at 20px 30px, var(--accent-color), transparent),
+    radial-gradient(4px 4px at 120px 80px, var(--accent-color), transparent),
+    radial-gradient(3px 3px at 250px 150px, var(--accent-color), transparent),
+    radial-gradient(4px 4px at 350px 40px, var(--accent-color), transparent),
+    radial-gradient(3px 3px at 80px 200px, var(--accent-color), transparent),
+    radial-gradient(4px 4px at 400px 250px, var(--accent-color), transparent);
+  background-repeat: repeat;
+  background-size: 450px 300px;
+  opacity: 0.35;
+  animation: starsMove 40s linear infinite;
+}
+
+@keyframes starsMove {
+  from { background-position: 0 0; }
+  to { background-position: 450px 300px; }
 }
 </style>

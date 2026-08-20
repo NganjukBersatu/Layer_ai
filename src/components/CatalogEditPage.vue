@@ -11,7 +11,13 @@ const title = ref("");
 const selectedCategories = ref([]);
 const description = ref("");
 
-const AVAILABLE_CATEGORIES = ["anime", "chibi", "furry", "kawaii", "spyxfamily"];
+const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan"];
+
+function isSelected(cat) {
+  return selectedCategories.value.some(
+    (c) => c.trim().toLowerCase() === cat.trim().toLowerCase()
+  );
+}
 
 onMounted(async () => {
   item.value = await fetchItemById(route.params.id);
@@ -60,10 +66,10 @@ async function handleDelete() {
           <label>Kategori <span class="hint">(bisa pilih lebih dari satu)</span></label>
           <div class="category-checkboxes">
             <label
-              v-for="cat in AVAILABLE_CATEGORIES"
+              v-for="cat in availableCategories"
               :key="cat"
               class="chip"
-              :class="{ active: selectedCategories.includes(cat) }"
+              :class="{ active: isSelected(cat) }"
             >
               <input type="checkbox" :value="cat" v-model="selectedCategories" />
               {{ cat }}
@@ -73,7 +79,7 @@ async function handleDelete() {
 
         <div class="field-group">
           <label>Deskripsi</label>
-          <textarea v-model="description" rows="6" placeholder="Tulis deskripsi karakter..."></textarea>
+          <textarea v-model="description" rows="12" placeholder="Tulis deskripsi karakter..."></textarea>
         </div>
 
         <div class="edit-actions">
@@ -91,9 +97,10 @@ async function handleDelete() {
 
 <style scoped>
 .edit-page {
-  max-width: 1000px;
+  max-width: 95%;
   margin: 0 auto;
-  padding: 30px 20px 60px;
+  padding: 30px 40px 60px;
+  box-sizing: border-box;
 }
 
 .btn-back {
@@ -112,7 +119,11 @@ async function handleDelete() {
 }
 
 .btn-back:hover {
-  background: var(--bg-hover);
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent-color) 35%, transparent);
 }
 
 .edit-content {
@@ -187,6 +198,7 @@ async function handleDelete() {
 .edit-form textarea {
   resize: vertical;
   line-height: 1.5;
+  min-height: 260px;
 }
 
 .category-checkboxes {
