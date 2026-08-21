@@ -7,8 +7,22 @@ import { useCategoryLabel } from "../utils/category.js";
 
 const route = useRoute();
 const router = useRouter();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const tagLabel = useCategoryLabel();
+const displayDescription = computed(() => {
+  if (!item.value) return '';
+  let desc = item.value.description;
+
+  if (typeof desc === 'string') {
+    try {
+      desc = JSON.parse(desc);
+    } catch (e) {
+      return desc; // kalau memang teks biasa (bukan JSON), tampilkan apa adanya
+    }
+  }
+
+  return desc?.[locale.value] || desc?.id || 'Belum ada deskripsi.';
+});
 
 const item = ref(null);
 const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
@@ -46,7 +60,7 @@ function goToEdit() {
 
         <button v-if="isAdmin" class="btn-edit" @click="goToEdit">{{ t('catalogDetail.edit') }}</button>
 
-        <p class="description-text">{{ item.description || 'Belum ada deskripsi.' }}</p>
+        <p class="description-text">{{ displayDescription }}</p>
       </div>
     </div>
   </div>

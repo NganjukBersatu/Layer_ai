@@ -1,7 +1,11 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { fetchItemById, updateItem, deleteItem } from "../data/catalogStore.js";
+import { useCategoryLabel } from "../utils/category.js";
+
+const categoryLabel = useCategoryLabel();
 
 const route = useRoute();
 const router = useRouter();
@@ -9,7 +13,17 @@ const router = useRouter();
 const item = ref(null);
 const title = ref("");
 const selectedCategories = ref([]);
-const description = ref("");
+const { t, locale } = useI18n(); // tambahkan locale di sini (baris yang sudah ada, tinggal tambah locale)
+const description = ref({ id: "", en: "", ja: "", ko: "" });
+
+const currentDescription = computed({
+  get() {
+    return description.value[locale.value] || "";
+  },
+  set(value) {
+    description.value[locale.value] = value;
+  }
+});
 
 const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan"];
 
@@ -24,7 +38,15 @@ onMounted(async () => {
   if (item.value) {
     title.value = item.value.name;
     selectedCategories.value = [...(item.value.category || [])];
-    description.value = item.value.description;
+    let desc = item.value.description;
+if (typeof desc === 'string') {
+  try {
+    desc = JSON.parse(desc);
+  } catch (e) {
+    desc = { id: desc, en: "", ja: "", ko: "" }; // kalau data lama masih teks polos, taruh sbg versi Indo
+  }
+}
+description.value = desc || { id: "", en: "", ja: "", ko: "" };
   }
 });
 
@@ -36,10 +58,11 @@ async function handleUpload() {
   await updateItem(route.params.id, {
     name: title.value,
     category: selectedCategories.value,
-    description: description.value,
+    description: JSON.stringify(description.value),
   });
-  router.push({ name: "CatalogDetail", params: { id: route.params.id } });
+
 }
+
 
 async function handleDelete() {
   await deleteItem(route.params.id);
@@ -49,7 +72,7 @@ async function handleDelete() {
 
 <template>
   <div class="edit-page" v-if="item">
-    <button class="btn-back" @click="goBack">← Kembali</button>
+    <button class="btn-back" @click="goBack">← {{ t('catalogEdit.back') }}</button>
 
     <div class="edit-content">
       <div class="edit-image">
@@ -58,40 +81,40 @@ async function handleDelete() {
 
       <div class="edit-form">
         <div class="field-group">
-          <label>Judul</label>
-          <input v-model="title" type="text" placeholder="Judul karakter" />
+          <label>{{ t('catalogEdit.title') }}</label>
+          <input v-model="title" type="text" :placeholder="t('catalogEdit.titlePlaceholder')" />
         </div>
 
         <div class="field-group">
-          <label>Kategori <span class="hint">(bisa pilih lebih dari satu)</span></label>
+          <label>{{ t('catalogEdit.category') }} <span class="hint">({{ t('catalogEdit.categoryHint') }})</span></label>
           <div class="category-checkboxes">
             <label
-              v-for="cat in availableCategories"
-              :key="cat"
-              class="chip"
-              :class="{ active: isSelected(cat) }"
+            v-for="cat in availableCategories"
+            :key="cat"
+            class="chip"
+            :class="{ active: isSelected(cat) }"
             >
-              <input type="checkbox" :value="cat" v-model="selectedCategories" />
-              {{ cat }}
-            </label>
+         <input type="checkbox" :value="cat" v-model="selectedCategories" />
+       {{ categoryLabel(cat) }}
+          </label>
           </div>
         </div>
 
         <div class="field-group">
-          <label>Deskripsi</label>
-          <textarea v-model="description" rows="12" placeholder="Tulis deskripsi karakter..."></textarea>
+          <label>{{ t('catalogEdit.description') }}</label>
+          <textarea v-model="currentDescription" rows="12" :placeholder="t('catalogEdit.descriptionPlaceholder')"></textarea>
         </div>
 
         <div class="edit-actions">
-          <button class="btn-delete" @click="handleDelete">Hapus</button>
-          <button class="btn-upload" @click="handleUpload">Simpan</button>
+          <button class="btn-delete" @click="handleDelete">{{ t('catalogEdit.delete') }}</button>
+          <button class="btn-upload" @click="handleUpload">{{ t('catalogEdit.save') }}</button>
         </div>
       </div>
     </div>
   </div>
 
   <div v-else class="not-found">
-    <p>Item tidak ditemukan.</p>
+    <p>{{ t('catalogEdit.notFound') }}</p>
   </div>
 </template>
 

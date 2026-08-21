@@ -30,6 +30,14 @@ const categoryKeyMap = {
   husbando: "filterHusbando",
   blackbutler: "filterBlackButler",
   detectiveconan: "filterDetectiveConan",
+  datealive: "filterDateAlive",
+  darlinginthefranxx: "filterDarlingInTheFranxx",
+  mydressupdarling: "filterMyDressUpDarling",
+  aeni: "filterAeni",
+  myheroacademia: "filterMyHeroAcademia",
+  demonslayer: "filterDemonSlayer",
+  classroomoftheelite: "filterClassroomOfTheElite",
+  brandnewanimal: "filterBrandNewAnimal",
 };
 
 function normalizeTag(tag) {
@@ -145,6 +153,62 @@ function tagLabel(tag) {
   @click="selectedCategory = 'Detective Conan'"
 >
   {{ t('catalog.filterDetectiveConan') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'Date A live' }"
+  @click="selectedCategory = 'Date A live'"
+>
+  {{ t('catalog.filterDateAlive') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'Darling in the Franxx' }"
+  @click="selectedCategory = 'Darling in the Franxx'"
+>
+  {{ t('catalog.filterDarlingInTheFranxx') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'My Dress-Up Darling' }"
+  @click="selectedCategory = 'My Dress-Up Darling'"
+>
+  {{ t('catalog.filterMyDressUpDarling') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'Aeni' }"
+  @click="selectedCategory = 'Aeni'"
+>
+  {{ t('catalog.filterAeni') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'My Hero Academia' }"
+  @click="selectedCategory = 'My Hero Academia'"
+>
+  {{ t('catalog.filterMyHeroAcademia') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'Demon Slayer' }"
+  @click="selectedCategory = 'Demon Slayer'"
+>
+  {{ t('catalog.filterDemonSlayer') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'Classroom of the Elite' }"
+  @click="selectedCategory = 'Classroom of the Elite'"
+>
+  {{ t('catalog.filterClassroomOfTheElite') }}
+</button>
+
+<button
+  :class="{ active: selectedCategory === 'Brand New Animal' }"
+  @click="selectedCategory = 'Brand New Animal'"
+>
+  {{ t('catalog.filterBrandNewAnimal') }}
 </button>
     </div>
 

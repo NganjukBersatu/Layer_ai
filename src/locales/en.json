@@ -182,6 +182,14 @@
   "filterDetectiveConan": "Detective Conan",
   "filterJujutsuKaisen": "Jujutsu Kaisen",
   "filterSpyXFamily": "Spy x Family",
+  "filterDateAlive": "Date A Live",
+  "filterDarlingInTheFranxx": "DARLING IN THE FRANXX",
+"filterMyDressUpDarling": "My Dress-Up Darling",
+"filterAeni": "Aeni",
+"filterMyHeroAcademia": "My Hero Academia",
+"filterDemonSlayer": "Demon Slayer",
+"filterClassroomOfTheElite": "Classroom of the Elite",
+"filterBrandNewAnimal": "Brand New Animal",
   "categories": {
     "anime": "Anime", "chibi": "Chibi", "furry": "Furry", "kawaii": "Kawaii"
   },
