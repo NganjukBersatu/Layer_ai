@@ -12,6 +12,14 @@ const categoryKeyMap = {
   husbando: "filterHusbando",
   blackbutler: "filterBlackButler",
   detectiveconan: "filterDetectiveConan",
+  datealive: "filterDateAlive", 
+  darlinginthefranxx: "filterDarlingInTheFranxx",
+  mydressupdarling: "filterMyDressUpDarling",
+  aeni: "filterAeni",
+  myheroacademia: "filterMyHeroAcademia",
+  demonslayer: "filterDemonSlayer",
+  classroomoftheelite: "filterClassroomOfTheElite",
+  brandnewanimal: "filterBrandNewAnimal",
 };
 
 export function normalizeTag(tag) {
