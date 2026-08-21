@@ -28,6 +28,9 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    return { top: 0 };
+  },
 })
 
 // Guard: halaman selain login/forgot-password/register wajib login dulu

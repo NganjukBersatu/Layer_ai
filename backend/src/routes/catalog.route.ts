@@ -23,8 +23,8 @@ const upload = multer({ storage });
 router.get("/catalog", async (req: Request, res: Response) => {
   try {
     const result = await pool.query(
-      `SELECT id, image_name AS name, category, description, image_url AS image
-       FROM results
+      `SELECT id, name, category, description, image_url AS image
+       FROM catalog
        ORDER BY created_at DESC`
     );
     res.json({ success: true, data: result.rows });
@@ -66,9 +66,9 @@ router.post(
       const imageUrl = "uploads/" + req.file.filename;
 
       const result = await pool.query(
-        `INSERT INTO results (user_id, image_name, image_url, category, description)
+        `INSERT INTO catalog (user_id, name, image_url, category, description)
          VALUES ($1, $2, $3, $4, $5)
-         RETURNING id, image_name AS name, category, description, image_url AS image`,
+         RETURNING id, name, category, description, image_url AS image`,
         [user_id || null, name, imageUrl, categoryArray, description || ""]
       );
 
@@ -92,8 +92,8 @@ router.get("/catalog/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await pool.query(
-      `SELECT id, image_name AS name, category, description, image_url AS image
-       FROM results WHERE id = $1`,
+      `SELECT id, name, category, description, image_url AS image
+       FROM catalog WHERE id = $1`,
       [id]
     );
     if (result.rows.length === 0) {
@@ -113,10 +113,10 @@ router.put("/catalog/:id", async (req: Request, res: Response) => {
     const { name, category, description } = req.body;
 
     const result = await pool.query(
-      `UPDATE results
-       SET image_name = $1, category = $2, description = $3
+      `UPDATE catalog
+       SET name = $1, category = $2, description = $3
        WHERE id = $4
-       RETURNING id, image_name AS name, category, description, image_url AS image`,
+       RETURNING id, name, category, description, image_url AS image`,
       [name, category, description, id]
     );
 
@@ -137,7 +137,7 @@ router.delete("/catalog/:id", async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await pool.query(
-      "DELETE FROM results WHERE id = $1 RETURNING *",
+      "DELETE FROM catalog WHERE id = $1 RETURNING *",
       [id]
     );
 
