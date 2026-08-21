@@ -257,6 +257,10 @@ onUnmounted(() => {
 </script>
 
 <template>
+
+<div class="page-glow glow-1"></div>
+<div class="page-glow glow-2"></div>
+
   <div class="history-page">
     <div class="page-header">
       <button class="back-btn" @click="emit('back-from-history')">&larr; {{ $t('history.back') }}</button>
@@ -1195,4 +1199,62 @@ onUnmounted(() => {
     flex: none;
   }
 }
+
+/* =====================================
+   SOFT GLOW
+===================================== */
+
+.page-glow {
+  position: fixed;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  filter: blur(120px);
+
+  opacity: 0.16;
+
+  z-index: 0;
+}
+
+
+/* =====================================
+   GLOW POJOK KIRI ATAS
+===================================== */
+
+.glow-1 {
+  top: -230px;
+  left: -230px;
+
+  background: #694cff;
+}
+
+
+/* =====================================
+   GLOW POJOK KANAN BAWAH
+===================================== */
+
+.glow-2 {
+  right: -230px;
+  bottom: -230px;
+
+  background: #8b5cf6;
+}
+
+
+/* =====================================
+   GLOW BAWAH TENGAH
+   HAPUS / JANGAN DIGUNAKAN
+===================================== */
+
+/*
+.glow-3 {
+  display: none;
+}
+*/
+
 </style>
