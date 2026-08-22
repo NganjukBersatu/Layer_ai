@@ -2,7 +2,17 @@
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
-const emit = defineEmits(["next", "history", "logout"]);
+const emit = defineEmits([
+  "next",
+  "history",
+  "logout",
+  "split",
+  "back",
+  "complete",
+  "restart",
+  "deleteResult",
+  "backFromHistory",
+]);
 const { t } = useI18n()
 
 const image = ref(null);
@@ -281,15 +291,15 @@ async function handleSplitClick() {
 </script>
 
 <template>
-
-<div class="page-glow glow-1"></div>
-<div class="page-glow glow-2"></div>
+<div class="input-page">
+  <div class="page-glow glow-1"></div>
+  <div class="page-glow glow-2"></div>
 
   <div class="input-card" :class="{ 'category-open': isCategoryDropdownOpen }">
     <div class="card-header">
       <h2>{{ $t('input.title') }}</h2>
 
-      <!-- Desktop actions (disembunyikan di mobile) -->
+      <!-- Actions: sekarang tampil di semua ukuran layar -->
       <div class="header-actions">
         <span class="credit-info" :class="{ 'credit-error': creditError }">
           <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
@@ -300,23 +310,6 @@ async function handleSplitClick() {
         <button class="add-credit-btn" @click="addCredit">{{ $t('input.addCredit') }}</button>
         <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
 
-      </div>
-
-      <!-- Group khusus mobile: Credit + Hamburger -->
-      <div class="mobile-right">
-        <span class="credit-info mobile-credit" :class="{ 'credit-error': creditError }">
-          <template v-if="isLoadingCredits">{{ $t('input.loadingCredit') }}</template>
-          <template v-else-if="creditError">{{ creditError }}</template>
-          <template v-else>💎 {{ remainingCredits }} {{ $t('input.credits') }}</template>
-        </span>
-
-        
-      </div>
-
-      <!-- Dropdown menu (hanya tombol aksi) -->
-      <div v-if="isMobileMenuOpen" class="mobile-menu">
-        <button class="history-btn" @click="emit('history')">{{ $t('input.history') }}</button>
-        <button class="logout-btn" @click="emit('logout')">{{ $t('input.logout') }}</button>
       </div>
     </div>
 
@@ -461,6 +454,7 @@ async function handleSplitClick() {
       {{ isSplitting ? $t('input.processing') : $t('input.splitBtn') }}
     </button>
   </div>
+</div>
 </template>
 
 <style scoped>
@@ -521,6 +515,7 @@ async function handleSplitClick() {
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
+  white-space: nowrap;
 }
 
 .add-credit-btn:hover {
@@ -553,43 +548,19 @@ async function handleSplitClick() {
 }
 
 /* ===== Header ===== */
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.mobile-menu-btn {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--bg-card);
-  cursor: pointer;
-  padding: 0;
-}
-
-.mobile-menu-btn span {
-  display: block;
-  width: 18px;
-  height: 2px;
-  background: var(--accent-color);
-  margin: 0 auto;
-  border-radius: 2px;
-}
-
-.mobile-menu {
-  display: none;
-}
-
-/* Group credit + hamburger (hanya untuk mobile) */
-.mobile-right {
-  display: none;
 }
 
 /* ===== Model Info ===== */
@@ -622,6 +593,7 @@ async function handleSplitClick() {
   background: var(--bg-accent-soft);
   padding: 6px 12px;
   border-radius: 8px;
+  white-space: nowrap;
 }
 
 .credit-info.credit-error {
@@ -678,6 +650,7 @@ async function handleSplitClick() {
   border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.15s;
+  white-space: nowrap;
 }
 
 .history-btn:hover {
@@ -694,6 +667,7 @@ async function handleSplitClick() {
   border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.15s;
+  white-space: nowrap;
 }
 
 .logout-btn:hover {
@@ -874,104 +848,64 @@ async function handleSplitClick() {
 
 /* =========================================
    MOBILE STYLES
+   Ketiga tombol (Credit, Tambah Kredit, History) tetap
+   ditampilkan di layar kecil, hanya disusun ulang & diperkecil
+   agar tidak overflow.
 ========================================= */
 @media (max-width: 600px) {
-  /* Sembunyikan header-actions desktop */
-  .header-actions {
-    display: none !important;
-  }
-
-  /* Tampilkan group credit + hamburger */
-  .mobile-right {
-    display: flex !important;
+  .card-header {
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;                    /* <-- atur jarak credit ↔ toggle di sini */
-    margin-left: auto;
+    gap: 8px;
   }
 
-  .mobile-credit {
-    display: inline-flex !important;
-    margin: 0 !important;
+  .card-header h2 {
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+    font-size: 20px;
+    flex: 1 1 auto;
+  }
+
+  /* Actions pindah ke baris baru penuh, tersusun rapi & rata kanan,
+     dan bisa wrap kalau ruang tidak cukup, bukan hilang */
+  .header-actions {
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .credit-info {
     font-size: 12px;
     padding: 5px 10px;
-    white-space: nowrap;
   }
 
-  .mobile-add-credit-btn {
-    width: 26px !important;
-    height: 26px !important;
-    padding: 0 !important;
-    border-radius: 6px !important;   /* <-- diubah dari 50% jadi 6px */
-    font-size: 0 !important;
-    display: inline-flex !important;
+  .add-credit-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
 
-  .mobile-add-credit-btn::after {
+  .add-credit-btn::after {
     content: "+";
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
-    line-height: 24px;
-    display: block;
+    line-height: 1;
     color: #fff;
   }
 
-  .mobile-menu-btn {
-    display: flex !important;
-    margin: 0 !important;
-    height: 36px;
-    flex-shrink: 0;
-  }
-
-  /* Header layout */
-  .card-header {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
-    align-items: center !important;
-    position: relative;
-    gap: 0 !important;
-  }
-
-  .card-header h2 {
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.2 !important;
-    font-size: 22px !important;
-    text-align: left !important;
-    width: auto !important;
-    flex: 0 0 auto !important;
-    height: 36px !important;
-    display: flex !important;
-    align-items: center !important;
-  }
-
-  /* Dropdown menu */
-  .mobile-menu {
-    display: flex !important;
-    flex-direction: column;
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    width: 180px;
-    margin-top: 0 !important;
-    padding: 12px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px var(--shadow-color);
-    z-index: 50;
-    gap: 8px;
-  }
-
-  .mobile-menu .add-credit-btn,
-  .mobile-menu .history-btn,
-  .mobile-menu .logout-btn {
-    width: 100%;
-    text-align: center;
+  .history-btn {
+    font-size: 12px;
+    padding: 5px 10px;
   }
 
   /* Model info di mobile */
@@ -991,6 +925,26 @@ async function handleSplitClick() {
 
   .preview-img {
     max-height: 200px;
+  }
+}
+
+/* Layar sangat sempit (<380px): tombol dibuat memenuhi lebar
+   agar tetap mudah ditekan, bukan malah disembunyikan */
+@media (max-width: 380px) {
+  .header-actions {
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .credit-info,
+  .history-btn {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+
+  .add-credit-btn {
+    width: 28px;
+    height: 28px;
   }
 }
 
@@ -1047,17 +1001,4 @@ async function handleSplitClick() {
 
   background: #8b5cf6;
 }
-
-
-/* =====================================
-   GLOW BAWAH TENGAH
-   HAPUS / JANGAN DIGUNAKAN
-===================================== */
-
-/*
-.glow-3 {
-  display: none;
-}
-*/
-
 </style>

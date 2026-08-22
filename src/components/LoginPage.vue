@@ -70,20 +70,21 @@ function goRegister() {
 </script>
 
 <template>
-  
-<!-- Efek bintik background -->
-<div class="catalog-dots">
-  <span
-    v-for="n in 45"
-    :key="n"
-    class="catalog-dot"
-    :style="{
-      left: `${(n * 37) % 100}%`,
-      top: `${(n * 53) % 100}%`,
-      animationDelay: `${(n % 8) * 0.4}s`
-    }"
-  ></span>
-</div>
+<div class="login-page">
+
+  <!-- Efek bintik background -->
+  <div class="catalog-dots">
+    <span
+      v-for="n in 45"
+      :key="n"
+      class="catalog-dot"
+      :style="{
+        left: `${(n * 37) % 100}%`,
+        top: `${(n * 53) % 100}%`,
+        animationDelay: `${(n % 8) * 0.4}s`
+      }"
+    ></span>
+  </div>
 
   <div class="login-card">
 
@@ -144,6 +145,7 @@ function goRegister() {
       {{ $t('login.register') }}</a>
     </p>
   </div>
+</div>
 </template>
 
 <style scoped>
@@ -157,6 +159,11 @@ function goRegister() {
   position: relative;
   min-height: calc(100vh - 65px);
   overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   /* Membuat stacking layer sendiri */
   isolation: isolate;
@@ -222,8 +229,10 @@ function goRegister() {
   position: relative;
   z-index: 10;
 
-  width: 400px;
-  margin: 80px auto;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin: 0 auto;
   padding: 35px;
 
   background: var(--bg-card);
@@ -353,5 +362,16 @@ function goRegister() {
   font-size: 14px;
   font-weight: 600;
   margin-left: 4px;
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+
+  .login-card h2 {
+    font-size: 28px;
+  }
 }
 </style>

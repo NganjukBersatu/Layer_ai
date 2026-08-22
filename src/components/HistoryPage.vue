@@ -257,9 +257,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-
-<div class="page-glow glow-1"></div>
-<div class="page-glow glow-2"></div>
+<div class="history-page-wrapper">
+  <div class="page-glow glow-1"></div>
+  <div class="page-glow glow-2"></div>
 
   <div class="history-page">
     <div class="page-header">
@@ -311,16 +311,19 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="filter-tabs">
-      <button
-        v-for="tab in filterTabs"
-        :key="tab.value"
-        class="filter-tab"
-        :class="{ active: modelFilter === tab.value }"
-        @click="modelFilter = tab.value"
-      >
-        {{ tab.label() }}
-      </button>
+    <div class="filter-tabs-wrap">
+      <div class="filter-tabs">
+        <button
+          v-for="tab in filterTabs"
+          :key="tab.value"
+          class="filter-tab"
+          :class="{ active: modelFilter === tab.value }"
+          @click="modelFilter = tab.value"
+        >
+          {{ tab.label() }}
+        </button>
+      </div>
+      <div class="filter-tabs-fade"></div>
     </div>
 
     <p v-if="!isLoadingList && histories.length > 0" class="result-count">
@@ -486,6 +489,7 @@ onUnmounted(() => {
       </div>
     </Transition>
   </div>
+</div>
 </template>
 
 <style scoped>
@@ -648,13 +652,19 @@ onUnmounted(() => {
   padding: 4px;
 }
 
+.filter-tabs-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
 .filter-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   flex-wrap: nowrap;
   overflow-x: auto;
   padding-bottom: 8px;
+  padding-right: 28px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -662,6 +672,18 @@ onUnmounted(() => {
 
 .filter-tabs::-webkit-scrollbar {
   display: none;
+}
+
+/* Sinyal visual bahwa masih ada tombol kategori lain di kanan
+   yang bisa di-scroll, supaya tidak terlihat seperti "terpotong" */
+.filter-tabs-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 8px;
+  width: 32px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--bg-primary));
 }
 
 .filter-tab {
@@ -935,8 +957,8 @@ onUnmounted(() => {
 
 .meta-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
   margin-top: 4px;
   gap: 6px;
 }
@@ -946,6 +968,8 @@ onUnmounted(() => {
   gap: 4px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .model-badge {
@@ -955,6 +979,7 @@ onUnmounted(() => {
   border-radius: 999px;
   text-transform: uppercase;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .model-badge.basic {
@@ -973,7 +998,9 @@ onUnmounted(() => {
   padding: 3px 8px;
   border-radius: 999px;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  max-width: 100%;
   background: #dbeafe;
   color: #1d4ed8;
 }
@@ -1244,17 +1271,4 @@ onUnmounted(() => {
 
   background: #8b5cf6;
 }
-
-
-/* =====================================
-   GLOW BAWAH TENGAH
-   HAPUS / JANGAN DIGUNAKAN
-===================================== */
-
-/*
-.glow-3 {
-  display: none;
-}
-*/
-
 </style>
