@@ -57,13 +57,6 @@ function tagLabel(tag) {
     <div class="catalog-header">
       <div class="catalog-header-top">
         <h1>{{ t('catalog.title') }}</h1>
-        <router-link
-          v-if="isAdmin"
-          to="/catalog/new"
-          class="add-catalog-btn"
-        >
-          +
-        </router-link>
       </div>
       <p>
         {{ t('catalog.subtitle') }}
@@ -239,7 +232,14 @@ function tagLabel(tag) {
       </router-link>
 
     </div>
-
+    <router-link
+      v-if="isAdmin"
+      to="/catalog/new"
+      class="add-catalog-btn"
+    >
+      +
+    </router-link>
+      
   </div>
 </template>
 
@@ -276,7 +276,7 @@ function tagLabel(tag) {
   text-decoration: none;
   line-height: 1;
   box-shadow: 0 4px 14px var(--shadow-color);
-  z-index: 100;
+  z-index: 1000;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 

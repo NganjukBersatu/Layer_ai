@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useClickOutside } from '../composables/useClickOutside.js'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -14,6 +15,28 @@ const emit = defineEmits([
 
 const theme = ref(localStorage.getItem('theme') || 'system')
 const isThemeMenuOpen = ref(false)
+
+const isMobileMenuOpen = ref(false)
+
+const themeSwitcherRef = ref(null)
+const hamburgerBtnRef = ref(null)
+const mobileMenuRef = ref(null)
+
+useClickOutside(themeSwitcherRef, () => {
+  isThemeMenuOpen.value = false
+})
+
+useClickOutside([hamburgerBtnRef, mobileMenuRef], () => {
+  isMobileMenuOpen.value = false
+})
+
+function toggleMobileMenu() {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+function closeMobileMenu() {
+  isMobileMenuOpen.value = false
+}
 
 function applyTheme(value) {
   const root = document.documentElement
@@ -39,40 +62,29 @@ onMounted(() => {
 
 <template>
   <nav class="navbar">
+  <!-- Kiri: hanya judul -->
+  <div class="navbar-left">
     <div class="navbar-title">{{ t('app.title') }}</div>
+  </div>
 
-    <div class="navbar-actions">
+  <div class="navbar-actions">
+    <!-- Menu desktop (disembunyikan di mobile) -->
+    <div class="nav-links desktop-only">
+      <button type="button" class="nav-link" @click="emit('catalog')">
+        {{ t('nav.catalog') }}
+      </button>
 
-<div class="nav-links">
-  <button
-  type="button"
-  class="nav-link"
-  @click="emit('catalog')"
->
-  {{ t('nav.catalog') }}
-</button>
+      <button type="button" class="nav-link" @click="emit('split')">
+        {{ t('nav.split') }}
+      </button>
 
-<button
-  type="button"
-  class="nav-link"
-  @click="emit('split')"
->
-  {{ t('nav.split') }}
-</button>
+      <button type="button" class="nav-link logout-link" @click="emit('logout')">
+        {{ t('input.logout') }}
+      </button>
+    </div>
 
-<button
-   type="button"
-   class="nav-link logout-link" 
-   @click="emit('logout')">
-   
-    {{ t('input.logout') }}
-  </button>
-
-
-
-</div>
-
-      <div class="theme-switcher">
+    <!-- Theme switcher -->
+    <div class="theme-switcher" ref="themeSwitcherRef">
         <button class="theme-button" type="button" @click="isThemeMenuOpen = !isThemeMenuOpen">
           <svg v-if="theme === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"/>
@@ -103,8 +115,69 @@ onMounted(() => {
         </div>
       </div>
 
-      <LanguageSwitcher />
-    </div>
+    <LanguageSwitcher />
+
+    <!-- ===== TOMBOL HAMBURGER di ujung kanan ===== -->
+    <button
+  class="hamburger-btn"
+  type="button"
+  ref="hamburgerBtnRef"
+  @click="toggleMobileMenu"
+  :aria-expanded="isMobileMenuOpen"
+>
+      <!-- Icon hamburger -->
+      <svg v-if="!isMobileMenuOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      <!-- Icon close (X) -->
+      <svg v-else width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div v-if="isMobileMenuOpen" class="mobile-menu" ref="mobileMenuRef">
+  <button
+    type="button"
+    class="mobile-menu-item"
+    @click="emit('catalog'); closeMobileMenu()"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7"/>
+      <rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/>
+      <rect x="3" y="14" width="7" height="7"/>
+    </svg>
+    {{ t('nav.catalog') }}
+  </button>
+
+  <button
+    type="button"
+    class="mobile-menu-item"
+    @click="emit('split'); closeMobileMenu()"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M3 9h18M9 21V9"/>
+    </svg>
+    {{ t('nav.split') }}
+  </button>
+
+  <div class="mobile-menu-divider"></div>
+
+  <button
+    type="button"
+    class="mobile-menu-item logout"
+    @click="emit('logout'); closeMobileMenu()"
+  >
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+    {{ t('input.logout') }}
+  </button>
+</div>
   </nav>
 </template>
 
@@ -238,6 +311,86 @@ onMounted(() => {
   font-weight: 500;
 }
 
+/* ===== Hamburger & Mobile Menu ===== */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hamburger-btn {
+  display: none; /* disembunyikan di desktop */
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mobile-menu {
+  display: none; /* default hidden */
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 12px;
+  left: auto;
+  width: 200px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 13px;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  padding: 6px;
+  z-index: 950;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mobile-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 9px 11px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mobile-menu-item svg {
+  flex-shrink: 0;
+}
+
+.mobile-menu-item:hover {
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  color: var(--accent-color);
+}
+
+.mobile-menu-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 6px 4px;
+}
+
+.mobile-menu-item.logout {
+  color: #f87171;
+}
+
+.mobile-menu-item.logout:hover {
+  background: #dc2626;
+  color: white;
+}
+
 /* =========================================
    MOBILE: navbar dibuat 2 baris supaya tidak
    ada elemen yang terdorong keluar/terpotong
@@ -289,6 +442,32 @@ onMounted(() => {
   .theme-button svg {
     width: 15px;
     height: 15px;
+  }
+
+  .hamburger-btn {
+    display: flex; /* tampilkan hamburger */
+  }
+
+  .desktop-only {
+    display: none !important; /* sembunyikan menu biasa */
+  }
+
+  .mobile-menu {
+    display: flex; /* tampilkan dropdown saat dibuka */
+  }
+
+  .navbar {
+    flex-wrap: nowrap; /* biar title + hamburger sejajar */
+    padding: 10px 12px;
+  }
+
+  .navbar-title {
+    font-size: 17px;
+  }
+
+  .navbar-actions {
+    width: auto;
+    gap: 8px;
   }
 }
 

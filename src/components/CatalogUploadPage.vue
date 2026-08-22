@@ -297,4 +297,46 @@ textarea.text-input {
     width: 100%;
   }
 }
+
+@media (max-width: 500px) {
+  .upload-page {
+    padding: 16px 12px 40px;
+  }
+
+  .header-section {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .header-section h1 {
+    font-size: 19px;
+  }
+
+  .back-btn {
+    padding: 6px 10px 6px 8px;
+    font-size: 12px;
+    gap: 5px;
+  }
+
+  .back-icon {
+    width: 13px;
+    height: 13px;
+  }
+
+  .category-select {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(3, auto);
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .category-select button {
+    padding: 6px 12px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+}
 </style>

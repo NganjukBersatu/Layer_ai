@@ -156,23 +156,22 @@ async function handleDelete() {
 
 .edit-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 260px 1fr;   /* kolom gambar lebih kecil */
   gap: 28px;
   align-items: start;
 }
 
 .edit-image {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 3px 12px var(--shadow-color);
+  width: 100%;
 }
 
 .edit-image img {
   width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: contain;
   display: block;
-  object-fit: cover;
+  box-shadow: 0 4px 14px var(--shadow-color);
 }
 
 .edit-form {
@@ -315,6 +314,52 @@ async function handleDelete() {
 @media (max-width: 700px) {
   .edit-content {
     grid-template-columns: 1fr;
+    justify-items: center;   /* gambar di tengah saat mobile */
+  }
+
+  .edit-image {
+    max-width: 240px;        /* gambar kecil di mobile */
+  }
+}
+
+@media (max-width: 500px) {
+  .edit-page {
+    padding: 16px 14px 40px;
+  }
+
+  .edit-image {
+    max-width: 220px;
+  }
+
+  .edit-form {
+    padding: 16px;
+  }
+
+  .btn-back {
+    padding: 6px 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .field-group label {
+    font-size: 12px;
+  }
+
+  .edit-form input[type="text"],
+  .edit-form textarea {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .btn-delete,
+  .btn-upload {
+    padding: 8px 16px;
+    font-size: 13px;
   }
 }
 </style>

@@ -95,14 +95,25 @@ function goToEdit() {
 }
 .description-content {
   display: grid;
-  grid-template-columns: minmax(280px, 380px) 1fr;
+  grid-template-columns: minmax(240px, 300px) 1fr;
   gap: 24px;
+  align-items: start;
 }
+.description-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg-accent-soft);
+}
+
 .description-image img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
   border-radius: 12px;
-  object-fit: contain;
 }
 .description-info h1 {
   margin: 0 0 10px;
@@ -155,15 +166,28 @@ function goToEdit() {
   position: relative;
   overflow: hidden;
 }
-.description-content {
-  position: relative;
-  z-index: 1;
-}
+  .description-content {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .description-image {
+    max-width: 260px;
+  }
 .stars-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden;
+}
+
+.stars-bg::before {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 200%;
+  height: 200%;
   background-image:
     radial-gradient(4px 4px at 20px 30px, var(--accent-color), transparent),
     radial-gradient(4px 4px at 120px 80px, var(--accent-color), transparent),
@@ -174,11 +198,38 @@ function goToEdit() {
   background-repeat: repeat;
   background-size: 450px 300px;
   opacity: 0.35;
+  will-change: transform;
   animation: starsMove 40s linear infinite;
 }
 
 @keyframes starsMove {
-  from { background-position: 0 0; }
-  to { background-position: 450px 300px; }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(450px, 300px, 0); }
+}
+
+@media (max-width: 500px) {
+  .description-page {
+    padding: 16px 14px 40px;
+  }
+
+  .btn-back {
+    padding: 6px 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .description-info h1 {
+    font-size: 20px;
+  }
+
+  .description-text {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
 }
 </style>

@@ -1,9 +1,16 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+import { useClickOutside } from '../composables/useClickOutside.js'
 
 const { locale } = useI18n()
 const isOpen = ref(false)
+
+const switcherRef = ref(null)
+
+useClickOutside(switcherRef, () => {
+  isOpen.value = false
+})
 
 function changeLang(lang) {
   locale.value = lang
@@ -12,7 +19,7 @@ function changeLang(lang) {
 </script>
 
 <template>
-  <div class="lang-switcher">
+  <div class="lang-switcher" ref="switcherRef">
     <!-- Tombol utama -->
     <button
       class="lang-button"
