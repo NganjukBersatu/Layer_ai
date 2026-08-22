@@ -1,15 +1,13 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
 
 const { t } = useI18n();
 
 const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
-
-onMounted(() => {
-  fetchCatalog();
-});
+const isRestoringScroll = ref(true);
 
 const selectedCategory = ref("all");
 
@@ -46,8 +44,27 @@ function normalizeTag(tag) {
 
 function tagLabel(tag) {
   const key = categoryKeyMap[normalizeTag(tag)];
-  return key ? t(`catalog.${key}`) : tag; // fallback tampilkan teks asli kalau tidak ketemu
+  return key ? t(`catalog.${key}`) : tag;
 }
+
+// Simpan posisi scroll sebelum meninggalkan halaman katalog
+onBeforeRouteLeave(() => {
+  sessionStorage.setItem("catalogScrollPos", window.scrollY.toString());
+});
+
+// Kembalikan posisi scroll + hilangkan flash
+onMounted(async () => {
+  fetchCatalog();
+
+  const saved = sessionStorage.getItem("catalogScrollPos");
+  if (saved !== null) {
+    window.scrollTo(0, parseInt(saved, 10));
+    await nextTick();
+    window.scrollTo(0, parseInt(saved, 10));
+  }
+
+  isRestoringScroll.value = false;
+});
 </script>
 
 <template>
