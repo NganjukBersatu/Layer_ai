@@ -25,7 +25,12 @@ const currentDescription = computed({
   }
 });
 
-const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan"];
+const availableCategories = [
+  "Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen",
+  "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan",
+  "Date A live", "Darling in the Franxx", "My Dress-Up Darling", "Aeni",
+  "My Hero Academia", "Demon Slayer", "Classroom of the Elite", "Brand New Animal"
+];
 
 function isSelected(cat) {
   return selectedCategories.value.some(

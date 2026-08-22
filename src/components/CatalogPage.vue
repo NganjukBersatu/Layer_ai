@@ -434,7 +434,28 @@ function tagLabel(tag) {
   .catalog-info h3 {
     font-size: 12px;
   }
+
+  /* --- Kategori bisa digeser horizontal, KHUSUS mobile --- */
+  .category-filter {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    margin-right: -12px;
+    padding-right: 12px;
+    scrollbar-width: none;
+  }
+
+  .category-filter::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-filter button {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 }
+
 .catalog-page {
   position: relative;
   overflow: hidden;
