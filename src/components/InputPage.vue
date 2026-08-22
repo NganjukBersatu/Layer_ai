@@ -855,8 +855,9 @@ async function handleSplitClick() {
 @media (max-width: 600px) {
   .card-header {
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
   }
 
@@ -864,28 +865,26 @@ async function handleSplitClick() {
     margin: 0;
     padding: 0;
     line-height: 1.2;
-    font-size: 20px;
-    flex: 1 1 auto;
+    font-size: 18px;
+    flex-shrink: 0;
   }
 
-  /* Actions pindah ke baris baru penuh, tersusun rapi & rata kanan,
-     dan bisa wrap kalau ruang tidak cukup, bukan hilang */
   .header-actions {
-    flex: 1 1 100%;
-    width: 100%;
-    justify-content: flex-end;
-    gap: 8px;
-    flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
   }
 
   .credit-info {
-    font-size: 12px;
-    padding: 5px 10px;
+    font-size: 11px;
+    padding: 5px 8px;
   }
 
   .add-credit-btn {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     padding: 0;
     border-radius: 8px;
     font-size: 0;
@@ -904,8 +903,8 @@ async function handleSplitClick() {
   }
 
   .history-btn {
-    font-size: 12px;
-    padding: 5px 10px;
+    font-size: 11px;
+    padding: 5px 8px;
   }
 
   /* Model info di mobile */
