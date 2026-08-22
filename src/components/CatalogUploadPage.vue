@@ -15,7 +15,7 @@ const selectedCategories = ref([]);
 const isSubmitting = ref(false);
 const errorMsg = ref("");
 
-const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan"];
+const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan", "Date A live", "Darling in the Franxx", "My Dress-Up Darling", "Aeni", "My Hero Academia", "Demon Slayer", "Classroom of the Elite", "Brand New Animal"];
 
 function handleFileChange(e) {
   const file = e.target.files[0];
