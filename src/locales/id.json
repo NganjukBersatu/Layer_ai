@@ -3,6 +3,11 @@
   "catalog": "Katalog",  
   "split": "Split Gambar"
 },
+"theme": {
+  "light": "Terang",
+  "dark": "Gelap",
+  "system": "Sistem"
+},
   "login": {
     "title": "Masuk",
     "loggingIn": "Sedang masuk...",
