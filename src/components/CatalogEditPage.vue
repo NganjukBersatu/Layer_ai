@@ -66,6 +66,7 @@ async function handleUpload() {
     description: JSON.stringify(description.value),
   });
 
+  router.push({ name: "CatalogDetail", params: { id: route.params.id } });
 }
 
 
