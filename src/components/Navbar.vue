@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useClickOutside } from '../composables/useClickOutside.js'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
+const route = useRoute()
 
 const emit = defineEmits([
   'catalog',
@@ -20,6 +22,16 @@ const isMobileMenuOpen = ref(false)
 const themeSwitcherRef = ref(null)
 const hamburgerBtnRef = ref(null)
 const mobileMenuRef = ref(null)
+
+// Katalog dianggap aktif untuk "/" dan semua sub-halamannya (/catalog/..)
+const isCatalogActive = computed(() =>
+  route.path === '/' || route.path.startsWith('/catalog')
+)
+
+// Split Gambar dianggap aktif untuk alur split (input, process, preview)
+const isSplitActive = computed(() =>
+  ['/split-gambar', '/process', '/preview'].includes(route.path)
+)
 
 useClickOutside(themeSwitcherRef, () => {
   isThemeMenuOpen.value = false
@@ -75,11 +87,21 @@ onMounted(() => {
     <div class="navbar-actions">
       <!-- Katalog & Split selalu tampil (desktop + mobile) -->
       <div class="nav-links">
-        <button type="button" class="nav-link" @click="emit('catalog')">
+        <button
+          type="button"
+          class="nav-link"
+          :class="{ active: isCatalogActive }"
+          @click="emit('catalog')"
+        >
           {{ t('nav.catalog') }}
         </button>
 
-        <button type="button" class="nav-link" @click="emit('split')">
+        <button
+          type="button"
+          class="nav-link"
+          :class="{ active: isSplitActive }"
+          @click="emit('split')"
+        >
           {{ t('nav.split') }}
         </button>
 
@@ -148,7 +170,12 @@ onMounted(() => {
     <!-- Mobile menu: hanya Tema + Bahasa + Logout -->
     <div v-if="isMobileMenuOpen" class="mobile-menu" ref="mobileMenuRef">
       <!-- Menu utama -->
-      <button type="button" class="mobile-menu-item" @click="emit('catalog'); closeMobileMenu()">
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: isCatalogActive }"
+        @click="emit('catalog'); closeMobileMenu()"
+      >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7"/>
           <rect x="14" y="3" width="7" height="7"/>
@@ -158,7 +185,12 @@ onMounted(() => {
         {{ t('nav.catalog') }}
       </button>
 
-      <button type="button" class="mobile-menu-item" @click="emit('split'); closeMobileMenu()">
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: isSplitActive }"
+        @click="emit('split'); closeMobileMenu()"
+      >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2 2 7l10 5 10-5-10-5Z"/>
           <path d="M2 17l10 5 10-5"/>
@@ -320,6 +352,11 @@ onMounted(() => {
 }
 
 .nav-link:hover {
+  color: var(--accent-color);
+  background: var(--bg-accent-soft);
+}
+
+.nav-link.active {
   color: var(--accent-color);
   background: var(--bg-accent-soft);
 }
