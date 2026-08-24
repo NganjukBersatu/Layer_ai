@@ -170,6 +170,7 @@
   "catalog": {
   "title": "카탈로그",
   "subtitle": "AI Layer Splitter 레이어별로 만든 다양한 작품을 확인해보세요.",
+  "searchPlaceholder": "이미지 이름 검색...",
   "filterAll": "전체",
   "filterAnime": "애니메",
   "filterChibi": "치비",

@@ -170,6 +170,7 @@
 "catalog": {
   "title": "Katalog",
   "subtitle": "Lihat berbagai hasil karya yang dibuat dengan AI Layer Splitter.",
+  "searchPlaceholder": "Cari nama gambar...",
   "filterAll": "Semua",
   "filterAnime": "Anime",
   "filterChibi": "Chibi",
@@ -183,7 +184,7 @@
   "filterBlackButler": "Black Butler",
   "filterDetectiveConan": "Detective Conan",
   "filterDateAlive": "Date A Live",
-  "filterDarlingInTheFranxx": "DARLING IN THE FRANXX",
+  "filterDarlingInTheFranxx": "DARLING in the FRANXX",
 "filterMyDressUpDarling": "My Dress-Up Darling",
 "filterAeni": "Aeni",
 "filterMyHeroAcademia": "My Hero Academia",

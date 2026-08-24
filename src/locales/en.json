@@ -170,6 +170,7 @@
   "catalog": {
   "title": "Catalog",
   "subtitle": "See various works created with AI Layer Splitter.",
+  "searchPlaceholder": "Search image name...",
   "filterAll": "All",
   "filterAnime": "Anime",
   "filterChibi": "Chibi",
@@ -183,7 +184,7 @@
   "filterJujutsuKaisen": "Jujutsu Kaisen",
   "filterSpyXFamily": "Spy x Family",
   "filterDateAlive": "Date A Live",
-  "filterDarlingInTheFranxx": "DARLING IN THE FRANXX",
+  "filterDarlingInTheFranxx": "DARLING in the FRANXX",
 "filterMyDressUpDarling": "My Dress-Up Darling",
 "filterAeni": "Aeni",
 "filterMyHeroAcademia": "My Hero Academia",
