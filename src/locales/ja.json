@@ -3,6 +3,11 @@
   "catalog": "カタログ",
   "split": "画像分割"
 },
+"theme": {
+  "light": "ライト",
+  "dark": "ダーク",
+  "system": "システム"
+},
   "login": {
     "title": "ログイン",
     "loggingIn": "ログイン中...",

@@ -3,6 +3,11 @@
   "catalog": "Catalog",
   "split": "Split Image"
 },
+"theme": {
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System"
+},
   "login": {
     "title": "Login",
     "loggingIn": "Logging in...",

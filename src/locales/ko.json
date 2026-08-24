@@ -3,6 +3,11 @@
     "catalog": "카탈로그",
     "split": "이미지 분할"
   },
+  "theme": {
+  "light": "라이트",
+  "dark": "다크",
+  "system": "시스템"
+},
   "login": {
     "title": "로그인",
     "loggingIn": "로그인 중...",
