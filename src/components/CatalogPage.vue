@@ -287,6 +287,13 @@ onMounted(async () => {
 .catalog-page {
   max-width: 1200px;
   margin: 0 auto;
+  /* PERBAIKAN: halaman Catalog (route "/") tidak menampilkan hero
+     di App.vue, sehingga .app { padding-top: 125px } tampil sebagai
+     ruang kosong polos langsung di bawah Navbar. Margin-top negatif
+     di sini menarik konten ke atas supaya jaraknya lebih dekat,
+     tanpa mengubah .app padding-top (yang masih dipakai halaman lain
+     seperti History / Split Gambar yang punya hero). */
+  margin-top: -25px;
   padding: 30px 20px 60px;
 }
 
