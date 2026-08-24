@@ -202,7 +202,7 @@ onMounted(() => {
       <div class="mobile-menu-divider"></div>
 
       <!-- Tema -->
-      <div class="mobile-menu-label">{{ t('nav.theme') || 'Tema' }}</div>
+      <div class="mobile-menu-label">{{ t('theme') || 'Tema' }}</div>
 
       <button
         type="button"
@@ -245,7 +245,7 @@ onMounted(() => {
       <div class="mobile-menu-divider"></div>
 
       <!-- Bahasa: flat, tanpa dropdown -->
-      <div class="mobile-menu-label">{{ t('nav.language') || 'Bahasa' }}</div>
+      <div class="mobile-menu-label">{{ t('language') || 'Bahasa' }}</div>
 
       <button
         type="button"
