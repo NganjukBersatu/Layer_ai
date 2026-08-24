@@ -29,7 +29,20 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return { top: 0 };
+    // Ditunda supaya reset/restore scroll baru terjadi SETELAH
+    // transisi page-fade (leave 0.2s) di App.vue selesai.
+    // Kalau langsung (synchronous), halaman lama sempat "dipaksa"
+    // scroll ke atas padahal masih terlihat saat fade-out,
+    // sehingga muncul flash bagian atas halaman sebelumnya.
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (savedPosition) {
+          resolve(savedPosition);
+        } else {
+          resolve({ top: 0 });
+        }
+      }, 300); // sedikit lebih lama dari durasi transisi (0.2s / 200ms)
+    });
   },
 })
 

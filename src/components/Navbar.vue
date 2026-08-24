@@ -4,13 +4,12 @@ import { useClickOutside } from '../composables/useClickOutside.js'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const emit = defineEmits([
   'catalog',
   'split',
   'logout',
-
 ])
 
 const theme = ref(localStorage.getItem('theme') || 'system')
@@ -55,6 +54,12 @@ function setTheme(value) {
   isThemeMenuOpen.value = false
 }
 
+// Sama seperti changeLang() di LanguageSwitcher.vue,
+// dipakai khusus untuk tombol bahasa flat di mobile menu.
+function changeLang(lang) {
+  locale.value = lang
+}
+
 onMounted(() => {
   applyTheme(theme.value)
 })
@@ -62,29 +67,30 @@ onMounted(() => {
 
 <template>
   <nav class="navbar">
-  <!-- Kiri: hanya judul -->
-  <div class="navbar-left">
-    <div class="navbar-title">{{ t('app.title') }}</div>
-  </div>
-
-  <div class="navbar-actions">
-    <!-- Menu desktop (disembunyikan di mobile) -->
-    <div class="nav-links desktop-only">
-      <button type="button" class="nav-link" @click="emit('catalog')">
-        {{ t('nav.catalog') }}
-      </button>
-
-      <button type="button" class="nav-link" @click="emit('split')">
-        {{ t('nav.split') }}
-      </button>
-
-      <button type="button" class="nav-link logout-link" @click="emit('logout')">
-        {{ t('input.logout') }}
-      </button>
+    <!-- Kiri: hanya judul -->
+    <div class="navbar-left">
+      <div class="navbar-title">{{ t('app.title') }}</div>
     </div>
 
-    <!-- Theme switcher -->
-    <div class="theme-switcher" ref="themeSwitcherRef">
+    <div class="navbar-actions">
+      <!-- Katalog & Split selalu tampil (desktop + mobile) -->
+      <div class="nav-links">
+        <button type="button" class="nav-link" @click="emit('catalog')">
+          {{ t('nav.catalog') }}
+        </button>
+
+        <button type="button" class="nav-link" @click="emit('split')">
+          {{ t('nav.split') }}
+        </button>
+
+        <!-- Logout hanya di desktop -->
+        <button type="button" class="nav-link logout-link desktop-only" @click="emit('logout')">
+          {{ t('input.logout') }}
+        </button>
+      </div>
+
+      <!-- Theme switcher (hanya desktop) -->
+      <div class="theme-switcher desktop-only" ref="themeSwitcherRef">
         <button class="theme-button" type="button" @click="isThemeMenuOpen = !isThemeMenuOpen">
           <svg v-if="theme === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"/>
@@ -115,69 +121,156 @@ onMounted(() => {
         </div>
       </div>
 
-    <LanguageSwitcher />
+      <!-- LanguageSwitcher (hanya desktop) -->
+      <div class="desktop-only">
+        <LanguageSwitcher />
+      </div>
 
-    <!-- ===== TOMBOL HAMBURGER di ujung kanan ===== -->
-    <button
-  class="hamburger-btn"
-  type="button"
-  ref="hamburgerBtnRef"
-  @click="toggleMobileMenu"
-  :aria-expanded="isMobileMenuOpen"
->
-      <!-- Icon hamburger -->
-      <svg v-if="!isMobileMenuOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-        <path d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-      <!-- Icon close (X) -->
-      <svg v-else width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
-  </div>
+      <!-- ===== TOMBOL HAMBURGER di ujung kanan ===== -->
+      <button
+        class="hamburger-btn"
+        type="button"
+        ref="hamburgerBtnRef"
+        @click="toggleMobileMenu"
+        :aria-expanded="isMobileMenuOpen"
+      >
+        <!-- Icon hamburger -->
+        <svg v-if="!isMobileMenuOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <!-- Icon close (X) -->
+        <svg v-else width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
 
-  <div v-if="isMobileMenuOpen" class="mobile-menu" ref="mobileMenuRef">
-  <button
-    type="button"
-    class="mobile-menu-item"
-    @click="emit('catalog'); closeMobileMenu()"
-  >
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="7" height="7"/>
-      <rect x="14" y="3" width="7" height="7"/>
-      <rect x="14" y="14" width="7" height="7"/>
-      <rect x="3" y="14" width="7" height="7"/>
-    </svg>
-    {{ t('nav.catalog') }}
-  </button>
+    <!-- Mobile menu: hanya Tema + Bahasa + Logout -->
+    <div v-if="isMobileMenuOpen" class="mobile-menu" ref="mobileMenuRef">
+      <!-- Menu utama -->
+      <button type="button" class="mobile-menu-item" @click="emit('catalog'); closeMobileMenu()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/>
+          <rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        {{ t('nav.catalog') }}
+      </button>
 
-  <button
-    type="button"
-    class="mobile-menu-item"
-    @click="emit('split'); closeMobileMenu()"
-  >
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <path d="M3 9h18M9 21V9"/>
-    </svg>
-    {{ t('nav.split') }}
-  </button>
+      <button type="button" class="mobile-menu-item" @click="emit('split'); closeMobileMenu()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2 2 7l10 5 10-5-10-5Z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        {{ t('nav.split') }}
+      </button>
 
-  <div class="mobile-menu-divider"></div>
+      <div class="mobile-menu-divider"></div>
 
-  <button
-    type="button"
-    class="mobile-menu-item logout"
-    @click="emit('logout'); closeMobileMenu()"
-  >
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-    {{ t('input.logout') }}
-  </button>
-</div>
+      <!-- Tema -->
+      <div class="mobile-menu-label">{{ t('nav.theme') || 'Tema' }}</div>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: theme === 'light' }"
+        @click="setTheme('light'); closeMobileMenu()"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        Terang
+      </button>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: theme === 'dark' }"
+        @click="setTheme('dark'); closeMobileMenu()"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        Gelap
+      </button>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: theme === 'system' }"
+        @click="setTheme('system'); closeMobileMenu()"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+        Sistem
+      </button>
+
+      <div class="mobile-menu-divider"></div>
+
+      <!-- Bahasa: flat, tanpa dropdown -->
+      <div class="mobile-menu-label">{{ t('nav.language') || 'Bahasa' }}</div>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: locale === 'id' }"
+        @click="changeLang('id'); closeMobileMenu()"
+      >
+        <span class="mobile-menu-flag">🇮🇩</span>
+        Indonesia
+      </button>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: locale === 'en' }"
+        @click="changeLang('en'); closeMobileMenu()"
+      >
+        <span class="mobile-menu-flag">🇬🇧</span>
+        English
+      </button>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: locale === 'ja' }"
+        @click="changeLang('ja'); closeMobileMenu()"
+      >
+        <span class="mobile-menu-flag">🇯🇵</span>
+        日本語
+      </button>
+
+      <button
+        type="button"
+        class="mobile-menu-item"
+        :class="{ active: locale === 'ko' }"
+        @click="changeLang('ko'); closeMobileMenu()"
+      >
+        <span class="mobile-menu-flag">🇰🇷</span>
+        한국어
+      </button>
+
+      <div class="mobile-menu-divider"></div>
+
+      <!-- Logout -->
+      <button
+        type="button"
+        class="mobile-menu-item logout"
+        @click="emit('logout'); closeMobileMenu()"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        {{ t('input.logout') }}
+      </button>
+    </div>
   </nav>
 </template>
 
@@ -376,10 +469,36 @@ onMounted(() => {
   color: var(--accent-color);
 }
 
+.mobile-menu-item.active {
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
 .mobile-menu-divider {
   height: 1px;
   background: var(--border-color);
   margin: 6px 4px;
+}
+
+.mobile-menu-label {
+  padding: 4px 11px 2px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Indikator chevron di wrapper bahasa, supaya terlihat "bisa dibuka"
+   tanpa perlu mengubah markup internal LanguageSwitcher.vue */
+.mobile-menu-flag {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
 }
 
 .mobile-menu-item.logout {
@@ -417,20 +536,7 @@ onMounted(() => {
   }
 
   .nav-links {
-    gap: 2px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .nav-links::-webkit-scrollbar {
-    display: none;
-  }
-
-  .nav-link {
-    padding: 6px 8px;
-    font-size: 11.5px;
-    flex-shrink: 0;
+    display: none; /* Katalog & Split Gambar sudah ada di dalam hamburger */
   }
 
   .theme-button {
@@ -449,7 +555,7 @@ onMounted(() => {
   }
 
   .desktop-only {
-    display: none !important; /* sembunyikan menu biasa */
+    display: none !important; /* sembunyikan theme & language di desktop mode */
   }
 
   .mobile-menu {
@@ -463,6 +569,7 @@ onMounted(() => {
 
   .navbar-title {
     font-size: 17px;
+    white-space: nowrap;
   }
 
   .navbar-actions {
@@ -474,11 +581,6 @@ onMounted(() => {
 @media (max-width: 360px) {
   .navbar-title {
     font-size: 15px;
-  }
-
-  .nav-link {
-    padding: 5px 6px;
-    font-size: 10.5px;
   }
 }
 </style>
