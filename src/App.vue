@@ -214,6 +214,17 @@ html {
   padding-top: 125px;
 }
 
+/* ===== hero (badge) tidak lagi pakai margin bawaan browser ===== */
+.hero {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.hero p {
+  margin: 0 0 4px;
+}
+
 .page-fade-enter-active,
 .page-fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -233,7 +244,8 @@ html {
   display: flex;
   justify-content: center;
   gap: 24px;
-  margin-top: 16px;
+  margin-top: 8px;
+  margin-bottom: 0;
   flex-wrap: wrap;
 }
 
@@ -250,19 +262,23 @@ html {
   border-radius: 999px;
 }
 
+/* ===== PERBAIKAN: badge di mobile sekarang wrap ke baris baru,
+   bukan di-scroll horizontal, jadi tidak ada lagi yang terpotong ===== */
 @media (max-width: 600px) {
   .hero-features {
-    gap: 8px;
+    gap: 4px;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding: 0 4px 4px;
+    overflow-x: visible;
+    justify-content: center;
+    padding: 0 4px;
   }
 
   .hero-feature {
-    font-size: 11px;
-    padding: 6px 10px;
-    flex-shrink: 0;
+    font-size: 9px;
+    padding: 4px 6px;
+    gap: 3px;
+    flex-shrink: 1;
+    white-space: nowrap;
   }
 }
 

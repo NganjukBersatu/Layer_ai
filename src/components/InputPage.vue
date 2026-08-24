@@ -469,8 +469,16 @@ async function handleSplitClick() {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
+/* Judul "Input" */
+.card-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
 .label {
   color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .upload-box {
@@ -502,6 +510,7 @@ async function handleSplitClick() {
   white-space: nowrap;
   padding: 0 8px;
   box-sizing: border-box;
+  font-size: 15px;
 }
 
 /* ===== Buttons & general ===== */
@@ -509,9 +518,9 @@ async function handleSplitClick() {
   border: none;
   background: #16a34a;
   color: white;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
@@ -530,7 +539,7 @@ async function handleSplitClick() {
   border-radius: 12px;
   background: #7c3aed;
   color: #fff;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.25s;
@@ -580,18 +589,18 @@ async function handleSplitClick() {
 .model-info span:last-child {
   flex: 1;
   min-width: 0;
-  line-height: 1.45;
-  font-size: 14px;
+  line-height: 1.5;
+  font-size: 16px;
   color: var(--text-secondary);
 }
 
 /* ===== Credit badge ===== */
 .credit-info {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--accent-color);
   background: var(--bg-accent-soft);
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 8px;
   white-space: nowrap;
 }
@@ -607,9 +616,9 @@ async function handleSplitClick() {
   align-items: center;
   background: #7c3aed;
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 999px;
   margin-right: 6px;
 }
@@ -617,8 +626,8 @@ async function handleSplitClick() {
 .badge-small {
   margin-left: 8px;
   margin-right: 0;
-  font-size: 10px;
-  padding: 2px 7px;
+  font-size: 12px;
+  padding: 3px 8px;
   vertical-align: middle;
 }
 
@@ -630,7 +639,7 @@ async function handleSplitClick() {
 /* ===== Credit estimate ===== */
 .credit-estimate {
   margin-top: 10px;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-secondary);
 }
 
@@ -645,8 +654,8 @@ async function handleSplitClick() {
   background: var(--bg-accent-soft);
   color: var(--accent-color);
   font-weight: 600;
-  font-size: 13px;
-  padding: 6px 14px;
+  font-size: 15px;
+  padding: 7px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -662,8 +671,8 @@ async function handleSplitClick() {
   background: var(--bg-error-soft);
   color: #f87171;
   font-weight: 600;
-  font-size: 13px;
-  padding: 6px 14px;
+  font-size: 15px;
+  padding: 7px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.15s;
@@ -687,7 +696,7 @@ async function handleSplitClick() {
   border-radius: 12px;
   background: #7c3aed;
   color: #fff;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -702,7 +711,7 @@ async function handleSplitClick() {
 }
 
 .chevron {
-  font-size: 12px;
+  font-size: 14px;
   transition: transform 0.2s;
 }
 
@@ -736,7 +745,7 @@ async function handleSplitClick() {
 .model-dropdown-item {
   padding: 14px;
   text-align: center;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--accent-color);
   cursor: pointer;
@@ -775,11 +784,12 @@ async function handleSplitClick() {
 
 .upload-icon {
   color: var(--text-secondary);
-  font-size: 32px;
+  font-size: 38px;
 }
 
 .upload-content p {
   color: var(--text-primary);
+  font-size: 17px;
 }
 
 .upload-content .upload-subtext,
@@ -811,14 +821,14 @@ async function handleSplitClick() {
 }
 
 .upload-subtext {
-  font-size: 12px;
+  font-size: 14px;
   color: #9ca3af;
   margin-top: 4px;
 }
 
 .upload-format {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #6b7280;
   font-weight: 500;
 }
@@ -865,7 +875,7 @@ async function handleSplitClick() {
     margin: 0;
     padding: 0;
     line-height: 1.2;
-    font-size: 18px;
+    font-size: 20px;
     flex-shrink: 0;
   }
 
@@ -878,13 +888,13 @@ async function handleSplitClick() {
   }
 
   .credit-info {
-    font-size: 11px;
-    padding: 5px 8px;
+    font-size: 13px;
+    padding: 6px 10px;
   }
 
   .add-credit-btn {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     padding: 0;
     border-radius: 8px;
     font-size: 0;
@@ -896,15 +906,15 @@ async function handleSplitClick() {
 
   .add-credit-btn::after {
     content: "+";
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     line-height: 1;
     color: #fff;
   }
 
   .history-btn {
-    font-size: 11px;
-    padding: 5px 8px;
+    font-size: 13px;
+    padding: 6px 10px;
   }
 
   /* Model info di mobile */
@@ -913,13 +923,13 @@ async function handleSplitClick() {
   }
 
   .model-info span:last-child {
-    font-size: 12.5px;
+    font-size: 14px;
     white-space: normal;
   }
 
   .model-info .badge {
-    font-size: 10px;
-    padding: 2px 8px;
+    font-size: 12px;
+    padding: 3px 9px;
   }
 
   .preview-img {
@@ -937,13 +947,13 @@ async function handleSplitClick() {
 
   .credit-info,
   .history-btn {
-    font-size: 11px;
-    padding: 5px 8px;
+    font-size: 13px;
+    padding: 6px 10px;
   }
 
   .add-credit-btn {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
   }
 }
 

@@ -493,11 +493,15 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.history-page-wrapper {
+  margin-top: -40px; /* tarik seluruh halaman History ke atas, dekat ke badge hero */
+}
+
 .history-page {
   width: 100vw !important;
   max-width: 100vw !important;
   margin-left: calc(-50vw + 50%) !important; 
-  padding: 16px clamp(20px, 6vw, 100px) !important;
+  padding: 0px clamp(20px, 6vw, 100px) 16px !important;
   box-sizing: border-box;
 }
 
@@ -505,6 +509,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-top: 4px;
   margin-bottom: 16px;
 }
 
