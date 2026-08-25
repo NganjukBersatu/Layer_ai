@@ -223,6 +223,7 @@
   "description": "설명",
   "descriptionPlaceholder": "캐릭터 설명을 작성하세요...",
   "delete": "삭제",
+  "cancel": "취소",
   "save": "저장",
   "notFound": "항목을 찾을 수 없습니다."
 },
