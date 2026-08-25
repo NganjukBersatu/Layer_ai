@@ -76,10 +76,10 @@ async function handleSubmit() {
     <div class="header-section">
       <button class="back-btn" @click="goBack">
           <svg class="back-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5" />
-              <path d="M12 19l-7-7 7-7" />
-           </svg>
-       {{ t('catalogNew.back') }}
+            <path d="M19 12H5" />
+            <path d="M12 19l-7-7 7-7" />
+          </svg>
+          <span class="back-text">{{ t('catalogNew.back') }}</span>
         </button>
             <h1>{{ t('catalogNew.title') }}</h1>
                 </div>
@@ -313,9 +313,13 @@ textarea.text-input {
   }
 
   .back-btn {
-    padding: 6px 10px 6px 8px;
+    padding: 8px;
     font-size: 12px;
-    gap: 5px;
+    gap: 0;
+  }
+
+  .back-text {
+    display: none;
   }
 
   .back-icon {
