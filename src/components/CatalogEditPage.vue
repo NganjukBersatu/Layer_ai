@@ -127,8 +127,8 @@ async function handleDelete() {
         </div>
 
         <div class="edit-actions">
-          <button class="btn-delete" @click="handleDelete">{{ t('catalogEdit.delete') }}</button>
           <button class="btn-cancel" @click="handleCancel">{{ t('catalogEdit.cancel') }}</button>
+          <button class="btn-delete" @click="handleDelete">{{ t('catalogEdit.delete') }}</button>
           <button class="btn-upload" @click="handleUpload">{{ t('catalogEdit.save') }}</button>
         </div>
       </div>
