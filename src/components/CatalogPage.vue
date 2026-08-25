@@ -63,23 +63,30 @@ onBeforeRouteLeave(() => {
   sessionStorage.setItem("catalogScrollPos", window.scrollY.toString());
 });
 
-// Kembalikan posisi scroll + hilangkan flash
 onMounted(async () => {
-  fetchCatalog();
+  // Cegah browser ikut campur mengatur scroll restoration bawaannya
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
+  await fetchCatalog();
+  await nextTick();
 
   const saved = sessionStorage.getItem("catalogScrollPos");
   if (saved !== null) {
     window.scrollTo(0, parseInt(saved, 10));
-    await nextTick();
-    window.scrollTo(0, parseInt(saved, 10));
   }
+
+  // Tunggu satu frame render supaya posisi scroll benar-benar
+  // diterapkan browser SEBELUM halaman ditampilkan ke user.
+  await new Promise((resolve) => requestAnimationFrame(resolve));
 
   isRestoringScroll.value = false;
 });
 </script>
 
 <template>
-  <div class="catalog-page">
+  <div class="catalog-page" :class="{ 'is-restoring': isRestoringScroll }">
     <div class="aurora-bg"></div>
 
     <div class="catalog-header">
@@ -295,6 +302,14 @@ onMounted(async () => {
      seperti History / Split Gambar yang punya hero). */
   margin-top: -25px;
   padding: 30px 20px 60px;
+  
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.catalog-page.is-restoring {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .catalog-header {
