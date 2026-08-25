@@ -15,6 +15,7 @@ const title = ref("");
 const selectedCategories = ref([]);
 const { t, locale } = useI18n(); // tambahkan locale di sini (baris yang sudah ada, tinggal tambah locale)
 const description = ref({ id: "", en: "", ja: "", ko: "" });
+const originalData = ref(null); // snapshot data tersimpan, untuk fitur "Batal"
 
 const currentDescription = computed({
   get() {
@@ -52,11 +53,25 @@ if (typeof desc === 'string') {
   }
 }
 description.value = desc || { id: "", en: "", ja: "", ko: "" };
+
+    // simpan snapshot data asli untuk fitur tombol "Batal"
+    originalData.value = {
+      title: title.value,
+      selectedCategories: [...selectedCategories.value],
+      description: { ...description.value },
+    };
   }
 });
 
 function goBack() {
   router.push({ name: "CatalogDetail", params: { id: route.params.id } });
+}
+
+function handleCancel() {
+  if (!originalData.value) return;
+  title.value = originalData.value.title;
+  selectedCategories.value = [...originalData.value.selectedCategories];
+  description.value = { ...originalData.value.description };
 }
 
 async function handleUpload() {
@@ -113,6 +128,7 @@ async function handleDelete() {
 
         <div class="edit-actions">
           <button class="btn-delete" @click="handleDelete">{{ t('catalogEdit.delete') }}</button>
+          <button class="btn-cancel" @click="handleCancel">{{ t('catalogEdit.cancel') }}</button>
           <button class="btn-upload" @click="handleUpload">{{ t('catalogEdit.save') }}</button>
         </div>
       </div>
@@ -289,6 +305,22 @@ async function handleDelete() {
   opacity: 0.85;
 }
 
+.btn-cancel {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.btn-cancel:hover {
+  opacity: 0.85;
+}
+
 .btn-upload {
   background: var(--accent-color);
   color: white;
@@ -358,6 +390,7 @@ async function handleDelete() {
   }
 
   .btn-delete,
+  .btn-cancel,
   .btn-upload {
     padding: 8px 16px;
     font-size: 13px;
