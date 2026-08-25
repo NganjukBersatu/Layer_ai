@@ -605,7 +605,7 @@ onMounted(() => {
   }
 
   .navbar-title {
-    font-size: 17px;
+    font-size: 20px;
     white-space: nowrap;
   }
 
@@ -617,7 +617,7 @@ onMounted(() => {
 
 @media (max-width: 360px) {
   .navbar-title {
-    font-size: 15px;
+    font-size: 18px;
   }
 }
 </style>

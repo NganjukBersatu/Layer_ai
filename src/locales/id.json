@@ -222,6 +222,7 @@
   "description": "Deskripsi",
   "descriptionPlaceholder": "Tulis deskripsi karakter...",
   "delete": "Hapus",
+  "cancel": "Batal",
   "save": "Simpan",
   "notFound": "Item tidak ditemukan."
 },

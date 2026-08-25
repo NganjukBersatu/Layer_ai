@@ -498,6 +498,22 @@ onMounted(async () => {
 @media (max-width: 500px) {
   .catalog-page {
     padding: 20px 12px 40px;
+    margin-top: -40px;
+  }
+
+  /*Bagian Yang Perkecil hero/header khusus mobile */
+  .catalog-header {
+    margin-bottom: 14px;
+  }
+
+  .catalog-header h1 {
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+
+  .catalog-header p {
+    font-size: 12.5px;
+    line-height: 1.4;
   }
 
   .catalog-grid {

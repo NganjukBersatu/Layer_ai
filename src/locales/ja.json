@@ -223,6 +223,7 @@
   "description": "説明",
   "descriptionPlaceholder": "キャラクターの説明を書いてください...",
   "delete": "削除",
+  "cancel": "キャンセル",
   "save": "保存",
   "notFound": "アイテムが見つかりません。"
 },
