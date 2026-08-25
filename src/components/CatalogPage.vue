@@ -405,16 +405,12 @@ onMounted(async () => {
 }
 
 .catalog-card {
-  overflow: hidden;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 3px 12px var(--shadow-color);
   text-decoration: none;
   color: inherit;
-  /* Sebelumnya: display: block (tinggi mengikuti konten/gambar asli). 
-     Diubah jadi flex-column supaya .catalog-info konsisten menempel 
-     di bawah gambar, dan card sama tinggi antar kolom. */
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -441,6 +437,7 @@ onMounted(async () => {
   aspect-ratio: 3 / 4;
   overflow: hidden;
   background: var(--bg-accent-soft);
+  border-radius: 12px 12px 0 0;
 }
 
 .image-container img {
@@ -453,18 +450,19 @@ onMounted(async () => {
 }
 
 .catalog-info {
-  padding: 10px;
-  /* Mendorong info menempel ke bawah kalau ada card dengan jumlah tag
-     berbeda-beda, supaya tinggi card tetap konsisten */
+  padding: 10px 10px 14px;
   flex: 1;
+  min-height: 82px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  border-radius: 0 0 12px 12px;
 }
 
 .catalog-info h3 {
-  margin: 0 0 5px;
+  margin: 0 0 2px;
   font-size: 13px;
+  line-height: 1.3;
 }
 
 .tag-list {
@@ -472,6 +470,8 @@ onMounted(async () => {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 4px;
+  max-height: 44px; /* kira-kira tinggi 2 baris badge, sesuaikan kalau perlu */
+  overflow: hidden;
 }
 
 .tag-badge {
@@ -522,7 +522,8 @@ onMounted(async () => {
   }
 
   .catalog-info {
-    padding: 9px;
+    padding: 9px 9px 10px;
+    min-height: 64px;
   }
 
   .catalog-info h3 {
