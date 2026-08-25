@@ -2,25 +2,26 @@
 import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
-// PERBAIKAN: nama event diubah dari "back" menjadi "back-from-history"
-// supaya cocok dengan listener @back-from-history="goBackFromHistory"
-// yang ada di App.vue. Sebelumnya nama event ini "back", yang ternyata
-// "nabrak" dengan listener @back="goBack" milik halaman lain, sehingga
-// tombol Kembali di halaman History malah memanggil goBack() dan
-// mengarah ke halaman Catalog.
 const emit = defineEmits(["back-from-history"]);
 const { t } = useI18n()
 
 const histories = ref([]);
 const searchQuery = ref("");
-const modelFilter = ref("all"); // "all" | "basic" | "advanced" | "chibi" | "anime" | "furry" | "kawaii" | "spyxfamily"
-const sortOrder = ref("newest"); // "newest" | "oldest"
+const modelFilter = ref("all");
+const sortOrder = ref("newest");
 const isSortMenuOpen = ref(false);
 const sortDropdownRef = ref(null);
 const sortOptions = [
   { value: "newest", label: () => t('history.sortNewest') },
   { value: "oldest", label: () => t('history.sortOldest') },
 ];
+
+// ===== Ref & fungsi untuk tombol geser filter kategori (mobile) =====
+const filterTabsRef = ref(null);
+
+function scrollFilterTabs(amount) {
+  filterTabsRef.value?.scrollBy({ left: amount, behavior: "smooth" });
+}
 
 function selectSort(value) {
   sortOrder.value = value;
@@ -34,11 +35,9 @@ function handleClickOutsideSort(event) {
 }
 const API_BASE = "http://localhost:3000";
 
-// Item yang sedang ditampilkan di modal preview. null = modal tertutup.
 const previewItem = ref(null);
 
 function openPreview(item) {
-  // Jangan buka modal kalau gambar belum berhasil dimuat / gagal
   if (imageStatus[item.id] !== "loaded") return;
   previewItem.value = item;
 }
@@ -51,10 +50,7 @@ function handlePreviewKeydown(event) {
   if (event.key === "Escape") closePreview();
 }
 
-// Loading state utama saat fetch daftar history dari API
 const isLoadingList = ref(true);
-
-// Status loading tiap gambar: { [item.id]: "loading" | "loaded" | "error" }
 const imageStatus = reactive({});
 
 function setImageStatus(id, status) {
@@ -69,10 +65,6 @@ function onImageError(item) {
   setImageStatus(item.id, "error");
 }
 
-// Dipanggil lewat :ref pas elemen <img> baru mount.
-// Kalau gambar sudah ada di cache browser, event "load" bisa saja sudah
-// selesai duluan sebelum listener sempat terpasang, jadi status jadi
-// "loading" selamanya. Ini jaga-jaga untuk kasus tersebut.
 function checkImageComplete(el, item) {
   if (!el) return;
   if (imageStatus[item.id] === "loaded" || imageStatus[item.id] === "error") return;
@@ -85,10 +77,7 @@ function checkImageComplete(el, item) {
   }
 }
 
-// Kategori "model" (tier AI) -> dicek dari item.model
 const MODEL_TIERS = ["basic", "advanced"];
-
-// Kategori "style" (gaya gambar) -> dari kolom `category` di tabel results
 const FIELD_CANDIDATES = ["category"];
 
 const filterTabs = [
@@ -102,7 +91,6 @@ const filterTabs = [
   { value: "spyxfamily", label: () => t('input.categorySpyxfamily') },
 ];
 
-// Ambil nilai kategori style dari item, coba beberapa kemungkinan nama field
 function getItemStyleValue(item) {
   for (const field of FIELD_CANDIDATES) {
     if (item[field]) {
@@ -124,7 +112,6 @@ const filteredHistories = computed(() => {
       if (MODEL_TIERS.includes(filter)) {
         matchesFilter = item.model === filter;
       } else {
-        // filter === "chibi" | "anime" | "furry" | "kawaii" | "spyxfamily"
         matchesFilter = getItemStyleValue(item) === filter;
       }
     }
@@ -143,16 +130,8 @@ async function loadHistory() {
   isLoadingList.value = true;
   try {
     const currentUserId = Number(localStorage.getItem("userId"));
-
-    console.log("👤 User ID:", currentUserId);
-
     const url = `${API_BASE}/history/${currentUserId}`;
-
-    console.log("📡 Request:", url);
-
     const response = await fetch(url);
-
-    console.log("📡 Status:", response.status);
 
     if (!response.ok) {
       throw new Error(`Request gagal: ${response.status}`);
@@ -160,19 +139,13 @@ async function loadHistory() {
 
     const data = await response.json();
 
-    console.log("📦 Response History:", data);
-
     histories.value = Array.isArray(data)
       ? data
       : data.data || [];
 
-    // Set status awal semua gambar jadi "loading" sebelum <img> selesai render
     histories.value.forEach((item) => {
       setImageStatus(item.id, "loading");
     });
-
-    console.log("📋 Histories:", histories.value);
-    console.log("📊 Jumlah history:", histories.value.length);
 
   } catch (error) {
     console.error("❌ Gagal load history:", error);
@@ -182,7 +155,6 @@ async function loadHistory() {
 }
 
 function getImageUrl(path) {
-  // path contoh: "uploads/1785742196966.jpg"
   return `${API_BASE}/${path}`;
 }
 
@@ -235,8 +207,6 @@ async function deleteHistory(item) {
   }
 }
 
-// Label badge untuk kartu (tetap pakai basic/advanced sebagai badge utama,
-// tapi kalau item punya nilai style, tampilkan itu juga)
 function getStyleLabel(item) {
   const val = getItemStyleValue(item);
   if (!val) return null;
@@ -263,7 +233,9 @@ onUnmounted(() => {
 
   <div class="history-page">
     <div class="page-header">
-      <button class="back-btn" @click="emit('back-from-history')">&larr; {{ $t('history.back') }}</button>
+      <button class="back-btn" @click="emit('back-from-history')" :title="$t('history.back')">
+        &larr; <span class="back-btn-text">{{ $t('history.back') }}</span>
+      </button>
       <h2>{{ $t('history.title') }}</h2>
     </div>
 
@@ -311,8 +283,13 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <!-- ===== Filter kategori: tombol geser hanya tampil di mobile ===== -->
     <div class="filter-tabs-wrap">
-      <div class="filter-tabs">
+      <button class="filter-nav-btn" @click="scrollFilterTabs(-160)" aria-label="Geser kiri">
+        &#10094;
+      </button>
+
+      <div class="filter-tabs" ref="filterTabsRef">
         <button
           v-for="tab in filterTabs"
           :key="tab.value"
@@ -323,14 +300,16 @@ onUnmounted(() => {
           {{ tab.label() }}
         </button>
       </div>
-      <div class="filter-tabs-fade"></div>
+
+      <button class="filter-nav-btn" @click="scrollFilterTabs(160)" aria-label="Geser kanan">
+        &#10095;
+      </button>
     </div>
 
     <p v-if="!isLoadingList && histories.length > 0" class="result-count">
       {{ filteredHistories.length }} {{ $t('history.imagesFound') }}
     </p>
 
-    <!-- Skeleton grid saat daftar history awal masih di-fetch -->
     <div v-if="isLoadingList" class="history-grid">
       <div v-for="n in 10" :key="'skeleton-' + n" class="history-card skeleton-card">
         <div class="thumbnail skeleton-shimmer"></div>
@@ -352,17 +331,14 @@ onUnmounted(() => {
           :class="{ clickable: imageStatus[item.id] === 'loaded' }"
           @click="openPreview(item)"
         >
-          <!-- Overlay spinner selama gambar masih dimuat -->
           <div v-if="imageStatus[item.id] !== 'loaded' && imageStatus[item.id] !== 'error'" class="thumb-loading">
             <span class="spinner"></span>
           </div>
 
-          <!-- Fallback kalau gambar gagal dimuat -->
           <div v-else-if="imageStatus[item.id] === 'error'" class="thumb-error">
             <span>{{ $t('history.imageFailed') || 'Gagal memuat gambar' }}</span>
           </div>
 
-          <!-- Ikon kaca pembesar saat hover, menandakan gambar bisa diperbesar -->
           <div v-if="imageStatus[item.id] === 'loaded'" class="thumb-zoom-hint">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="11" cy="11" r="7" stroke="white" stroke-width="2" />
@@ -494,7 +470,7 @@ onUnmounted(() => {
 
 <style scoped>
 .history-page-wrapper {
-  margin-top: -40px; /* tarik seluruh halaman History ke atas, dekat ke badge hero */
+  margin-top: -40px;
 }
 
 .history-page {
@@ -518,6 +494,7 @@ onUnmounted(() => {
   font-size: 22px;
 }
 
+/* ===== Tombol kembali: desktop = teks + panah ===== */
 .back-btn {
   border: none;
   background: var(--bg-accent-soft); 
@@ -528,6 +505,10 @@ onUnmounted(() => {
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .back-btn:hover {
@@ -657,19 +638,22 @@ onUnmounted(() => {
   padding: 4px;
 }
 
+/* ===== Filter tabs + tombol geser (tombol geser default disembunyikan, hanya muncul di mobile) ===== */
 .filter-tabs-wrap {
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 16px;
 }
 
 .filter-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
   flex-wrap: nowrap;
   overflow-x: auto;
   padding-bottom: 8px;
-  padding-right: 28px;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -679,16 +663,25 @@ onUnmounted(() => {
   display: none;
 }
 
-/* Sinyal visual bahwa masih ada tombol kategori lain di kanan
-   yang bisa di-scroll, supaya tidak terlihat seperti "terpotong" */
-.filter-tabs-fade {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 8px;
-  width: 32px;
-  pointer-events: none;
-  background: linear-gradient(to right, transparent, var(--bg-primary));
+.filter-nav-btn {
+  display: none; /* disembunyikan di desktop, dimunculkan lagi di media query mobile */
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.filter-nav-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .filter-tab {
@@ -722,21 +715,19 @@ onUnmounted(() => {
   gap: 14px;
 }
 
-/* Layar besar/menengah, sebelum tablet */
 @media (max-width: 1100px) {
   .history-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* Tablet */
 @media (max-width: 900px) {
   .history-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Mobile */
+/* ===== MOBILE: panah saja untuk tombol kembali + tombol geser filter muncul ===== */
 @media (max-width: 600px) {
   .history-page {
     width: 100% !important;
@@ -750,6 +741,23 @@ onUnmounted(() => {
   .page-header {
     gap: 10px;
     margin-bottom: 12px;
+  }
+
+  .back-btn-text {
+    display: none;
+  }
+
+  .back-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 8px;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .filter-nav-btn {
+    display: flex;
   }
 
   .toolbar-row {
@@ -851,7 +859,6 @@ onUnmounted(() => {
   transform: scale(1.05);
 }
 
-/* Ikon kaca pembesar yang muncul saat hover di atas thumbnail */
 .thumb-zoom-hint {
   position: absolute;
   inset: 0;
@@ -870,7 +877,6 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.25);
 }
 
-/* Overlay spinner ketika gambar sedang dimuat */
 .thumb-loading {
   position: absolute;
   inset: 0;
@@ -895,7 +901,6 @@ onUnmounted(() => {
   }
 }
 
-/* State ketika gambar gagal dimuat */
 .thumb-error {
   position: absolute;
   inset: 0;
@@ -909,7 +914,6 @@ onUnmounted(() => {
   font-size: 12px;
 }
 
-/* Skeleton placeholder saat daftar history awal masih di-fetch */
 .skeleton-card .thumbnail {
   background: none;
 }
@@ -1182,7 +1186,6 @@ onUnmounted(() => {
   padding-top: 10px;
 }
 
-/* Transisi buka/tutup modal */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.2s ease;
@@ -1203,7 +1206,6 @@ onUnmounted(() => {
   transform: scale(0.96);
 }
 
-/* Tablet & mobile: gambar di atas, info di bawah, bisa di-scroll */
 @media (max-width: 720px) {
   .preview-overlay {
     padding: 0;
@@ -1238,42 +1240,24 @@ onUnmounted(() => {
 
 .page-glow {
   position: fixed;
-
   width: 420px;
   height: 420px;
-
   border-radius: 50%;
-
   pointer-events: none;
-
   filter: blur(120px);
-
   opacity: 0.16;
-
   z-index: 0;
 }
-
-
-/* =====================================
-   GLOW POJOK KIRI ATAS
-===================================== */
 
 .glow-1 {
   top: -230px;
   left: -230px;
-
   background: #694cff;
 }
-
-
-/* =====================================
-   GLOW POJOK KANAN BAWAH
-===================================== */
 
 .glow-2 {
   right: -230px;
   bottom: -230px;
-
   background: #8b5cf6;
 }
 </style>
