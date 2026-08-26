@@ -370,7 +370,7 @@ onUnmounted(() => {
                 $t('history.filterAdvanced')
                 : $t('history.filterBasic') }}
               </span>
-              <span v-if="getStyleLabel(item)" class="style-badge">
+              <span v-if="getStyleLabel(item)" class="style-badge" :title="getStyleLabel(item)">
                 {{ getStyleLabel(item) }}
               </span>
             </div>
@@ -713,6 +713,7 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 14px;
+  align-items: stretch; /* penting: semua card dalam 1 row diregangkan sama tinggi */
 }
 
 @media (max-width: 1100px) {
@@ -780,6 +781,7 @@ onUnmounted(() => {
 
   .meta {
     padding: 8px 10px 2px;
+    min-height: 76px; /* sesuaikan lagi kalau di HP badge masih beda tinggi */
   }
 
   .image-name {
@@ -793,7 +795,7 @@ onUnmounted(() => {
   .model-badge,
   .style-badge {
     font-size: 9px;
-    padding: 2px 7px;
+    padding: 0 7px;
   }
 
   .actions {
@@ -944,9 +946,19 @@ onUnmounted(() => {
   border-radius: 4px;
 }
 
+/* =====================================
+   META (nama file, tanggal, badge)
+   ---------------------------------------
+   FIX: .meta dikasih min-height + flex column
+   supaya walau badge kategori wrap jadi 2 baris
+   di salah satu card, tombol Unduh/Hapus tetap
+   sejajar rata dengan card lain dalam 1 baris.
+===================================== */
 .meta {
   padding: 10px 12px 4px;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .image-name {
@@ -966,29 +978,60 @@ onUnmounted(() => {
 
 .meta-row {
   display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  margin-top: 4px;
+  flex-direction: column;
   gap: 6px;
+  margin-top: 4px;
 }
 
+/* =====================================
+   BADGES ROW
+   ---------------------------------------
+   FIX: SELALU 1 baris (nowrap), TIDAK PERNAH
+   wrap ke baris ke-2. Ini kunci utamanya —
+   dengan begini tinggi badge row dijamin
+   sama persis di SEMUA card, gak peduli
+   badge nya 1 atau banyak / pendek atau
+   panjang. Kalau kepanjangan, badge nya
+   sendiri yang dipotong "..." (lihat
+   .model-badge / .style-badge di bawah).
+===================================== */
 .badges {
   display: flex;
+  align-items: center;
   gap: 4px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  flex: 1 1 auto;
-  min-width: 0;
+  flex-wrap: nowrap;   /* WAJIB nowrap, jangan wrap */
+  min-width: 0;        /* supaya child overflow/ellipsis bisa jalan */
 }
 
-.model-badge {
+/* =====================================
+   BADGE (model & style)
+   ---------------------------------------
+   height tetap sama + nowrap + ellipsis
+   supaya teks panjang tidak bikin badge
+   ini jadi lebih tinggi dari badge lain,
+   dan tidak mendorong badge sebelahnya
+   turun ke baris baru.
+===================================== */
+.model-badge,
+.style-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  line-height: 1;
+  box-sizing: border-box;
   font-size: 9px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 0 8px;
   border-radius: 999px;
   text-transform: uppercase;
   white-space: nowrap;
-  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model-badge {
+  flex-shrink: 0;   /* badge tingkat (BASIC/ADVANCED) tetap penuh, jangan ikut kepotong */
+  max-width: 40%;
 }
 
 .model-badge.basic {
@@ -1002,16 +1045,10 @@ onUnmounted(() => {
 }
 
 .style-badge {
-  font-size: 9px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  white-space: normal;
-  word-break: break-word;
-  max-width: 100%;
   background: #dbeafe;
   color: #1d4ed8;
+  flex-shrink: 1;   /* badge kategori boleh menyusut & dipotong duluan kalau sempit */
+  min-width: 0;
 }
 
 .actions {
