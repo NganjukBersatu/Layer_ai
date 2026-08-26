@@ -30,7 +30,7 @@ const isCatalogActive = computed(() =>
 
 // Split Gambar dianggap aktif untuk alur split (input, process, preview)
 const isSplitActive = computed(() =>
-  ['/split-gambar', '/process', '/preview'].includes(route.path)
+  ['/split-gambar', '/process', '/preview', '/history'].includes(route.path)
 )
 
 useClickOutside(themeSwitcherRef, () => {
