@@ -58,6 +58,41 @@ function tagLabel(tag) {
   return key ? t(`catalog.${key}`) : tag;
 }
 
+const categories = [
+  { value: "Anime", labelKey: "filterAnime" },
+  { value: "Chibi", labelKey: "filterChibi" },
+  { value: "Furry", labelKey: "filterFurry" },
+  { value: "Kawaii", labelKey: "filterKawaii" },
+  { value: "Jujutsu Kaisen", labelKey: "filterJujutsuKaisen" },
+  { value: "Spy X Family", labelKey: "filterSpyXFamily" },
+  { value: "Naruto", labelKey: "filterNaruto" },
+  { value: "Waifu", labelKey: "filterWaifu" },
+  { value: "Husbando", labelKey: "filterHusbando" },
+  { value: "Black Butler", labelKey: "filterBlackButler" },
+  { value: "Detective Conan", labelKey: "filterDetectiveConan" },
+  { value: "Date A live", labelKey: "filterDateAlive" },
+  { value: "Darling in the Franxx", labelKey: "filterDarlingInTheFranxx" },
+  { value: "My Dress-Up Darling", labelKey: "filterMyDressUpDarling" },
+  { value: "Aeni", labelKey: "filterAeni" },
+  { value: "My Hero Academia", labelKey: "filterMyHeroAcademia" },
+  { value: "Demon Slayer", labelKey: "filterDemonSlayer" },
+  { value: "Classroom of the Elite", labelKey: "filterClassroomOfTheElite" },
+  { value: "Brand New Animal", labelKey: "filterBrandNewAnimal" },
+];
+
+function selectCategory(value, event) {
+  selectedCategory.value = value;
+
+  const btn = event.currentTarget;
+  if (btn && typeof btn.scrollIntoView === "function") {
+    btn.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }
+}
+
 // Simpan posisi scroll sebelum meninggalkan halaman katalog
 onBeforeRouteLeave(() => {
   sessionStorage.setItem("catalogScrollPos", window.scrollY.toString());
@@ -110,146 +145,22 @@ onMounted(async () => {
     </div>
 
 
-    <div class="category-filter">
+        <div class="category-filter">
       <button
         :class="{ active: selectedCategory === 'all' }"
-        @click="selectedCategory = 'all'"
+        @click="selectCategory('all', $event)"
       >
         {{ t('catalog.filterAll') }}
       </button>
 
       <button
-        :class="{ active: selectedCategory === 'Anime' }"
-        @click="selectedCategory = 'Anime'"
+        v-for="cat in categories"
+        :key="cat.value"
+        :class="{ active: selectedCategory === cat.value }"
+        @click="selectCategory(cat.value, $event)"
       >
-        {{ t('catalog.filterAnime') }}
+        {{ t('catalog.' + cat.labelKey) }}
       </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Chibi' }"
-        @click="selectedCategory = 'Chibi'"
-      >
-        {{ t('catalog.filterChibi') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Furry' }"
-        @click="selectedCategory = 'Furry'"
-      >
-        {{ t('catalog.filterFurry') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Kawaii' }"
-        @click="selectedCategory = 'Kawaii'"
-      >
-        {{ t('catalog.filterKawaii') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Jujutsu Kaisen' }"
-        @click="selectedCategory = 'Jujutsu Kaisen'"
-      > 
-        {{ t('catalog.filterJujutsuKaisen') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Spy X Family' }"
-        @click="selectedCategory = 'Spy X Family'"
-      > 
-        {{ t('catalog.filterSpyXFamily') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Naruto' }"
-        @click="selectedCategory = 'Naruto'"
-      >
-        {{ t('catalog.filterNaruto') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Waifu' }"
-        @click="selectedCategory = 'Waifu'"
-      >
-        {{ t('catalog.filterWaifu') }}
-      </button>
-
-      <button
-        :class="{ active: selectedCategory === 'Husbando' }"
-        @click="selectedCategory = 'Husbando'"
-      >
-        {{ t('catalog.filterHusbando') }}
-      </button>
-
-      <button
-  :class="{ active: selectedCategory === 'Black Butler' }"
-  @click="selectedCategory = 'Black Butler'"
->
-  {{ t('catalog.filterBlackButler') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Detective Conan' }"
-  @click="selectedCategory = 'Detective Conan'"
->
-  {{ t('catalog.filterDetectiveConan') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Date A live' }"
-  @click="selectedCategory = 'Date A live'"
->
-  {{ t('catalog.filterDateAlive') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Darling in the Franxx' }"
-  @click="selectedCategory = 'Darling in the Franxx'"
->
-  {{ t('catalog.filterDarlingInTheFranxx') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'My Dress-Up Darling' }"
-  @click="selectedCategory = 'My Dress-Up Darling'"
->
-  {{ t('catalog.filterMyDressUpDarling') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Aeni' }"
-  @click="selectedCategory = 'Aeni'"
->
-  {{ t('catalog.filterAeni') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'My Hero Academia' }"
-  @click="selectedCategory = 'My Hero Academia'"
->
-  {{ t('catalog.filterMyHeroAcademia') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Demon Slayer' }"
-  @click="selectedCategory = 'Demon Slayer'"
->
-  {{ t('catalog.filterDemonSlayer') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Classroom of the Elite' }"
-  @click="selectedCategory = 'Classroom of the Elite'"
->
-  {{ t('catalog.filterClassroomOfTheElite') }}
-</button>
-
-<button
-  :class="{ active: selectedCategory === 'Brand New Animal' }"
-  @click="selectedCategory = 'Brand New Animal'"
->
-  {{ t('catalog.filterBrandNewAnimal') }}
-</button>
     </div>
 
     <div class="catalog-grid">
