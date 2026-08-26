@@ -240,7 +240,9 @@
   "requiredFields": "이미지와 제목은 필수입니다.",
   "saveError": "카탈로그 저장 중 오류가 발생했습니다.",
   "saving": "저장 중...",
-  "submit": "카탈로그 저장"
+  "submit": "카탈로그 저장",
+"showCategory": "카테고리 선택",
+"hideCategory": "카테고리 숨기기"
 },
   "common": {
     "basic": "Basic",

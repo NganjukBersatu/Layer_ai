@@ -239,7 +239,9 @@
   "requiredFields": "Gambar dan judul wajib diisi.",
   "saveError": "Terjadi kesalahan saat menyimpan katalog.",
   "saving": "Menyimpan...",
-  "submit": "Simpan Katalog"
+  "submit": "Simpan Katalog",
+"showCategory": "Pilih jenis kategori",
+"hideCategory": "Sembunyikan kategori"
 },
   "common": {
     "basic": "Basic",

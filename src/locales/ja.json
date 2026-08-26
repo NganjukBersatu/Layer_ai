@@ -240,7 +240,9 @@
   "requiredFields": "画像とタイトルは必須です。",
   "saveError": "カタログの保存中にエラーが発生しました。",
   "saving": "保存中...",
-  "submit": "カタログを保存"
+  "submit": "カタログを保存",
+"showCategory": "カテゴリーを選択",
+"hideCategory": "カテゴリーを隠す"
 },
   "common": {
     "basic": "Basic",

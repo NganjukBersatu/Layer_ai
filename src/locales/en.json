@@ -240,7 +240,9 @@
   "requiredFields": "Image and title are required.",
   "saveError": "An error occurred while saving the catalog.",
   "saving": "Saving...",
-  "submit": "Save Catalog"
+  "submit": "Save Catalog",
+"showCategory": "Choose category type",
+"hideCategory": "Hide category"
 },
   "common": {
     "basic": "Basic",
