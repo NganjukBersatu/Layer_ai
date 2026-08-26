@@ -4,9 +4,13 @@
   "split": "画像分割"
 },
 "theme": {
+  "sectionTitle": "テーマ",
   "light": "ライト",
   "dark": "ダーク",
   "system": "システム"
+},
+"language": {
+  "sectionTitle": "言語"
 },
   "login": {
     "title": "ログイン",
