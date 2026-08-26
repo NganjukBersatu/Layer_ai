@@ -4,9 +4,13 @@
   "split": "Split Image"
 },
 "theme": {
+  "sectionTitle": "Theme",
   "light": "Light",
   "dark": "Dark",
   "system": "System"
+},
+"language": {
+  "sectionTitle": "Language"
 },
   "login": {
     "title": "Login",

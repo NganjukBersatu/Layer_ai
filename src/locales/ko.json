@@ -4,9 +4,13 @@
     "split": "이미지 분할"
   },
   "theme": {
+  "sectionTitle": "테마",
   "light": "라이트",
   "dark": "다크",
   "system": "시스템"
+},
+"language": {
+  "sectionTitle": "언어"
 },
   "login": {
     "title": "로그인",

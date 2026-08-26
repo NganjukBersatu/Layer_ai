@@ -4,9 +4,13 @@
   "split": "Split Gambar"
 },
 "theme": {
+  "sectionTitle": "Tema",
   "light": "Terang",
   "dark": "Gelap",
   "system": "Sistem"
+},
+"language": {
+  "sectionTitle": "Bahasa"
 },
   "login": {
     "title": "Masuk",
@@ -47,7 +51,7 @@
    "loadingCredit": "Memuat kredit...",
     "credits": "Kredit",
     "addCredit": "+ Tambah Kredit",
-    "history": "History",
+    "history": "Riwayat",
     "logout": "Keluar",
     "uploadLabel": "Unggah Gambar",
     "clickUpload": "Klik untuk unggah gambar",

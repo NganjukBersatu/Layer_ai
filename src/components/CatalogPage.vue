@@ -340,6 +340,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-width: 0;
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
