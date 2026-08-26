@@ -14,8 +14,13 @@ const description = ref("");
 const selectedCategories = ref([]);
 const isSubmitting = ref(false);
 const errorMsg = ref("");
+const isCategoryExpanded = ref(false);
 
 const availableCategories = ["Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen", "Naruto", "Waifu", "Husbando", "Black Butler", "Detective Conan", "Date A live", "Darling In The Franxx", "My Dress Up Darling", "Aeni", "My Hero Academia", "Demon Slayer", "Classroom Of The Elite", "Brand New Animal"];
+
+function toggleCategoryExpanded() {
+  isCategoryExpanded.value = !isCategoryExpanded.value;
+}
 
 function handleFileChange(e) {
   const file = e.target.files[0];
@@ -101,16 +106,62 @@ async function handleSubmit() {
           rows="3"
           ></textarea>
 
-        <div class="category-select">
+        <!-- ===== Kategori: tombol toggle, chip baru muncul saat diklik ===== -->
+        <div class="category-block">
           <button
-           v-for="cat in availableCategories"
-          :key="cat"
             type="button"
-          :class="{ active: selectedCategories.includes(cat) }"
-          @click="toggleCategory(cat)"
-        >
-        {{ t(`catalog.filter${cat.replace(/\s+/g, '')}`) }}
+            class="category-toggle-btn"
+            @click="toggleCategoryExpanded"
+          >
+            <span>
+              {{ isCategoryExpanded ? 'Sembunyikan kategori' : 'Pilih jenis kategori' }}
+              <span v-if="selectedCategories.length" class="category-toggle-count">
+                ({{ selectedCategories.length }})
+              </span>
+            </span>
+            <svg
+              class="category-toggle-icon"
+              :class="{ rotated: isCategoryExpanded }"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </button>
+
+          <div v-if="isCategoryExpanded" class="category-select">
+            <button
+              v-for="cat in availableCategories"
+              :key="cat"
+              type="button"
+              :class="{ active: selectedCategories.includes(cat) }"
+              @click="toggleCategory(cat)"
+            >
+              <svg
+                v-if="selectedCategories.includes(cat)"
+                class="category-check"
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M20 6L9 17L4 12"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              {{ t(`catalog.filter${cat.replace(/\s+/g, '')}`) }}
+            </button>
+          </div>
         </div>
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
@@ -241,25 +292,120 @@ textarea.text-input {
   line-height: 1.5;
 }
 
+/* =====================================
+   KATEGORI: counter + chip scrollable
+===================================== */
+.category-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* =====================================
+   TOMBOL TOGGLE: default cuma nampilin ini,
+   chip kategori baru muncul pas diklik
+===================================== */
+.category-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.category-toggle-btn:hover {
+  border-color: var(--accent-color);
+}
+
+.category-toggle-count {
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
+.category-toggle-icon {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.category-toggle-icon.rotated {
+  transform: rotate(180deg);
+}
+
+/* Chip list: hanya di-render saat expanded (v-if), jadi
+   otomatis 0 tinggi saat collapsed tanpa perlu max-height/scroll */
 .category-select {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-card);
+  animation: category-fade-in 0.18s ease;
+}
+
+@keyframes category-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .category-select button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 8px 15px;
   border: 1px solid var(--border-color);
   border-radius: 20px;
-  background: var(--bg-card);
+  background: var(--bg-accent-soft);
   color: var(--text-primary);
+  font-size: 13px;
   cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.category-select button:hover {
+  border-color: var(--accent-color);
+}
+
+.category-select button:active {
+  transform: scale(0.96);
 }
 
 .category-select button.active {
   background: var(--accent-color);
   color: white;
   border-color: var(--accent-color);
+}
+
+.category-check {
+  flex-shrink: 0;
+}
+
+.category-empty {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 12px 0;
+  margin: 0;
 }
 
 .submit-btn {
@@ -327,20 +473,9 @@ textarea.text-input {
     height: 13px;
   }
 
-  .category-select {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-rows: repeat(3, auto);
-    gap: 6px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-  }
-
   .category-select button {
     padding: 6px 12px;
     font-size: 12px;
-    white-space: nowrap;
   }
 }
 </style>

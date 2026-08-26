@@ -157,6 +157,8 @@ function goRegister() {
 
 .login-page {
   position: relative;
+  width: 100vw;                        /* ← tambahan */
+  margin-left: calc(-50vw + 50%);      /* ← tambahan */
   min-height: calc(100vh - 65px);
   overflow: hidden;
   box-sizing: border-box;
@@ -164,8 +166,6 @@ function goRegister() {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Membuat stacking layer sendiri */
   isolation: isolate;
 }
 
