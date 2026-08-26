@@ -145,7 +145,7 @@ onMounted(async () => {
     </div>
 
 
-        <div class="category-filter">
+    <div class="category-filter">
       <button
         :class="{ active: selectedCategory === 'all' }"
         @click="selectCategory('all', $event)"

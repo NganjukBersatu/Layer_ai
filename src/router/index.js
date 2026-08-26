@@ -16,9 +16,9 @@ const routes = [
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPasswordPage, meta: { public: true } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { public: true } },
   { path: '/', name: 'Catalog', component: CatalogPage },
-  { path: '/catalog/new', name: 'CatalogNew', component: CatalogUploadPage },
+  { path: '/catalog/new', name: 'CatalogNew', component: CatalogUploadPage, meta: { requiresAdmin: true } },
   { path: '/catalog/:id', name: 'CatalogDetail', component: CatalogDetailPage },
-  { path: '/catalog/:id/edit', name: 'CatalogEdit', component: CatalogEditPage },
+  { path: '/catalog/:id/edit', name: 'CatalogEdit', component: CatalogEditPage, meta: { requiresAdmin: true } },
   { path: '/split-gambar', name: 'SplitGambar', component: InputPage },
   { path: '/process', name: 'Process', component: ProcessPage },
   { path: '/preview', name: 'Preview', component: PreviewPage },
@@ -49,9 +49,13 @@ const router = createRouter({
 // Guard: halaman selain login/forgot-password/register wajib login dulu
 router.beforeEach((to) => {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+  const isAdmin = localStorage.getItem('isAdmin') === 'true'
 
   if (!to.meta.public && !isLoggedIn) {
     return { name: 'Login' }
+  }
+  if (to.meta.requiresAdmin && !isAdmin) {
+    return { name: 'Catalog' }
   }
   if (to.name === 'Login' && isLoggedIn) {
     return { name: 'Catalog' }
