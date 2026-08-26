@@ -113,8 +113,8 @@ async function handleSubmit() {
             class="category-toggle-btn"
             @click="toggleCategoryExpanded"
           >
-            <span>
-              {{ isCategoryExpanded ? 'Sembunyikan kategori' : 'Pilih jenis kategori' }}
+              <span>
+              {{ isCategoryExpanded ? t('catalogNew.hideCategory') : t('catalogNew.showCategory') }}
               <span v-if="selectedCategories.length" class="category-toggle-count">
                 ({{ selectedCategories.length }})
               </span>
