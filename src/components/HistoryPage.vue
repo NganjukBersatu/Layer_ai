@@ -3,7 +3,13 @@ import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["back-from-history"]);
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// helper: pakai translation kalau key-nya ada di file i18n,
+// kalau belum ada (misal 'history.edit' belum didaftarkan), pakai fallback teks biasa
+function tr(key, fallback) {
+  return te(key) ? t(key) : fallback;
+}
 
 const histories = ref([]);
 const searchQuery = ref("");
@@ -39,6 +45,7 @@ const previewItem = ref(null);
 
 function openPreview(item) {
   if (imageStatus[item.id] !== "loaded") return;
+  if (editingId.value === item.id) return; // jangan buka preview saat lagi rename
   previewItem.value = item;
 }
 
@@ -47,7 +54,13 @@ function closePreview() {
 }
 
 function handlePreviewKeydown(event) {
-  if (event.key === "Escape") closePreview();
+  if (event.key === "Escape") {
+    if (editingId.value !== null) {
+      cancelEdit();
+    } else {
+      closePreview();
+    }
+  }
 }
 
 const isLoadingList = ref(true);
@@ -207,6 +220,85 @@ async function deleteHistory(item) {
   }
 }
 
+// ===================================================
+// ===== FITUR EDIT / RENAME NAMA GAMBAR (BARU) =====
+// ===================================================
+const editingId = ref(null);
+const editingValue = ref("");
+const isSavingEdit = ref(false);
+const editInputRef = ref(null);
+
+function startEdit(item) {
+  editingId.value = item.id;
+  editingValue.value = item.image_name || "";
+  // fokus & select isi input begitu muncul
+  requestAnimationFrame(() => {
+    editInputRef.value?.focus();
+    editInputRef.value?.select();
+  });
+}
+
+function cancelEdit() {
+  editingId.value = null;
+  editingValue.value = "";
+}
+
+async function saveEdit(item) {
+  const newName = editingValue.value.trim();
+
+  if (!newName) {
+    alert(t('history.renameEmpty') || 'Nama file tidak boleh kosong');
+    return;
+  }
+
+  if (newName === item.image_name) {
+    cancelEdit();
+    return;
+  }
+
+  isSavingEdit.value = true;
+  try {
+    const response = await fetch(`${API_BASE}/history/${item.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image_name: newName }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request gagal: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.success === false) {
+      throw new Error(data.message || "Gagal mengubah nama");
+    }
+
+    // update state lokal supaya UI langsung berubah tanpa reload
+    item.image_name = newName;
+    if (previewItem.value && previewItem.value.id === item.id) {
+      previewItem.value.image_name = newName;
+    }
+
+    cancelEdit();
+  } catch (error) {
+    console.error("Gagal rename:", error);
+    alert(t('history.renameError') || 'Terjadi kesalahan saat mengubah nama file');
+  } finally {
+    isSavingEdit.value = false;
+  }
+}
+
+function handleEditKeydown(event, item) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    saveEdit(item);
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    cancelEdit();
+  }
+}
+
 function getStyleLabel(item) {
   const val = getItemStyleValue(item);
   if (!val) return null;
@@ -214,15 +306,69 @@ function getStyleLabel(item) {
   return found ? found.label() : val;
 }
 
+// ===================================================
+// ===== TOOLBAR & FILTER COLLAPSIBLE SAAT SCROLL (MOBILE) =====
+// ===================================================
+const isToolbarVisible = ref(true);
+const lastScrollY = ref(0);
+const MOBILE_BREAKPOINT = 600;
+const SCROLL_THRESHOLD = 60; // px, jarak minimal scroll sebelum toolbar disembunyikan
+let scrollTicking = false;
+
+function updateToolbarVisibility() {
+  // fitur collapse ini cuma aktif di layar mobile, desktop tetap selalu terlihat
+  if (window.innerWidth > MOBILE_BREAKPOINT) {
+    isToolbarVisible.value = true;
+    lastScrollY.value = window.scrollY;
+    scrollTicking = false;
+    return;
+  }
+
+  const currentY = window.scrollY;
+
+  if (currentY <= SCROLL_THRESHOLD) {
+    // masih dekat atas halaman -> selalu tampilkan
+    isToolbarVisible.value = true;
+  } else if (currentY > lastScrollY.value) {
+    // scroll ke bawah -> sembunyikan
+    isToolbarVisible.value = false;
+  } else if (currentY < lastScrollY.value) {
+    // scroll ke atas -> tampilkan lagi
+    isToolbarVisible.value = true;
+  }
+
+  lastScrollY.value = currentY;
+  scrollTicking = false;
+}
+
+function handleScroll() {
+  // throttle pakai requestAnimationFrame supaya update state selaras
+  // dengan siklus render browser (tidak kaku/patah-patah saat scroll cepat)
+  if (!scrollTicking) {
+    scrollTicking = true;
+    window.requestAnimationFrame(updateToolbarVisibility);
+  }
+}
+
+function handleResize() {
+  if (window.innerWidth > MOBILE_BREAKPOINT) {
+    isToolbarVisible.value = true;
+  }
+}
+
 onMounted(() => {
   loadHistory();
   document.addEventListener("click", handleClickOutsideSort);
   document.addEventListener("keydown", handlePreviewKeydown);
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutsideSort);
   document.removeEventListener("keydown", handlePreviewKeydown);
+  window.removeEventListener("scroll", handleScroll);
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 
@@ -239,71 +385,75 @@ onUnmounted(() => {
       <h2>{{ $t('history.title') }}</h2>
     </div>
 
-    <div class="toolbar-row">
-      <div class="search-box">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
-          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-        <input
-          v-model="searchQuery"
-          type="text"
-          :placeholder="$t('history.searchPlaceholder')"
-        />
-        <button
-          v-if="searchQuery"
-          class="clear-btn"
-          @click="searchQuery = ''"
-          :title="$t('history.clearSearch')"
-        >
-          &times;
-        </button>
-      </div>
-
-      <div class="sort-dropdown" ref="sortDropdownRef">
-        <button type="button" class="sort-button" @click="isSortMenuOpen = !isSortMenuOpen">
-          <span>{{ sortOptions.find(o => o.value === sortOrder)?.label() }}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ rotated: isSortMenuOpen }">
-            <polyline points="6 9 12 15 18 9" />
+    <div class="toolbar-filter-wrap" :class="{ collapsed: !isToolbarVisible }">
+     <div class="toolbar-filter-inner">
+      <div class="toolbar-row">
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+            <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
           </svg>
-        </button>
-
-        <div v-if="isSortMenuOpen" class="sort-menu">
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="$t('history.searchPlaceholder')"
+          />
           <button
-            v-for="opt in sortOptions"
-            :key="opt.value"
-            type="button"
-            class="sort-option"
-            :class="{ active: sortOrder === opt.value }"
-            @click="selectSort(opt.value)"
+            v-if="searchQuery"
+            class="clear-btn"
+            @click="searchQuery = ''"
+            :title="$t('history.clearSearch')"
           >
-            {{ opt.label() }}
+            &times;
           </button>
         </div>
+
+        <div class="sort-dropdown" ref="sortDropdownRef">
+          <button type="button" class="sort-button" @click="isSortMenuOpen = !isSortMenuOpen">
+            <span>{{ sortOptions.find(o => o.value === sortOrder)?.label() }}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ rotated: isSortMenuOpen }">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          <div v-if="isSortMenuOpen" class="sort-menu">
+            <button
+              v-for="opt in sortOptions"
+              :key="opt.value"
+              type="button"
+              class="sort-option"
+              :class="{ active: sortOrder === opt.value }"
+              @click="selectSort(opt.value)"
+            >
+              {{ opt.label() }}
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- ===== Filter kategori: tombol geser hanya tampil di mobile ===== -->
-    <div class="filter-tabs-wrap">
-      <button class="filter-nav-btn" @click="scrollFilterTabs(-160)" aria-label="Geser kiri">
-        &#10094;
-      </button>
+      <!-- ===== Filter kategori: tombol geser hanya tampil di mobile ===== -->
+      <div class="filter-tabs-wrap">
+        <button class="filter-nav-btn" @click="scrollFilterTabs(-160)" aria-label="Geser kiri">
+          &#10094;
+        </button>
 
-      <div class="filter-tabs" ref="filterTabsRef">
-        <button
-          v-for="tab in filterTabs"
-          :key="tab.value"
-          class="filter-tab"
-          :class="{ active: modelFilter === tab.value }"
-          @click="modelFilter = tab.value"
-        >
-          {{ tab.label() }}
+        <div class="filter-tabs" ref="filterTabsRef">
+          <button
+            v-for="tab in filterTabs"
+            :key="tab.value"
+            class="filter-tab"
+            :class="{ active: modelFilter === tab.value }"
+            @click="modelFilter = tab.value"
+          >
+            {{ tab.label() }}
+          </button>
+        </div>
+
+        <button class="filter-nav-btn" @click="scrollFilterTabs(160)" aria-label="Geser kanan">
+          &#10095;
         </button>
       </div>
-
-      <button class="filter-nav-btn" @click="scrollFilterTabs(160)" aria-label="Geser kanan">
-        &#10095;
-      </button>
+     </div>
     </div>
 
     <p v-if="!isLoadingList && histories.length > 0" class="result-count">
@@ -356,9 +506,42 @@ onUnmounted(() => {
         </div>
 
         <div class="meta">
-          <p class="image-name" :title="item.image_name">
+          <!-- ===== Nama file: mode normal vs mode edit ===== -->
+          <div v-if="editingId === item.id" class="edit-name-row" @click.stop>
+            <input
+              ref="editInputRef"
+              v-model="editingValue"
+              type="text"
+              class="edit-name-input"
+              :disabled="isSavingEdit"
+              @keydown="handleEditKeydown($event, item)"
+            />
+            <button
+              class="edit-icon-btn confirm"
+              :disabled="isSavingEdit"
+              :title="$t('history.saveRename') || 'Simpan'"
+              @click="saveEdit(item)"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </button>
+            <button
+              class="edit-icon-btn cancel"
+              :disabled="isSavingEdit"
+              :title="$t('history.cancelRename') || 'Batal'"
+              @click="cancelEdit"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <p v-else class="image-name" :title="item.image_name">
             {{ item.image_name }}
           </p>
+
           <div class="meta-row">
             <p class="date">{{ formatDate(item.created_at) }}</p>
             <div class="badges">
@@ -415,7 +598,39 @@ onUnmounted(() => {
             </div>
 
             <div class="preview-info">
-              <h3 class="preview-name" :title="previewItem.image_name">
+              <!-- ===== Nama file di modal preview: mode normal vs mode edit ===== -->
+              <div v-if="editingId === previewItem.id" class="edit-name-row">
+                <input
+                  ref="editInputRef"
+                  v-model="editingValue"
+                  type="text"
+                  class="edit-name-input"
+                  :disabled="isSavingEdit"
+                  @keydown="handleEditKeydown($event, previewItem)"
+                />
+                <button
+                  class="edit-icon-btn confirm"
+                  :disabled="isSavingEdit"
+                  :title="$t('history.saveRename') || 'Simpan'"
+                  @click="saveEdit(previewItem)"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </button>
+                <button
+                  class="edit-icon-btn cancel"
+                  :disabled="isSavingEdit"
+                  :title="$t('history.cancelRename') || 'Batal'"
+                  @click="cancelEdit"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <h3 v-else class="preview-name" :title="previewItem.image_name">
                 {{ previewItem.image_name }}
               </h3>
 
@@ -449,6 +664,9 @@ onUnmounted(() => {
               </dl>
 
               <div class="preview-actions">
+                <button class="btn edit" @click="startEdit(previewItem)">
+                  {{ tr('history.edit', 'Edit') }}
+                </button>
                 <button class="btn download" @click="downloadImage(previewItem)">
                   {{ $t('history.download') }}
                 </button>
@@ -708,6 +926,55 @@ onUnmounted(() => {
   margin: 0 0 10px;
 }
 
+/* =====================================
+   TOOLBAR + FILTER: bisa "collapse" pas scroll ke bawah (mobile)
+   ---------------------------------------
+   .toolbar-filter-wrap membungkus search+sort+filter tabs.
+   Kelas .collapsed cuma di-toggle lewat JS saat layar <= 600px,
+   jadi di desktop wrapper ini selalu dalam kondisi normal.
+
+   Dipakai teknik "grid-template-rows: 1fr -> 0fr" (bukan max-height
+   dengan angka tebakan) supaya animasi ke tinggi asli konten
+   selalu mulus, seberapa pun tinggi kontennya berubah.
+===================================== */
+.toolbar-filter-wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.28s ease;
+  opacity: 1;
+  /* mencegah browser "scroll anchoring" mengoreksi posisi scroll
+     tiap frame animasi berjalan - ini penyebab utama grid gambar
+     di bawah kelihatan patah-patah/kaku saat toolbar mengecil */
+  overflow-anchor: none;
+  will-change: grid-template-rows;
+}
+
+.toolbar-filter-wrap.collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toolbar-filter-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* grid gambar diisolasi renderingnya (CSS containment) supaya browser
+   tidak perlu menghitung ulang layout/paint semua card tiap kali
+   tinggi elemen di atasnya (toolbar) berubah - card cukup "digeser"
+   posisinya secara ringan, bukan direnderulang */
+.history-grid {
+  contain: layout style;
+}
+
+@media (max-width: 600px) {
+  /* header dikembalikan ke perilaku normal (ikut scroll, tidak sticky),
+     karena efek sticky+blur sebelumnya membuat area blur terlihat
+     seperti kotak/tombol akibat kontras dengan glow di background */
+}
+
 /* ===== GRID ===== */
 .history-grid {
   display: grid;
@@ -948,11 +1215,6 @@ onUnmounted(() => {
 
 /* =====================================
    META (nama file, tanggal, badge)
-   ---------------------------------------
-   FIX: .meta dikasih min-height + flex column
-   supaya walau badge kategori wrap jadi 2 baris
-   di salah satu card, tombol Unduh/Hapus tetap
-   sejajar rata dengan card lain dalam 1 baris.
 ===================================== */
 .meta {
   padding: 10px 12px 4px;
@@ -970,6 +1232,56 @@ onUnmounted(() => {
   text-overflow: ellipsis;
 }
 
+/* ===== FITUR RENAME: input inline pengganti nama file ===== */
+.edit-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 4px;
+  cursor: default;
+}
+
+.edit-name-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 6px;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.edit-icon-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.edit-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-icon-btn.confirm {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.edit-icon-btn.cancel {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
 .date {
   font-size: 11px;
   color: var(--text-secondary);
@@ -983,35 +1295,14 @@ onUnmounted(() => {
   margin-top: 4px;
 }
 
-/* =====================================
-   BADGES ROW
-   ---------------------------------------
-   FIX: SELALU 1 baris (nowrap), TIDAK PERNAH
-   wrap ke baris ke-2. Ini kunci utamanya —
-   dengan begini tinggi badge row dijamin
-   sama persis di SEMUA card, gak peduli
-   badge nya 1 atau banyak / pendek atau
-   panjang. Kalau kepanjangan, badge nya
-   sendiri yang dipotong "..." (lihat
-   .model-badge / .style-badge di bawah).
-===================================== */
 .badges {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex-wrap: nowrap;   /* WAJIB nowrap, jangan wrap */
-  min-width: 0;        /* supaya child overflow/ellipsis bisa jalan */
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
-/* =====================================
-   BADGE (model & style)
-   ---------------------------------------
-   height tetap sama + nowrap + ellipsis
-   supaya teks panjang tidak bikin badge
-   ini jadi lebih tinggi dari badge lain,
-   dan tidak mendorong badge sebelahnya
-   turun ke baris baru.
-===================================== */
 .model-badge,
 .style-badge {
   display: inline-flex;
@@ -1030,7 +1321,7 @@ onUnmounted(() => {
 }
 
 .model-badge {
-  flex-shrink: 0;   /* badge tingkat (BASIC/ADVANCED) tetap penuh, jangan ikut kepotong */
+  flex-shrink: 0;
   max-width: 40%;
 }
 
@@ -1047,7 +1338,7 @@ onUnmounted(() => {
 .style-badge {
   background: #dbeafe;
   color: #1d4ed8;
-  flex-shrink: 1;   /* badge kategori boleh menyusut & dipotong duluan kalau sempit */
+  flex-shrink: 1;
   min-width: 0;
 }
 
@@ -1072,6 +1363,12 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn.edit {
+  background: var(--bg-accent-soft);
+  color: var(--accent-color);
+  border-color: var(--bg-accent-soft);
 }
 
 .btn.download {
@@ -1181,6 +1478,20 @@ onUnmounted(() => {
   font-weight: 700;
   color: var(--text-primary);
   word-break: break-word;
+}
+
+.preview-info .edit-name-row {
+  margin: 0;
+}
+
+.preview-info .edit-name-input {
+  font-size: 15px;
+  padding: 6px 8px;
+}
+
+.preview-info .edit-icon-btn {
+  width: 26px;
+  height: 26px;
 }
 
 .preview-badges {

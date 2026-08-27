@@ -141,6 +141,32 @@ const hasEnoughCredit = computed(
   () => remainingCredits.value >= estimatedCredit.value,
 );
 
+// ===================================================
+// ===== ALASAN TOMBOL "PISAHKAN GAMBAR" DISABLED (BARU) =====
+// ---------------------------------------------------
+// Sebelumnya alasan disabled cuma ada di atribut `title` (tooltip
+// native browser), yang butuh hover mouse dan tidak pernah muncul
+// di HP. Sekarang ada computed yang menghasilkan teks alasan,
+// ditampilkan permanen sebagai <p> kecil di bawah tombol.
+// ===================================================
+const disabledReason = computed(() => {
+  if (isSplitting.value) return "";
+
+  if (!image.value) {
+    return t('input.uploadFirstTitle');
+  }
+
+  if (!hasEnoughCredit.value) {
+    return t('input.notEnoughCreditTitle');
+  }
+
+  return "";
+});
+
+const isSplitDisabled = computed(
+  () => !image.value || !hasEnoughCredit.value || isSplitting.value
+);
+
 function toggleModelDropdown() {
   isModelDropdownOpen.value = !isModelDropdownOpen.value;
 }
@@ -441,7 +467,7 @@ async function handleSplitClick() {
 
     <button
       class="split-btn"
-      :disabled="!image || !hasEnoughCredit || isSplitting"
+      :disabled="isSplitDisabled"
       :title="
         !image
           ? $t('input.uploadFirstTitle')
@@ -453,6 +479,18 @@ async function handleSplitClick() {
     >
       {{ isSplitting ? $t('input.processing') : $t('input.splitBtn') }}
     </button>
+
+    <!-- ===== Alasan tombol disabled (BARU) =====
+         Selalu tampil (bukan cuma tooltip hover), supaya jelas
+         di HP maupun desktop kenapa tombolnya tidak bisa diklik. -->
+    <p v-if="disabledReason" class="disabled-reason">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      {{ disabledReason }}
+    </p>
   </div>
 </div>
 </template>
@@ -554,6 +592,24 @@ async function handleSplitClick() {
   border-color: #c4b5fd;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+/* ===== Alasan tombol disabled (BARU) ===== */
+.disabled-reason {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.disabled-reason svg {
+  flex-shrink: 0;
+  color: var(--accent-color);
 }
 
 /* ===== Header ===== */
