@@ -463,8 +463,6 @@ onMounted(async () => {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 6px;
-    margin-right: -12px;
-    padding-right: 12px;
     scrollbar-width: none;
   }
 
