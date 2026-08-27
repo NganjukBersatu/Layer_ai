@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import { useClickOutside } from '../composables/useClickOutside.js'
 
-const { locale } = useI18n()
+const { locale } = useI18n({ useScope: 'global' })
 const isOpen = ref(false)
 
 const switcherRef = ref(null)
