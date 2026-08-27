@@ -277,6 +277,17 @@ function goRegister() {
   border-color: var(--accent-color);
 }
 
+.login-card input:-webkit-autofill,
+.login-card input:-webkit-autofill:hover,
+.login-card input:-webkit-autofill:focus,
+.login-card input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-card) inset !important;
+  box-shadow: 0 0 0 1000px var(--bg-card) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  caret-color: var(--text-primary);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 .password-wrapper {
   position: relative;
 }
