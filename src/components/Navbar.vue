@@ -14,7 +14,7 @@ const emit = defineEmits([
   'logout',
 ])
 
-const theme = ref(localStorage.getItem('theme') || 'system')
+const theme = ref(localStorage.getItem('theme') || 'light')
 const isThemeMenuOpen = ref(false)
 
 const isMobileMenuOpen = ref(false)

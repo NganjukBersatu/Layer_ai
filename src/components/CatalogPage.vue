@@ -397,8 +397,6 @@ onMounted(async () => {
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 4px;
-  max-height: 44px; /* kira-kira tinggi 2 baris badge, sesuaikan kalau perlu */
-  overflow: hidden;
 }
 
 .tag-badge {
