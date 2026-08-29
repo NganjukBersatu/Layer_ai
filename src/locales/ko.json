@@ -21,6 +21,7 @@
     "passwordPlaceholder": "비밀번호",
     "hidePassword": "비밀번호 숨기기",
     "showPassword": "비밀번호 표시",
+    "googleLogin": "Google로 로그인",
     "forgotPassword": "비밀번호를 잊으셨나요?",
     "noAccount": "계정이 없으신가요?",
     "register": "회원가입",
@@ -44,7 +45,17 @@
     "emptyFiltered": "이 필터와 일치하는 이미지가 없습니다.",
     "sortNewest": "최신순",
     "sortOldest": "오래된순",
-    "imagesFound": "개의 이미지 발견"
+    "imagesFound": "개의 이미지 발견",
+    "createdAt": "생성일",
+"time": "시간",
+"fileFormat": "파일 형식",
+"edit": "편집",
+"justNow": "방금 전",
+"minutesAgo": "{n}분 전",
+"hoursAgo": "{n}시간 전",
+"daysAgo": "{n}일 전",
+"monthsAgo": "{n}개월 전",
+"yearsAgo": "{n}년 전"
   },
   "input": {
     "title": "입력",
@@ -200,6 +211,9 @@
 "filterDemonSlayer": "귀멸의 칼날",
 "filterClassroomOfTheElite": "어서 오세요 실력지상주의 교실에",
 "filterBrandNewAnimal": "브랜뉴 애니멀",
+"emptyTitle": "찾을 수 없습니다",
+"emptyForQuery": "\"{query}\"에 대한 결과가 없습니다",
+"emptyCategory": "이 카테고리에는 결과가 없습니다",
   "categories": {
     "anime": "애니메", "chibi": "치비", "furry": "퍼리", "kawaii": "카와이"
   },

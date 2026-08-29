@@ -21,6 +21,7 @@
     "passwordPlaceholder": "パスワード",
     "hidePassword": "パスワードを隠す",
     "showPassword": "パスワードを表示",
+    "googleLogin": "Googleでログイン",
     "forgotPassword": "パスワードをお忘れですか？",
     "noAccount": "アカウントをお持ちでないですか？",
     "register": "登録",
@@ -44,7 +45,17 @@
     "emptyFiltered": "このフィルターに一致する画像はありません。",
     "sortNewest": "新しい順",
     "sortOldest": "古い順",
-    "imagesFound": "件の画像が見つかりました"
+    "imagesFound": "件の画像が見つかりました",
+    "createdAt": "作成日",
+"time": "時間",
+"fileFormat": "ファイル形式",
+"edit": "編集",
+"justNow": "たった今",
+"minutesAgo": "{n}分前",
+"hoursAgo": "{n}時間前",
+"daysAgo": "{n}日前",
+"monthsAgo": "{n}ヶ月前",
+"yearsAgo": "{n}年前"
   },
   "input": {
     "title": "入力",
@@ -200,6 +211,9 @@
 "filterDemonSlayer": "鬼滅の刃",
 "filterClassroomOfTheElite": "ようこそ実力至上主義の教室へ",
 "filterBrandNewAnimal": " ビー・エヌ・エー",
+"emptyTitle": "見つかりません",
+"emptyForQuery": "\"{query}\"の結果が見つかりません",
+"emptyCategory": "このカテゴリーに結果はありません",
   "categories": {
     "anime": "アニメ", "chibi": "チビ", "furry": "ファーリー", "kawaii": "カワイイ"
   },
