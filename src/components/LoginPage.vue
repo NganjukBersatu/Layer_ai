@@ -1,15 +1,23 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["login", "forgot-password", "register"]);
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const username = ref("");
 const password = ref("");
 const error = ref("");
 const showPassword = ref(false);
 const isLoading = ref(false);
+
+// Map dari kode locale aplikasi ke kode bahasa yang dikenali Google
+const googleLocaleMap = {
+  id: "id",
+  en: "en",
+  ja: "ja",
+  ko: "ko",
+};
 
 async function login() {
   error.value = "";
@@ -60,15 +68,61 @@ async function login() {
   }
 }
 
-onMounted(() => {
+// Google menentukan bahasa tombolnya dari parameter "hl" pada URL
+// script gsi/client saat pertama kali dimuat, opsi "locale" di
+// renderButton saja seringkali tidak cukup. Jadi setiap kali bahasa
+// aplikasi berubah, kita hapus script lama & muat ulang dengan hl baru.
+function loadGoogleScript(hl) {
+  return new Promise((resolve) => {
+    // Hapus script gsi/client lama kalau ada
+    const oldScript = document.getElementById("google-gsi-script");
+    if (oldScript) oldScript.remove();
+
+    // Reset object google supaya benar-benar diinisialisasi ulang
+    if (window.google && window.google.accounts) {
+      delete window.google.accounts;
+    }
+
+    const script = document.createElement("script");
+    script.id = "google-gsi-script";
+    script.src = `https://accounts.google.com/gsi/client?hl=${hl}`;
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    document.head.appendChild(script);
+  });
+}
+
+async function renderGoogleButton() {
+  const el = document.getElementById("google-signin-btn");
+  if (!el) return;
+
+  const hl = googleLocaleMap[locale.value] || "en";
+
+  await loadGoogleScript(hl);
+
+  el.innerHTML = ""; // bersihkan tombol lama sebelum render ulang
+
   window.google.accounts.id.initialize({
     client_id: "729124027686-hm3c27lgel9p28bqjd8ntr1hbu38vjcp.apps.googleusercontent.com",
     callback: handleGoogleResponse,
   });
-  window.google.accounts.id.renderButton(
-    document.getElementById("google-signin-btn"),
-    { theme: "outline", size: "large", width: "100%" }
-  );
+
+  window.google.accounts.id.renderButton(el, {
+    theme: "outline",
+    size: "large",
+    width: "100%",
+    locale: hl,
+  });
+}
+
+onMounted(() => {
+  renderGoogleButton();
+});
+
+// Setiap kali bahasa aplikasi berubah, muat ulang script Google & render ulang tombolnya
+watch(locale, () => {
+  renderGoogleButton();
 });
 
 async function handleGoogleResponse(response) {

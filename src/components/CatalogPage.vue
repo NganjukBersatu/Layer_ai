@@ -220,13 +220,13 @@ onMounted(async () => {
 
     <!-- Pesan kalau pencarian/filter tidak menghasilkan apa-apa -->
     <div class="empty-state" v-else>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
-        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
-      </svg>
-      <h3>Tidak ditemukan</h3>
-      <p v-if="searchQuery.trim() !== ''">Tidak ada hasil untuk "{{ searchQuery }}"</p>
-      <p v-else>Tidak ada hasil pada kategori ini</p>
-    </div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+    <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+  </svg>
+  <h3>{{ t('catalog.emptyTitle') }}</h3>
+  <p v-if="searchQuery.trim() !== ''">{{ t('catalog.emptyForQuery', { query: searchQuery }) }}</p>
+  <p v-else>{{ t('catalog.emptyCategory') }}</p>
+</div>
 
     <router-link
       v-if="isAdmin"

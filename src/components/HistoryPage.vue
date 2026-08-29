@@ -3,7 +3,7 @@ import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["back-from-history"]);
-const { t, te } = useI18n()
+const { t, te, locale } = useI18n()
 
 // helper: pakai translation kalau key-nya ada di file i18n,
 // kalau belum ada (misal 'history.edit' belum didaftarkan), pakai fallback teks biasa
@@ -195,37 +195,46 @@ function getImageUrl(path) {
   return `${API_BASE}/${path}`;
 }
 
+// Map dari kode locale aplikasi ke locale tag yang dikenali Intl/toLocaleDateString
+const dateLocaleMap = {
+  id: "id-ID",
+  en: "en-US",
+  ja: "ja-JP",
+  ko: "ko-KR",
+};
+
 function formatDate(dateStr) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("id-ID", {
+  return d.toLocaleDateString(dateLocaleMap[locale.value] || "en-US", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
 }
 
-// Waktu relatif ("2 hari lalu", "Baru saja", dst), dihitung dari created_at
+// Waktu relatif ("2 hari lalu", "Baru saja", dst), dihitung dari created_at.
+// Teksnya sekarang diambil dari i18n (t()) supaya ikut berubah sesuai bahasa aktif.
 function timeAgo(dateStr) {
   const now = Date.now();
   const then = new Date(dateStr).getTime();
   const diffSec = Math.max(0, Math.floor((now - then) / 1000));
 
-  if (diffSec < 60) return "Baru saja";
+  if (diffSec < 60) return t('history.justNow');
 
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} menit lalu`;
+  if (diffMin < 60) return t('history.minutesAgo', { n: diffMin });
 
   const diffHour = Math.floor(diffMin / 60);
-  if (diffHour < 24) return `${diffHour} jam lalu`;
+  if (diffHour < 24) return t('history.hoursAgo', { n: diffHour });
 
   const diffDay = Math.floor(diffHour / 24);
-  if (diffDay < 30) return `${diffDay} hari lalu`;
+  if (diffDay < 30) return t('history.daysAgo', { n: diffDay });
 
   const diffMonth = Math.floor(diffDay / 30);
-  if (diffMonth < 12) return `${diffMonth} bulan lalu`;
+  if (diffMonth < 12) return t('history.monthsAgo', { n: diffMonth });
 
   const diffYear = Math.floor(diffMonth / 12);
-  return `${diffYear} tahun lalu`;
+  return t('history.yearsAgo', { n: diffYear });
 }
 
 // Format file diambil dari ekstensi URL gambar (mis. .png -> "PNG")
@@ -722,11 +731,11 @@ onUnmounted(() => {
                   <dd>{{ formatDate(previewItem.created_at) }}</dd>
                 </div>
                 <div class="preview-meta-row">
-                  <dt>Waktu</dt>
+                  <dt>{{ tr('history.time', 'Waktu') }}</dt>
                   <dd>{{ timeAgo(previewItem.created_at) }}</dd>
                 </div>
                 <div v-if="getFileFormat(previewItem.image_url)" class="preview-meta-row">
-                  <dt>Format file</dt>
+                  <dt>{{ tr('history.fileFormat', 'Format file') }}</dt>
                   <dd>{{ getFileFormat(previewItem.image_url) }}</dd>
                 </div>
                 <div v-if="previewItem.width && previewItem.height" class="preview-meta-row">

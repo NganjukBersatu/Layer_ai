@@ -21,6 +21,7 @@
     "passwordPlaceholder": "Kata sandi",
     "hidePassword": "Sembunyikan password",
     "showPassword": "Tampilkan password",
+    "googleLogin": "Login dengan Google",
     "forgotPassword": "Lupa password?",
     "noAccount": "Belum punya akun?",
     "register": "Daftar",
@@ -44,7 +45,17 @@
     "emptyFiltered": "Tidak ada gambar yang cocok dengan filter ini.",
     "sortNewest": "Terbaru",
     "sortOldest": "Terlama",
-    "imagesFound": "gambar ditemukan"
+    "imagesFound": "gambar ditemukan",
+    "createdAt": "Tanggal dibuat",
+"time": "Waktu",
+"fileFormat": "Format file",
+"edit": "Edit",
+"justNow": "Baru saja",
+"minutesAgo": "{n} menit lalu",
+"hoursAgo": "{n} jam lalu",
+"daysAgo": "{n} hari lalu",
+"monthsAgo": "{n} bulan lalu",
+"yearsAgo": "{n} tahun lalu"
   },
   "input": {
     "title": "Input",
@@ -200,6 +211,9 @@
 "filterDemonSlayer": "Demon Slayer",
 "filterClassroomOfTheElite": "Classroom of the Elite",
 "filterBrandNewAnimal": "Brand New Animal",
+"emptyTitle": "Tidak ditemukan",
+"emptyForQuery": "Tidak ada hasil untuk \"{query}\"",
+"emptyCategory": "Tidak ada hasil pada kategori ini",
   "categories": {
     "anime": "Anime", "chibi": "Chibi", "furry": "Furry", "kawaii": "Kawaii"
   },
