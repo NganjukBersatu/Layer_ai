@@ -6,6 +6,26 @@ import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
 
 const { t } = useI18n();
 
+// Directive untuk animasi "muncul" saat elemen masuk ke area layar
+// (bukan langsung semua jalan saat halaman dimuat), jadi card yang
+// posisinya di bawah tetap ikut animasi saat di-scroll ke sana.
+const vReveal = {
+  mounted(el) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            el.classList.add("is-visible");
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    observer.observe(el);
+  },
+};
+
 const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
 const isRestoringScroll = ref(true);
 
@@ -26,6 +46,10 @@ const filteredItems = computed(() => {
 
   return items;
 });
+
+// Menentukan apakah hasil pencarian/filter kosong,
+// dipakai untuk menampilkan pesan "tidak ditemukan"
+const hasResults = computed(() => filteredItems.value.length > 0);
 
 const categoryKeyMap = {
   anime: "filterAnime",
@@ -163,13 +187,16 @@ onMounted(async () => {
       </button>
     </div>
 
-    <div class="catalog-grid">
+    <!-- Grid hasil, hanya tampil kalau ada hasil -->
+    <div class="catalog-grid" v-if="hasResults">
 
       <router-link
-        v-for="item in filteredItems"
+        v-for="(item, index) in filteredItems"
         :key="item.id"
         :to="'/catalog/' + item.id"
         class="catalog-card"
+        v-reveal
+        :style="{ transitionDelay: (index % 5) * 0.1 + 's' }"
       >
         <div class="image-container">
           <img :src="item.image" :alt="item.name" />
@@ -190,6 +217,17 @@ onMounted(async () => {
       </router-link>
 
     </div>
+
+    <!-- Pesan kalau pencarian/filter tidak menghasilkan apa-apa -->
+    <div class="empty-state" v-else>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+      </svg>
+      <h3>Tidak ditemukan</h3>
+      <p v-if="searchQuery.trim() !== ''">Tidak ada hasil untuk "{{ searchQuery }}"</p>
+      <p v-else>Tidak ada hasil pada kategori ini</p>
+    </div>
+
     <router-link
       v-if="isAdmin"
       to="/catalog/new"
@@ -342,12 +380,25 @@ onMounted(async () => {
   height: 100%;
   min-width: 0;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  /* Kondisi awal sebelum card masuk ke layar */
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.25s ease;
+}
+
+/* Class ini ditambahkan oleh directive v-reveal saat card
+   terdeteksi masuk ke area layar (scroll-triggered), bukan
+   langsung semua jalan saat halaman baru dibuka */
+.catalog-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .catalog-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px var(--shadow-color);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .catalog-card:hover .image-container img {
@@ -406,6 +457,35 @@ onMounted(async () => {
   padding: 2px 7px;
   border-radius: 999px;
   white-space: nowrap;
+}
+
+/* ===== Empty state (hasil pencarian/filter tidak ditemukan) ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  position: relative;
+  z-index: 1;
+}
+
+.empty-state svg {
+  opacity: 0.4;
+  margin-bottom: 12px;
+}
+
+.empty-state h3 {
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 13px;
 }
 
 @media (max-width: 1000px) {
@@ -471,6 +551,10 @@ onMounted(async () => {
   .category-filter button {
     flex-shrink: 0;
     white-space: nowrap;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
   }
 }
 

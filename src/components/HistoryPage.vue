@@ -11,6 +11,27 @@ function tr(key, fallback) {
   return te(key) ? t(key) : fallback;
 }
 
+// Directive untuk animasi "muncul" saat elemen masuk ke area layar
+// (sama seperti di CatalogPage.vue), jadi card yang posisinya di
+// bawah tetap ikut animasi saat di-scroll ke sana, bukan langsung
+// semua jalan sekaligus pas halaman dimuat.
+const vReveal = {
+  mounted(el) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            el.classList.add("is-visible");
+            observer.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    observer.observe(el);
+  },
+};
+
 const histories = ref([]);
 const searchQuery = ref("");
 const modelFilter = ref("all");
@@ -104,13 +125,16 @@ const filterTabs = [
   { value: "spyxfamily", label: () => t('input.categorySpyxfamily') },
 ];
 
-function getItemStyleValue(item) {
+function getItemCategories(item) {
   for (const field of FIELD_CANDIDATES) {
     if (item[field]) {
-      return String(item[field]).toLowerCase().replace(/[\s_-]/g, "");
+      return String(item[field])
+        .split(",")
+        .map((c) => c.trim().toLowerCase().replace(/[\s_-]/g, ""))
+        .filter(Boolean);
     }
   }
-  return "";
+  return [];
 }
 
 const filteredHistories = computed(() => {
@@ -125,7 +149,7 @@ const filteredHistories = computed(() => {
       if (MODEL_TIERS.includes(filter)) {
         matchesFilter = item.model === filter;
       } else {
-        matchesFilter = getItemStyleValue(item) === filter;
+        matchesFilter = getItemCategories(item).includes(filter);
       }
     }
 
@@ -178,6 +202,37 @@ function formatDate(dateStr) {
     month: "2-digit",
     year: "numeric",
   });
+}
+
+// Waktu relatif ("2 hari lalu", "Baru saja", dst), dihitung dari created_at
+function timeAgo(dateStr) {
+  const now = Date.now();
+  const then = new Date(dateStr).getTime();
+  const diffSec = Math.max(0, Math.floor((now - then) / 1000));
+
+  if (diffSec < 60) return "Baru saja";
+
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin < 60) return `${diffMin} menit lalu`;
+
+  const diffHour = Math.floor(diffMin / 60);
+  if (diffHour < 24) return `${diffHour} jam lalu`;
+
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffDay < 30) return `${diffDay} hari lalu`;
+
+  const diffMonth = Math.floor(diffDay / 30);
+  if (diffMonth < 12) return `${diffMonth} bulan lalu`;
+
+  const diffYear = Math.floor(diffMonth / 12);
+  return `${diffYear} tahun lalu`;
+}
+
+// Format file diambil dari ekstensi URL gambar (mis. .png -> "PNG")
+function getFileFormat(url) {
+  if (!url) return null;
+  const match = String(url).match(/\.([a-zA-Z0-9]+)(?:\?.*)?$/);
+  return match ? match[1].toUpperCase() : null;
 }
 
 async function downloadImage(item) {
@@ -299,11 +354,11 @@ function handleEditKeydown(event, item) {
   }
 }
 
-function getStyleLabel(item) {
-  const val = getItemStyleValue(item);
-  if (!val) return null;
-  const found = filterTabs.find((t) => t.value === val);
-  return found ? found.label() : val;
+function getStyleLabels(item) {
+  return getItemCategories(item).map((val) => {
+    const found = filterTabs.find((t) => t.value === val);
+    return found ? found.label() : val;
+  });
 }
 
 // ===================================================
@@ -472,9 +527,11 @@ onUnmounted(() => {
 
     <div v-else class="history-grid">
       <div
-        v-for="item in filteredHistories"
+        v-for="(item, index) in filteredHistories"
         :key="item.id"
         class="history-card"
+        v-reveal
+        :style="{ transitionDelay: (index % 5) * 0.1 + 's' }"
       >
         <div
           class="thumbnail"
@@ -486,7 +543,7 @@ onUnmounted(() => {
           </div>
 
           <div v-else-if="imageStatus[item.id] === 'error'" class="thumb-error">
-            <span>{{ $t('history.imageFailed') || 'Gagal memuat gambar' }}</span>
+            <span>{{ tr('history.imageFailed', 'Gagal memuat gambar') }}</span>
           </div>
 
           <div v-if="imageStatus[item.id] === 'loaded'" class="thumb-zoom-hint">
@@ -519,7 +576,7 @@ onUnmounted(() => {
             <button
               class="edit-icon-btn confirm"
               :disabled="isSavingEdit"
-              :title="$t('history.saveRename') || 'Simpan'"
+              :title="tr('history.saveRename', 'Simpan')"
               @click="saveEdit(item)"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -529,7 +586,7 @@ onUnmounted(() => {
             <button
               class="edit-icon-btn cancel"
               :disabled="isSavingEdit"
-              :title="$t('history.cancelRename') || 'Batal'"
+              :title="tr('history.cancelRename', 'Batal')"
               @click="cancelEdit"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -553,8 +610,13 @@ onUnmounted(() => {
                 $t('history.filterAdvanced')
                 : $t('history.filterBasic') }}
               </span>
-              <span v-if="getStyleLabel(item)" class="style-badge" :title="getStyleLabel(item)">
-                {{ getStyleLabel(item) }}
+              <span
+                v-for="label in getStyleLabels(item)"
+                :key="label"
+                class="style-badge"
+                :title="label"
+              >
+                {{ label }}
               </span>
             </div>
           </div>
@@ -584,7 +646,7 @@ onUnmounted(() => {
         @click.self="closePreview"
       >
         <div class="preview-modal">
-          <button class="preview-close" @click="closePreview" :title="$t('history.close') || 'Tutup'">
+          <button class="preview-close" @click="closePreview" :title="tr('history.close', 'Tutup')">
             &times;
           </button>
 
@@ -611,7 +673,7 @@ onUnmounted(() => {
                 <button
                   class="edit-icon-btn confirm"
                   :disabled="isSavingEdit"
-                  :title="$t('history.saveRename') || 'Simpan'"
+                  :title="tr('history.saveRename', 'Simpan')"
                   @click="saveEdit(previewItem)"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -621,7 +683,7 @@ onUnmounted(() => {
                 <button
                   class="edit-icon-btn cancel"
                   :disabled="isSavingEdit"
-                  :title="$t('history.cancelRename') || 'Batal'"
+                  :title="tr('history.cancelRename', 'Batal')"
                   @click="cancelEdit"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -643,22 +705,36 @@ onUnmounted(() => {
                     ? $t('history.filterAdvanced')
                     : $t('history.filterBasic') }}
                 </span>
-                <span v-if="getStyleLabel(previewItem)" class="style-badge">
-                  {{ getStyleLabel(previewItem) }}
+                <span
+                  v-for="label in getStyleLabels(previewItem)"
+                  :key="label"
+                  class="style-badge"
+                >
+                  {{ label }}
                 </span>
               </div>
 
+              <div class="preview-divider"></div>
+
               <dl class="preview-meta-list">
                 <div class="preview-meta-row">
-                  <dt>{{ $t('history.createdAt') || 'Tanggal dibuat' }}</dt>
+                  <dt>{{ tr('history.createdAt', 'Tanggal dibuat') }}</dt>
                   <dd>{{ formatDate(previewItem.created_at) }}</dd>
                 </div>
+                <div class="preview-meta-row">
+                  <dt>Waktu</dt>
+                  <dd>{{ timeAgo(previewItem.created_at) }}</dd>
+                </div>
+                <div v-if="getFileFormat(previewItem.image_url)" class="preview-meta-row">
+                  <dt>Format file</dt>
+                  <dd>{{ getFileFormat(previewItem.image_url) }}</dd>
+                </div>
                 <div v-if="previewItem.width && previewItem.height" class="preview-meta-row">
-                  <dt>{{ $t('history.dimensions') || 'Dimensi' }}</dt>
+                  <dt>{{ tr('history.dimensions', 'Dimensi') }}</dt>
                   <dd>{{ previewItem.width }} &times; {{ previewItem.height }} px</dd>
                 </div>
                 <div v-if="previewItem.file_size" class="preview-meta-row">
-                  <dt>{{ $t('history.fileSize') || 'Ukuran file' }}</dt>
+                  <dt>{{ tr('history.fileSize', 'Ukuran file') }}</dt>
                   <dd>{{ (previewItem.file_size / 1024).toFixed(1) }} KB</dd>
                 </div>
               </dl>
@@ -1086,12 +1162,25 @@ onUnmounted(() => {
   flex-direction: column;
   height: 100%;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  /* Kondisi awal sebelum card masuk ke layar. Class .is-visible
+     ditambahkan oleh directive v-reveal saat card terdeteksi masuk
+     viewport (scroll-triggered), bukan langsung semua jalan saat
+     halaman baru dibuka. */
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.18s ease;
+}
+
+.history-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .history-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .history-card:active {
@@ -1101,6 +1190,13 @@ onUnmounted(() => {
 
 .history-card .actions {
   cursor: default;
+}
+
+/* Skeleton loading tidak perlu ikut animasi reveal, langsung tampil */
+.skeleton-card {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 .thumbnail {
@@ -1299,7 +1395,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   min-width: 0;
 }
 
@@ -1447,35 +1543,41 @@ onUnmounted(() => {
 .preview-image-wrap {
   flex: 1.4;
   min-width: 0;
-  background: var(--bg-accent-soft);
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 32px;
+  box-sizing: border-box;
 }
 
 .preview-image {
   width: 100%;
   height: 100%;
-  max-height: 90vh;
+  max-height: calc(90vh - 64px);
   object-fit: contain;
   display: block;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .preview-info {
   flex: 1;
-  min-width: 260px;
-  max-width: 340px;
-  padding: 24px 22px;
+  min-width: 280px;
+  max-width: 360px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
   overflow-y: auto;
+  background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-hover) 140%);
 }
 
 .preview-name {
   margin: 0;
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
   word-break: break-word;
 }
@@ -1500,13 +1602,19 @@ onUnmounted(() => {
   flex-wrap: wrap;
 }
 
+.preview-divider {
+  height: 3px;
+  width: 44px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-color), transparent);
+}
+
 .preview-meta-list {
   margin: 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-color);
+  padding-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .preview-meta-row {
@@ -1531,7 +1639,7 @@ onUnmounted(() => {
   margin-top: auto;
   display: flex;
   gap: 10px;
-  padding-top: 10px;
+  padding-top: 16px;
 }
 
 .modal-fade-enter-active,
