@@ -105,10 +105,6 @@ onMounted(() => {
           {{ t('nav.split') }}
         </button>
 
-        <!-- Logout hanya di desktop -->
-        <button type="button" class="nav-link logout-link desktop-only" @click="emit('logout')">
-          {{ t('input.logout') }}
-        </button>
       </div>
 
       <!-- Theme switcher (hanya desktop) -->
@@ -147,6 +143,11 @@ onMounted(() => {
       <div class="desktop-only">
         <LanguageSwitcher />
       </div>
+
+      <!-- Logout hanya di desktop -->
+      <button type="button" class="nav-link logout-link desktop-only" @click="emit('logout')">
+        {{ t('input.logout') }}
+      </button>
 
       <!-- ===== TOMBOL HAMBURGER di ujung kanan ===== -->
       <button

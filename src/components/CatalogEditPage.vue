@@ -39,11 +39,23 @@ function isSelected(cat) {
   );
 }
 
+// Menyamakan ejaan kategori lama ke ejaan yang berlaku sekarang,
+// sekaligus menghapus duplikat yang muncul akibat perbedaan ejaan lama/baru.
+function normalizeCategories(cats) {
+  const normalized = cats.map((c) => {
+    const match = availableCategories.find(
+      (a) => a.trim().toLowerCase() === c.trim().toLowerCase()
+    );
+    return match || c; // kalau kategori lama sudah dihapus total dari daftar, biarkan apa adanya
+  });
+  return [...new Set(normalized)];
+}
+
 onMounted(async () => {
   item.value = await fetchItemById(route.params.id);
   if (item.value) {
     title.value = item.value.name;
-    selectedCategories.value = [...(item.value.category || [])];
+    selectedCategories.value = normalizeCategories(item.value.category || []);
     let desc = item.value.description;
 if (typeof desc === 'string') {
   try {
