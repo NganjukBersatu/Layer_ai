@@ -9,6 +9,7 @@ import multer from "multer";
 import geminiSplitRouter from "./openrouter-split";
 import { removeBackground } from "@imgly/background-removal-node";
 import catalogRouter from "./routes/catalog.route";
+import authRoute from './routes/auth.route';
 
 dotenv.config();
 
@@ -39,6 +40,8 @@ app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/", geminiSplitRouter);
 
 app.use("/", catalogRouter);
+
+app.use("/", authRoute);
 
 app.get("/test-db", async (req: Request, res: Response) => {
   try {

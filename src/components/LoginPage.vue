@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'
 
 const emit = defineEmits(["login", "forgot-password", "register"]);
@@ -55,6 +55,47 @@ async function login() {
   } catch (err) {
     console.error(err);
     error.value = t('login.cannotConnect');
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  window.google.accounts.id.initialize({
+    client_id: "729124027686-hm3c27lgel9p28bqjd8ntr1hbu38vjcp.apps.googleusercontent.com",
+    callback: handleGoogleResponse,
+  });
+  window.google.accounts.id.renderButton(
+    document.getElementById("google-signin-btn"),
+    { theme: "outline", size: "large", width: "100%" }
+  );
+});
+
+async function handleGoogleResponse(response) {
+  error.value = "";
+  isLoading.value = true;
+
+  try {
+    const res = await fetch("http://localhost:3000/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential: response.credential }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("userName", data.user.name);
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("isAdmin", data.user.is_admin ? "true" : "false");
+      emit("login");
+    } else {
+      error.value = data.message;
+    }
+  } catch (err) {
+    console.error(err);
+    error.value = t("login.cannotConnect");
   } finally {
     isLoading.value = false;
   }
@@ -136,6 +177,8 @@ function goRegister() {
         {{ isLoading ? $t('login.loggingIn') : $t('login.title') }}
       </button>
     </form>
+
+    <div id="google-signin-btn" class="google-btn-wrapper"></div>
 
     <p class="error" role="alert" aria-live="polite">{{ error }}</p>
 
@@ -354,6 +397,10 @@ function goRegister() {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+.google-btn-wrapper {
+  margin-top: 12px;
 }
 
 .error {
