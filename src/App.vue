@@ -104,7 +104,7 @@ function goBackFromHistory() { router.push("/split-gambar"); }
   />
 
   <div class="app" :class="{ 'app--login': route.path === '/login' }">
-    <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== '/login'">
+    <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== ('/login') && route.path !== ('/register') && route.path !== ('/forgot-password')">
       <p>{{ t('app.subtitle') }}</p>
       <div class="hero-features">
         <span class="hero-feature">⚡ {{ t('app.featureFast') }}</span>
