@@ -96,13 +96,14 @@ function goBackFromHistory() { router.push("/split-gambar"); }
 
 <template>
   <Navbar
+    v-if="!['/login', '/forgot-password', '/register'].includes(route.path)"
     @catalog="goToCatalogRoute"
     @split="goToInputRoute"
     @history="goToHistoryRoute"
     @logout="logout"
   />
 
-  <div class="app">
+  <div class="app" :class="{ 'app--login': route.path === '/login' }">
     <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== '/login'">
       <p>{{ t('app.subtitle') }}</p>
       <div class="hero-features">
@@ -212,6 +213,10 @@ html {
   color: var(--text-primary);
   transition: background-color 0.2s ease, color 0.2s ease;
   padding-top: 125px;
+}
+
+.app--login {
+  padding-top: 24px;
 }
 
 /* ===== hero (badge) tidak lagi pakai margin bawaan browser ===== */

@@ -24,7 +24,7 @@ router.post("/auth/google", async (req, res) => {
       return res.status(401).json({ success: false, message: "Token tidak valid" });
     }
 
-    const { sub: googleId, email, name } = payload;
+    const { sub: googleId, email, name, picture } = payload;
 
     // Cek apakah user sudah ada (berdasarkan google_id atau email)
     const existing = await pool.query(
@@ -46,15 +46,17 @@ router.post("/auth/google", async (req, res) => {
         });
       }
 
-      if (!user.google_id) {
-        await pool.query("UPDATE users SET google_id = $1 WHERE id = $2", [googleId, user.id]);
-      }
+      const updated = await pool.query(
+        "UPDATE users SET google_id = $1, avatar_url = $2 WHERE id = $3 RETURNING *",
+        [googleId, picture, user.id]
+      );
+      user = updated.rows[0];
     } else {
       // User baru dari Google
       const inserted = await pool.query(
-        `INSERT INTO users (name, email, google_id, is_admin)
-         VALUES ($1, $2, $3, false) RETURNING *`,
-        [name, email, googleId]
+        `INSERT INTO users (name, email, google_id, is_admin, avatar_url)
+         VALUES ($1, $2, $3, false, $4) RETURNING *`,
+        [name, email, googleId, picture]
       );
       user = inserted.rows[0];
     }
@@ -66,6 +68,7 @@ router.post("/auth/google", async (req, res) => {
         name: user.name,
         email: user.email,
         is_admin: user.is_admin,
+        avatar_url: user.avatar_url,
       },
     });
   } catch (err) {

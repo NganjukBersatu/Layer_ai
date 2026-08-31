@@ -28,12 +28,13 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior(to, from, savedPosition) {
-    // Ditunda supaya reset/restore scroll baru terjadi SETELAH
-    // transisi page-fade (leave 0.2s) di App.vue selesai.
-    // Kalau langsung (synchronous), halaman lama sempat "dipaksa"
-    // scroll ke atas padahal masih terlihat saat fade-out,
-    // sehingga muncul flash bagian atas halaman sebelumnya.
+    scrollBehavior(to, from, savedPosition) {
+    // Halaman publik (login/register/lupa password) tidak perlu delay,
+    // supaya tidak sempat menampilkan sisa scroll halaman sebelumnya.
+    if (to.meta.public) {
+      return { top: 0 };
+    }
+
     return new Promise((resolve) => {
       setTimeout(() => {
         if (savedPosition) {
@@ -41,7 +42,7 @@ const router = createRouter({
         } else {
           resolve({ top: 0 });
         }
-      }, 300); // sedikit lebih lama dari durasi transisi (0.2s / 200ms)
+      }, 300);
     });
   },
 })
