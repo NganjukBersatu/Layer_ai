@@ -528,12 +528,20 @@ onMounted(async () => {
 
   .catalog-info {
     padding: 9px 9px 10px;
-    min-height: 64px;
+    min-height: 70px;
   }
 
   .catalog-info h3 {
-    font-size: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
   }
+
+  .tag-badge {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 9px;
+}
 
   /* --- Kategori bisa digeser horizontal, KHUSUS mobile --- */
   .category-filter {

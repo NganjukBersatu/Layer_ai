@@ -1133,11 +1133,13 @@ onUnmounted(() => {
 
   .meta {
     padding: 8px 10px 2px;
-    min-height: 76px; /* sesuaikan lagi kalau di HP badge masih beda tinggi */
+    min-height: 82px; /* dinaikkan sedikit karena nama file sekarang lebih besar */
   }
 
   .image-name {
-    font-size: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
   }
 
   .date {
@@ -1156,8 +1158,9 @@ onUnmounted(() => {
   }
 
   .btn {
-    height: 30px;
-    font-size: 12px;
+    height: 34px;
+    font-size: 14px;
+    font-weight: 700;
   }
 }
 
@@ -1402,10 +1405,12 @@ onUnmounted(() => {
 
 .badges {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
   flex-wrap: wrap;
   min-width: 0;
+  min-height: 44px; /* reservasi ruang setara 2 baris badge, supaya tombol Unduh/Hapus tetap sejajar walau jumlah badge beda-beda antar card */
+  align-content: flex-start;
 }
 
 .model-badge,
