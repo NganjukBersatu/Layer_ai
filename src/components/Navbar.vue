@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useClickOutside } from '../composables/useClickOutside.js'
+import { useAuthUser } from '../composables/useAuthUser.js'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -23,6 +24,22 @@ const themeSwitcherRef = ref(null)
 const hamburgerBtnRef = ref(null)
 const mobileMenuRef = ref(null)
 
+
+const { userPhoto, userName, userEmail, isAdmin, clearAuthUser } = useAuthUser()
+const hasAvatar = computed(() => !isAdmin.value && !!userPhoto.value && !avatarLoadFailed.value)
+watch(userPhoto, () => {
+  avatarLoadFailed.value = false
+})
+
+const avatarLoadFailed = ref(false)
+
+function handleAvatarError() {
+  avatarLoadFailed.value = true
+}
+
+const isAvatarMenuOpen = ref(false)
+const avatarSwitcherRef = ref(null)
+
 // Katalog dianggap aktif untuk "/" dan semua sub-halamannya (/catalog/..)
 const isCatalogActive = computed(() =>
   route.path === '/' || route.path.startsWith('/catalog')
@@ -41,12 +58,21 @@ useClickOutside([hamburgerBtnRef, mobileMenuRef], () => {
   isMobileMenuOpen.value = false
 })
 
+useClickOutside(avatarSwitcherRef, () => {
+  isAvatarMenuOpen.value = false
+})
+
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
 function closeMobileMenu() {
   isMobileMenuOpen.value = false
+}
+
+function handleLogout() {
+  clearAuthUser()
+  emit('logout')
 }
 
 function applyTheme(value) {
@@ -144,8 +170,35 @@ onMounted(() => {
         <LanguageSwitcher />
       </div>
 
-      <!-- Logout hanya di desktop -->
-      <button type="button" class="nav-link logout-link desktop-only" @click="emit('logout')">
+      <!-- Avatar Google (desktop) -->
+      <div v-if="hasAvatar" class="avatar-switcher desktop-only" ref="avatarSwitcherRef">
+        <button class="avatar-button" type="button" @click="isAvatarMenuOpen = !isAvatarMenuOpen">
+          <img :src="userPhoto" alt="Foto profil" class="avatar-img" referrerpolicy="no-referrer" @error="handleAvatarError" />
+        </button>
+        <div v-if="isAvatarMenuOpen" class="avatar-menu">
+          <div class="avatar-menu-header">
+            <img :src="userPhoto" alt="Foto profil" class="avatar-menu-photo" referrerpolicy="no-referrer" @error="handleAvatarError" />
+            <div class="avatar-menu-info">
+              <span class="avatar-menu-name">{{ userName }}</span>
+              <span class="avatar-menu-email">{{ userEmail }}</span>
+            </div>
+          </div>
+
+          <div class="avatar-menu-divider"></div>
+
+          <button type="button" class="avatar-menu-item" @click="handleLogout(); isAvatarMenuOpen = false">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            {{ t('input.logout') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Fallback: tombol Keluar biasa (admin / login manual, tidak ada foto) -->
+      <button v-else type="button" class="nav-link logout-link desktop-only" @click="handleLogout">
         {{ t('input.logout') }}
       </button>
 
@@ -157,8 +210,10 @@ onMounted(() => {
         @click="toggleMobileMenu"
         :aria-expanded="isMobileMenuOpen"
       >
+        <!-- Foto profil menggantikan ikon hamburger (kalau ada) -->
+        <img v-if="hasAvatar && !isMobileMenuOpen" :src="userPhoto" alt="Foto profil" class="hamburger-avatar" referrerpolicy="no-referrer" @error="handleAvatarError" />
         <!-- Icon hamburger -->
-        <svg v-if="!isMobileMenuOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <svg v-else-if="!isMobileMenuOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
           <path d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
         <!-- Icon close (X) -->
@@ -294,7 +349,7 @@ onMounted(() => {
       <button
         type="button"
         class="mobile-menu-item logout"
-        @click="emit('logout'); closeMobileMenu()"
+        @click="handleLogout(); closeMobileMenu()"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -440,6 +495,112 @@ onMounted(() => {
   background: color-mix(in srgb, var(--accent-color) 18%, transparent);
   color: var(--accent-color);
   font-weight: 500;
+}
+
+.avatar-switcher {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.avatar-img,
+.hamburger-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+  display: block;
+}
+
+.avatar-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 230px;
+  padding: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 13px;
+  box-shadow: 0 10px 30px var(--shadow-color);
+  z-index: 1000;
+}
+
+.avatar-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+}
+
+.avatar-menu-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.avatar-menu-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.avatar-menu-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-menu-email {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-menu-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 4px 4px 6px;
+}
+
+.avatar-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 9px 11px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #f87171;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.avatar-menu-item:hover {
+  background: #dc2626;
+  color: #fff;
 }
 
 /* ===== Hamburger & Mobile Menu ===== */

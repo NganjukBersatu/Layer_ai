@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useI18n } from 'vue-i18n'
+import { useAuthUser } from '../composables/useAuthUser.js'
 
 const emit = defineEmits(["login", "forgot-password", "register"]);
 const { t, locale } = useI18n()
+const { refreshAuthUser } = useAuthUser()
 
 const username = ref("");
 const password = ref("");
@@ -53,6 +55,8 @@ async function login() {
   localStorage.setItem("userName", data.user.name);
   localStorage.setItem("userEmail", data.user.email);
   localStorage.setItem("isAdmin", data.user.is_admin ? "true" : "false");
+  localStorage.setItem("userPhoto", "");
+  refreshAuthUser();
 
   emit("login");
 
@@ -143,6 +147,8 @@ async function handleGoogleResponse(response) {
       localStorage.setItem("userName", data.user.name);
       localStorage.setItem("userEmail", data.user.email);
       localStorage.setItem("isAdmin", data.user.is_admin ? "true" : "false");
+      localStorage.setItem("userPhoto", data.user.avatar_url || "");
+      refreshAuthUser();
       emit("login");
     } else {
       error.value = data.message;
@@ -254,14 +260,13 @@ function goRegister() {
 
 .login-page {
   position: relative;
-  width: 100vw;                        /* ← tambahan */
-  margin-left: calc(-50vw + 50%);      /* ← tambahan */
-  min-height: calc(100vh - 65px);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   overflow: hidden;
   box-sizing: border-box;
-  padding: 0 16px;
+  padding: 16px 16px 16px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   isolation: isolate;
 }
