@@ -372,6 +372,7 @@ onMounted(async () => {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
+  overflow: hidden;
   box-shadow: 0 3px 12px var(--shadow-color);
   text-decoration: none;
   color: inherit;
@@ -457,6 +458,10 @@ onMounted(async () => {
   padding: 2px 7px;
   border-radius: 999px;
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 
 /* ===== Empty state (hasil pencarian/filter tidak ditemukan) ===== */
@@ -526,9 +531,9 @@ onMounted(async () => {
     gap: 10px;
   }
 
-  .catalog-info {
+    .catalog-info {
     padding: 9px 9px 10px;
-    min-height: 70px;
+    min-height: 95px;
   }
 
   .catalog-info h3 {
@@ -537,11 +542,16 @@ onMounted(async () => {
     line-height: 1.3;
   }
 
-  .tag-badge {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 3px 9px;
-}
+     .tag-badge {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 9px;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
 
   /* --- Kategori bisa digeser horizontal, KHUSUS mobile --- */
   .category-filter {
