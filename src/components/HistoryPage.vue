@@ -38,6 +38,25 @@ const modelFilter = ref("all");
 const sortOrder = ref("newest");
 const isSortMenuOpen = ref(false);
 const sortDropdownRef = ref(null);
+const sortButtonRef = ref(null);
+const sortMenuPosition = ref({});
+
+function toggleSortMenu() {
+  isSortMenuOpen.value = !isSortMenuOpen.value;
+  if (isSortMenuOpen.value) {
+    requestAnimationFrame(() => {
+      const rect = sortButtonRef.value?.getBoundingClientRect();
+      if (rect) {
+        sortMenuPosition.value = {
+          position: "fixed",
+          top: `${rect.bottom + 8}px`,
+          left: `${rect.right - 130}px`,
+        };
+      }
+    });
+  }
+}
+
 const sortOptions = [
   { value: "newest", label: () => t('history.sortNewest') },
   { value: "oldest", label: () => t('history.sortOldest') },
@@ -60,6 +79,13 @@ function handleClickOutsideSort(event) {
     isSortMenuOpen.value = false;
   }
 }
+
+function closeSortMenuOnScroll() {
+  if (isSortMenuOpen.value) {
+    isSortMenuOpen.value = false;
+  }
+}
+
 const API_BASE = "http://localhost:3000";
 
 const previewItem = ref(null);
@@ -123,6 +149,7 @@ const filterTabs = [
   { value: "furry", label: () => t('input.categoryFurry') },
   { value: "kawaii", label: () => t('input.categoryKawaii') },
   { value: "spyxfamily", label: () => t('input.categorySpyxfamily') },
+  { value: "jujutsukaisen", label: () => t('catalog.filterJujutsuKaisen') },
 ];
 
 function getItemCategories(item) {
@@ -425,6 +452,7 @@ onMounted(() => {
   document.addEventListener("click", handleClickOutsideSort);
   document.addEventListener("keydown", handlePreviewKeydown);
   window.addEventListener("scroll", handleScroll, { passive: true });
+  window.addEventListener("scroll", closeSortMenuOnScroll, { passive: true, capture: true });
   window.addEventListener("resize", handleResize);
 });
 
@@ -432,6 +460,7 @@ onUnmounted(() => {
   document.removeEventListener("click", handleClickOutsideSort);
   document.removeEventListener("keydown", handlePreviewKeydown);
   window.removeEventListener("scroll", handleScroll);
+  window.removeEventListener("scroll", closeSortMenuOnScroll, { capture: true });
   window.removeEventListener("resize", handleResize);
 });
 </script>
@@ -472,26 +501,33 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <div class="sort-dropdown" ref="sortDropdownRef">
-          <button type="button" class="sort-button" @click="isSortMenuOpen = !isSortMenuOpen">
+                <div class="sort-dropdown" ref="sortDropdownRef">
+          <button type="button" ref="sortButtonRef" class="sort-button" @click="toggleSortMenu">
             <span>{{ sortOptions.find(o => o.value === sortOrder)?.label() }}</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ rotated: isSortMenuOpen }">
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
 
-          <div v-if="isSortMenuOpen" class="sort-menu">
-            <button
-              v-for="opt in sortOptions"
-              :key="opt.value"
-              type="button"
-              class="sort-option"
-              :class="{ active: sortOrder === opt.value }"
-              @click="selectSort(opt.value)"
+          <Teleport to="body">
+            <div
+              v-if="isSortMenuOpen"
+              class="sort-menu sort-menu-teleported"
+              :style="sortMenuPosition"
+              ref="sortDropdownRef"
             >
-              {{ opt.label() }}
-            </button>
-          </div>
+              <button
+                v-for="opt in sortOptions"
+                :key="opt.value"
+                type="button"
+                class="sort-option"
+                :class="{ active: sortOrder === opt.value }"
+                @click="selectSort(opt.value)"
+              >
+                {{ opt.label() }}
+              </button>
+            </div>
+          </Teleport>
         </div>
       </div>
 
@@ -879,6 +915,12 @@ onUnmounted(() => {
   z-index: 1000;
 }
 
+.sort-menu-teleported {
+  position: fixed;
+  z-index: 99999;
+  width: 130px;
+}
+
 .sort-option {
   width: 100%;
   text-align: left;
@@ -1033,6 +1075,8 @@ onUnmounted(() => {
      di bawah kelihatan patah-patah/kaku saat toolbar mengecil */
   overflow-anchor: none;
   will-change: grid-template-rows;
+    position: relative;
+  z-index: 20;
 }
 
 .toolbar-filter-wrap.collapsed {
@@ -1052,6 +1096,8 @@ onUnmounted(() => {
    posisinya secara ringan, bukan direnderulang */
 .history-grid {
   contain: layout style;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 600px) {
