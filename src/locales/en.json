@@ -60,6 +60,7 @@
   },
   "input": {
     "title": "Input",
+    "backToCatalog": "Back to Catalog",
     "loadingCredit": "Loading credit...",
     "credits": "Credits",
     "addCredit": "+ Add Credit",
@@ -260,6 +261,30 @@
   "submit": "Save Catalog",
 "showCategory": "Choose category type",
 "hideCategory": "Hide category"
+},
+"hero": {
+  "titleBefore": "Split Images Into",
+  "titleHighlight": "Layers",
+  "titleAfter": "with AI",
+  "description": "Turn one image into multiple separate layers automatically. Fast, accurate, and ready to use for all your creative needs.",
+  "cta": "Split Image",
+  "feature1Title": "Smart AI",
+  "feature1Desc": "Detects objects and separates layers automatically",
+  "feature2Title": "Quality Results",
+  "feature2Desc": "Clean separated layers with high transparency",
+  "feature3Title": "Ready to Use",
+  "feature3Desc": "Download layers in transparent PNG format for various creative needs"
+},
+"howItWorks": {
+  "title": "How does AI Layer Splitter work?",
+  "step1Title": "Upload Image",
+  "step1Desc": "Upload the image you want to split into layers",
+  "step2Title": "AI Processes",
+  "step2Desc": "AI detects objects and separates each layer",
+  "step3Title": "Layers Separated",
+  "step3Desc": "Each layer is generated with high transparency",
+  "step4Title": "Download & Use",
+  "step4Desc": "Download the layers and use them for design, anime, or your projects"
 },
   "common": {
     "basic": "Basic",

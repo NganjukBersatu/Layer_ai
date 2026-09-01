@@ -60,6 +60,7 @@
   },
   "input": {
     "title": "入力",
+    "backToCatalog": "カタログに戻る",
     "loadingCredit": "クレジットを読み込み中...",
     "credits": "クレジット",
     "addCredit": "+ クレジットを追加",
@@ -259,6 +260,30 @@
   "submit": "カタログを保存",
 "showCategory": "カテゴリーを選択",
 "hideCategory": "カテゴリーを隠す"
+},
+"hero": {
+  "titleBefore": "画像を",
+  "titleHighlight": "レイヤー",
+  "titleAfter": "にAIで分割",
+  "description": "1枚の画像を自動で複数のレイヤーに分割。速く、正確に、あらゆる創作ニーズにすぐ使えます。",
+  "cta": "画像を分割する",
+  "feature1Title": "スマートAI",
+  "feature1Desc": "オブジェクトを検出し、自動でレイヤーを分離します",
+  "feature2Title": "高品質な結果",
+  "feature2Desc": "高い透明度でクリーンに分離されたレイヤー",
+  "feature3Title": "すぐに使える",
+  "feature3Desc": "透明PNG形式でレイヤーをダウンロードし、様々な創作用途に活用できます"
+},
+"howItWorks": {
+  "title": "AI Layer Splitterの仕組み",
+  "step1Title": "画像をアップロード",
+  "step1Desc": "レイヤーに分割したい画像をアップロードします",
+  "step2Title": "AIが処理",
+  "step2Desc": "AIがオブジェクトを検出し、各レイヤーを分離します",
+  "step3Title": "レイヤー分離完了",
+  "step3Desc": "各レイヤーは高い透明度で生成されます",
+  "step4Title": "ダウンロードして使用",
+  "step4Desc": "レイヤーをダウンロードし、デザインやアニメ、あなたのプロジェクトに活用しましょう"
 },
   "common": {
     "basic": "Basic",

@@ -60,6 +60,7 @@
   },
   "input": {
     "title": "입력",
+    "backToCatalog": "카탈로그로 돌아가기",
     "loadingCredit": "크레딧 불러오는 중...",
     "credits": "크레딧",
     "addCredit": "+ 크레딧 추가",
@@ -260,6 +261,30 @@
   "submit": "카탈로그 저장",
 "showCategory": "카테고리 선택",
 "hideCategory": "카테고리 숨기기"
+},
+"hero": {
+  "titleBefore": "이미지를",
+  "titleHighlight": "레이어",
+  "titleAfter": "로 AI가 분할",
+  "description": "하나의 이미지를 자동으로 여러 개의 레이어로 분리합니다. 빠르고 정확하며, 모든 창작 작업에 바로 사용할 수 있습니다.",
+  "cta": "이미지 분할하기",
+  "feature1Title": "스마트 AI",
+  "feature1Desc": "객체를 감지하고 자동으로 레이어를 분리합니다",
+  "feature2Title": "고품질 결과",
+  "feature2Desc": "높은 투명도로 깔끔하게 분리된 레이어",
+  "feature3Title": "바로 사용 가능",
+  "feature3Desc": "투명 PNG 형식으로 레이어를 다운로드하여 다양한 창작 작업에 활용하세요"
+},
+"howItWorks": {
+  "title": "AI Layer Splitter는 어떻게 작동하나요?",
+  "step1Title": "이미지 업로드",
+  "step1Desc": "레이어로 분할하고 싶은 이미지를 업로드하세요",
+  "step2Title": "AI 처리",
+  "step2Desc": "AI가 객체를 감지하고 각 레이어를 분리합니다",
+  "step3Title": "레이어 분리 완료",
+  "step3Desc": "각 레이어는 높은 투명도로 생성됩니다",
+  "step4Title": "다운로드 후 사용",
+  "step4Desc": "레이어를 다운로드하여 디자인, 애니메이션, 또는 당신의 프로젝트에 활용하세요"
 },
   "common": {
     "basic": "Basic",
