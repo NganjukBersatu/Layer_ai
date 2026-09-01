@@ -60,6 +60,7 @@
   },
   "input": {
     "title": "Input",
+    "backToCatalog": "Kembali ke Katalog",
    "loadingCredit": "Memuat kredit...",
     "credits": "Kredit",
     "addCredit": "+ Tambah Kredit",
