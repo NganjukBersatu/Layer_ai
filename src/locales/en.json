@@ -23,6 +23,7 @@
     "showPassword": "Show password",
     "forgotPassword": "Forgot password?",
     "googleLogin": "Sign in with Google",
+    "orContinueWith": "or",
     "noAccount": "Don't have an account?",
     "register": "Register",
     "requiredFields": "Email and password are required.",
