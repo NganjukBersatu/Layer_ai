@@ -111,27 +111,8 @@ onMounted(() => {
     </div>
 
     <div class="navbar-actions">
-      <!-- Katalog & Split selalu tampil (desktop + mobile) -->
-      <div class="nav-links">
-        <button
-          type="button"
-          class="nav-link"
-          :class="{ active: isCatalogActive }"
-          @click="emit('catalog')"
-        >
-          {{ t('nav.catalog') }}
-        </button>
-
-        <button
-          type="button"
-          class="nav-link"
-          :class="{ active: isSplitActive }"
-          @click="emit('split')"
-        >
-          {{ t('nav.split') }}
-        </button>
-
-      </div>
+      <!-- Split Gambar & Katalog selalu tampil (desktop + mobile) -->
+      <div class="nav-links"></div>
 
       <!-- Theme switcher (hanya desktop) -->
       <div class="theme-switcher desktop-only" ref="themeSwitcherRef">
@@ -205,13 +186,14 @@ onMounted(() => {
       <!-- ===== TOMBOL HAMBURGER di ujung kanan ===== -->
       <button
         class="hamburger-btn"
+        :class="{ 'is-avatar-mode': hasAvatar }"
         type="button"
         ref="hamburgerBtnRef"
         @click="toggleMobileMenu"
         :aria-expanded="isMobileMenuOpen"
       >
-        <!-- Foto profil menggantikan ikon hamburger (kalau ada) -->
-        <img v-if="hasAvatar && !isMobileMenuOpen" :src="userPhoto" alt="Foto profil" class="hamburger-avatar" referrerpolicy="no-referrer" @error="handleAvatarError" />
+        <!-- Foto profil menggantikan ikon hamburger (kalau ada), tetap tampil walau menu terbuka -->
+        <img v-if="hasAvatar" :src="userPhoto" alt="Foto profil" class="hamburger-avatar" referrerpolicy="no-referrer" @error="handleAvatarError" />
         <!-- Icon hamburger -->
         <svg v-else-if="!isMobileMenuOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
           <path d="M4 6h16M4 12h16M4 18h16"/>
@@ -225,37 +207,16 @@ onMounted(() => {
 
     <!-- Mobile menu: hanya Tema + Bahasa + Logout -->
     <div v-if="isMobileMenuOpen" class="mobile-menu" ref="mobileMenuRef">
-      <!-- Menu utama -->
-      <button
-        type="button"
-        class="mobile-menu-item"
-        :class="{ active: isCatalogActive }"
-        @click="emit('catalog'); closeMobileMenu()"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7"/>
-          <rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        {{ t('nav.catalog') }}
-      </button>
 
-      <button
-        type="button"
-        class="mobile-menu-item"
-        :class="{ active: isSplitActive }"
-        @click="emit('split'); closeMobileMenu()"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2 2 7l10 5 10-5-10-5Z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
-        {{ t('nav.split') }}
-      </button>
-
-      <div class="mobile-menu-divider"></div>
+      <!-- Header user info (foto + nama + email) -->
+      <div v-if="hasAvatar" class="mobile-menu-header">
+        <img :src="userPhoto" alt="Foto profil" class="mobile-menu-photo" referrerpolicy="no-referrer" @error="handleAvatarError" />
+        <div class="mobile-menu-user-info">
+          <span class="mobile-menu-user-name">{{ userName }}</span>
+          <span class="mobile-menu-user-email">{{ userEmail }}</span>
+        </div>
+      </div>
+      <div v-if="hasAvatar" class="mobile-menu-divider"></div>
 
       <!-- Tema -->
       <div class="mobile-menu-label">{{ t('theme.sectionTitle') }}</div>
@@ -415,6 +376,24 @@ onMounted(() => {
 .nav-link.active {
   color: var(--accent-color);
   background: var(--bg-accent-soft);
+}
+
+/* Split Gambar = fungsi inti aplikasi, dibuat menonjol sebagai CTA
+   (filled) supaya tidak terlihat setara dengan tab Katalog biasa. */
+.nav-link--primary {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+.nav-link--primary:hover {
+  background: var(--accent-color);
+  color: #fff;
+  opacity: 0.9;
+}
+
+.nav-link--primary.active {
+  background: var(--accent-color);
+  color: #fff;
 }
 
 .logout-link {
@@ -624,6 +603,16 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
+/* Saat menampilkan foto profil, tombol hamburger tidak boleh
+   punya border/background sendiri, supaya avatar tampil bulat
+   polos seperti pada versi desktop (.avatar-button). */
+.hamburger-btn.is-avatar-mode {
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  padding: 0;
+}
+
 .mobile-menu {
   display: none; /* default hidden */
   position: absolute;
@@ -639,6 +628,45 @@ onMounted(() => {
   z-index: 950;
   flex-direction: column;
   gap: 2px;
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 8px 10px;
+}
+
+.mobile-menu-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.mobile-menu-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mobile-menu-user-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-menu-user-email {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mobile-menu-item {
@@ -674,6 +702,26 @@ onMounted(() => {
   font-weight: 500;
 }
 
+/* Split Gambar = fungsi inti, ditandai dengan chip warna solid
+   supaya berbeda dari item menu lainnya (tema, bahasa, dsb). */
+.mobile-menu-item--primary {
+  background: var(--accent-color);
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.mobile-menu-item--primary:hover {
+  background: var(--accent-color);
+  color: #fff;
+  opacity: 0.9;
+}
+
+.mobile-menu-item--primary.active {
+  background: var(--accent-color);
+  color: #fff;
+}
+
 .mobile-menu-divider {
   height: 1px;
   background: var(--border-color);
@@ -690,8 +738,6 @@ onMounted(() => {
   opacity: 0.7;
 }
 
-/* Indikator chevron di wrapper bahasa, supaya terlihat "bisa dibuka"
-   tanpa perlu mengubah markup internal LanguageSwitcher.vue */
 .mobile-menu-flag {
   font-size: 16px;
   line-height: 1;
@@ -734,8 +780,9 @@ onMounted(() => {
     flex-wrap: nowrap;
   }
 
-  .nav-links {
-    display: none; /* Katalog & Split Gambar sudah ada di dalam hamburger */
+  .nav-link {
+    font-size: 12px;
+    padding: 8px 10px;
   }
 
   .theme-button {
