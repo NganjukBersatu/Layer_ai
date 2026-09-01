@@ -238,6 +238,8 @@
   "titlePlaceholder": "Judul karakter",
   "category": "Kategori",
   "categoryHint": "bisa pilih lebih dari satu",
+  "showCategory": "Pilih jenis kategori",
+  "hideCategory": "Sembunyikan kategori",
   "description": "Deskripsi",
   "descriptionPlaceholder": "Tulis deskripsi karakter...",
   "delete": "Hapus",

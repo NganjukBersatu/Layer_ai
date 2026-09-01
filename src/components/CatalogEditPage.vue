@@ -13,6 +13,7 @@ const router = useRouter();
 const item = ref(null);
 const title = ref("");
 const selectedCategories = ref([]);
+const showCategory = ref(false);
 const { t, locale } = useI18n(); // tambahkan locale di sini (baris yang sudah ada, tinggal tambah locale)
 const description = ref({ id: "", en: "", ja: "", ko: "" });
 const originalData = ref(null); // snapshot data tersimpan, untuk fitur "Batal"
@@ -119,19 +120,25 @@ async function handleDelete() {
         </div>
 
         <div class="field-group">
-          <label>{{ t('catalogEdit.category') }} <span class="hint">({{ t('catalogEdit.categoryHint') }})</span></label>
-          <div class="category-checkboxes">
-            <label
-            v-for="cat in availableCategories"
-            :key="cat"
-            class="chip"
-            :class="{ active: isSelected(cat) }"
-            >
-         <input type="checkbox" :value="cat" v-model="selectedCategories" />
-       {{ categoryLabel(cat) }}
-          </label>
-          </div>
-        </div>
+  <div class="category-header">
+    <label>{{ t('catalogEdit.category') }} <span class="hint">({{ t('catalogEdit.categoryHint') }})</span></label>
+    <button type="button" class="toggle-category-btn" @click="showCategory = !showCategory">
+      {{ showCategory ? t('catalogEdit.hideCategory') : t('catalogEdit.showCategory') }}
+    </button>
+  </div>
+
+  <div v-if="showCategory" class="category-checkboxes">
+    <label
+      v-for="cat in availableCategories"
+      :key="cat"
+      class="chip"
+      :class="{ active: isSelected(cat) }"
+    >
+      <input type="checkbox" :value="cat" v-model="selectedCategories" />
+      {{ categoryLabel(cat) }}
+    </label>
+  </div>
+</div>
 
         <div class="field-group">
           <label>{{ t('catalogEdit.description') }}</label>
@@ -261,6 +268,40 @@ async function handleDelete() {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.category-header label {
+  margin-bottom: 0;
+}
+
+.toggle-category-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-primary);
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.toggle-category-btn:hover {
+  background: var(--accent-color);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 35%, transparent);
 }
 
 .chip {
