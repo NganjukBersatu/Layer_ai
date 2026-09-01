@@ -239,6 +239,8 @@
   "titlePlaceholder": "Character title",
   "category": "Category",
   "categoryHint": "can select more than one",
+  "showCategory": "Show categories",
+  "hideCategory": "Hide categories",
   "description": "Description",
   "descriptionPlaceholder": "Write character description...",
   "delete": "Delete",

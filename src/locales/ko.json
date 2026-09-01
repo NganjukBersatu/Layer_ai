@@ -239,6 +239,8 @@
   "titlePlaceholder": "캐릭터 제목",
   "category": "카테고리",
   "categoryHint": "여러 개 선택 가능",
+  "showCategory": "카테고리 선택",
+  "hideCategory": "카테고리 숨기기",
   "description": "설명",
   "descriptionPlaceholder": "캐릭터 설명을 작성하세요...",
   "delete": "삭제",
