@@ -15,6 +15,10 @@ const emit = defineEmits([
 ]);
 const { t } = useI18n()
 
+function goToCatalog() {                
+  router.push('/')
+}
+
 const image = ref(null);
 const imagePreview = ref(null);
 const isDragging = ref(false);
@@ -496,6 +500,11 @@ async function handleSplitClick() {
 </template>
 
 <style scoped>
+.back-to-catalog-btn:hover {
+  color: var(--accent-color);
+  background: var(--bg-accent-soft);
+}
+
 /* ===== Fix responsive: cegah card & gambar overflow di layar sempit ===== */
 .input-card {
   width: 100%;

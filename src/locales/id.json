@@ -263,5 +263,29 @@
   "common": {
     "basic": "Basic",
     "advanced": "Advanced"
+  },
+  "hero": {
+    "titleBefore": "Pisahkan Gambar Menjadi",
+    "titleHighlight": "Layer",
+    "titleAfter": "dengan AI",
+    "description": "Ubah satu gambar menjadi beberapa layer terpisah secara otomatis. Cepat, akurat, dan siap digunakan untuk berbagai kebutuhan kreatifmu.",
+    "cta": "Split Gambar",
+    "feature1Title": "AI Cerdas",
+    "feature1Desc": "Deteksi objek dan pisahkan layer secara otomatis",
+    "feature2Title": "Hasil Berkualitas",
+    "feature2Desc": "Layer terpisah rapi dengan transparansi tinggi",
+    "feature3Title": "Siap Digunakan",
+    "feature3Desc": "Unduh layer dalam format PNG transparan untuk berbagai kebutuhan kreatifmu"
+  },
+  "howItWorks": {
+    "title": "Bagaimana AI Layer Splitter bekerja?",
+    "step1Title": "Upload Gambar",
+    "step1Desc": "Upload gambar yang ingin kamu pisahkan layer-nya",
+    "step2Title": "AI Memproses",
+    "step2Desc": "AI akan mendeteksi objek dan memisahkan setiap layer",
+    "step3Title": "Layer Terpisah",
+    "step3Desc": "Setiap layer dihasilkan dengan transparansi tinggi",
+    "step4Title": "Unduh & Gunakan",
+    "step4Desc": "Unduh layer dan gunakan untuk desain, anime, atau proyekmu"
   }
 }

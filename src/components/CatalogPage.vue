@@ -1,10 +1,40 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from "vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
 
 const { t } = useI18n();
+const router = useRouter();
+
+function goToSplit() {
+  router.push("/split-gambar");
+}
+
+const heroFeatures = [
+  {
+    icon: "brain",
+    titleKey: "hero.feature1Title",
+    descKey: "hero.feature1Desc",
+  },
+  {
+    icon: "sparkle",
+    titleKey: "hero.feature2Title",
+    descKey: "hero.feature2Desc",
+  },
+  {
+    icon: "download",
+    titleKey: "hero.feature3Title",
+    descKey: "hero.feature3Desc",
+  },
+];
+
+const howItWorksSteps = [
+  { icon: "upload", titleKey: "howItWorks.step1Title", descKey: "howItWorks.step1Desc" },
+  { icon: "cpu", titleKey: "howItWorks.step2Title", descKey: "howItWorks.step2Desc" },
+  { icon: "layers", titleKey: "howItWorks.step3Title", descKey: "howItWorks.step3Desc" },
+  { icon: "download", titleKey: "howItWorks.step4Title", descKey: "howItWorks.step4Desc" },
+];
 
 // Directive untuk animasi "muncul" saat elemen masuk ke area layar
 // (bukan langsung semua jalan saat halaman dimuat), jadi card yang
@@ -148,9 +178,97 @@ onMounted(async () => {
   <div class="catalog-page" :class="{ 'is-restoring': isRestoringScroll }">
     <div class="aurora-bg"></div>
 
+    <!-- Hero: menegaskan fungsi inti aplikasi (split gambar jadi layer),
+     supaya Katalog tidak disangka sebagai tujuan utama produk. -->
+    <section class="landing-hero">
+      <div class="hero-content">
+        <h1>
+          {{ t('hero.titleBefore') }}
+          <span class="hero-highlight">{{ t('hero.titleHighlight') }}</span>
+          {{ t('hero.titleAfter') }}
+        </h1>
+        <p>{{ t('hero.description') }}</p>
+
+        <button type="button" class="hero-cta" @click="goToSplit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2 2 7l10 5 10-5-10-5Z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          {{ t('hero.cta') }}
+        </button>
+
+        <div class="hero-badges">
+          <div class="hero-badge-item" v-for="feature in heroFeatures" :key="feature.titleKey">
+            <div class="hero-badge-icon">
+              <svg v-if="feature.icon === 'brain'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M9 9h.01M15 9h.01M8 14s1.5 2 4 2 4-2 4-2"/>
+              </svg>
+              <svg v-else-if="feature.icon === 'sparkle'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+              <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </div>
+            <div class="hero-badge-text">
+              <strong>{{ t(feature.titleKey) }}</strong>
+              <span>{{ t(feature.descKey) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel "Bagaimana bekerja": tampil di kanan hero (desktop),
+       pindah ke bawah hero (mobile) karena flex-direction berubah -->
+      <div class="hero-steps">
+        <h3 class="hero-steps-title">{{ t('howItWorks.title') }}</h3>
+        <div class="hero-steps-row">
+          <div class="hero-step" v-for="(step, idx) in howItWorksSteps" :key="step.titleKey">
+            <div class="hero-step-icon-col">
+              <div class="hero-step-icon">
+                <svg v-if="step.icon === 'upload'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <svg v-else-if="step.icon === 'cpu'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="16" height="16" rx="2"/>
+                  <rect x="9" y="9" width="6" height="6"/>
+                  <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>
+                </svg>
+                <svg v-else-if="step.icon === 'layers'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                  <polyline points="2 17 12 22 22 17"/>
+                  <polyline points="2 12 12 17 22 12"/>
+                </svg>
+                <svg v-else width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </div>
+              <svg v-if="idx < howItWorksSteps.length - 1" class="hero-step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </div>
+            <div class="hero-step-text">
+              <strong>{{ (idx + 1) + '. ' + t(step.titleKey) }}</strong>
+              <span>{{ t(step.descKey) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
     <div class="catalog-header">
       <div class="catalog-header-top">
-        <h1>{{ t('catalog.title') }}</h1>
+        <h2>{{ t('catalog.title') }}</h2>
       </div>
       <p>
         {{ t('catalog.subtitle') }}
@@ -201,7 +319,7 @@ onMounted(async () => {
         <div class="image-container">
           <img :src="item.image" :alt="item.name" />
         </div>
-        
+
         <div class="catalog-info">
           <h3>{{ item.name }}</h3>
           <div class="tag-list">
@@ -243,15 +361,12 @@ onMounted(async () => {
 .catalog-page {
   max-width: 1200px;
   margin: 0 auto;
-  /* PERBAIKAN: halaman Catalog (route "/") tidak menampilkan hero
-     di App.vue, sehingga .app { padding-top: 125px } tampil sebagai
-     ruang kosong polos langsung di bawah Navbar. Margin-top negatif
-     di sini menarik konten ke atas supaya jaraknya lebih dekat,
-     tanpa mengubah .app padding-top (yang masih dipakai halaman lain
-     seperti History / Split Gambar yang punya hero). */
-  margin-top: -25px;
+  /* CATATAN: margin-top negatif yang sebelumnya ada di sini sudah
+     tidak diperlukan karena halaman ini sekarang punya .landing-hero
+     sendiri di bagian atas, jadi tidak ada lagi ruang kosong polos
+     antara Navbar dan konten. */
   padding: 30px 20px 60px;
-  
+
   opacity: 1;
   transition: opacity 0.15s ease;
 }
@@ -259,6 +374,218 @@ onMounted(async () => {
 .catalog-page.is-restoring {
   opacity: 0;
   pointer-events: none;
+}
+
+/* ===== Hero: fungsi inti aplikasi (Split Gambar) ===== */
+.landing-hero {
+  display: flex;
+  align-items: stretch;
+  gap: 32px;
+  text-align: left;
+  padding: 36px 16px 32px;
+  margin-bottom: 8px;
+}
+
+.hero-content {
+  flex: 1 1 480px;
+  max-width: 640px;
+}
+
+.hero-steps {
+  flex: 1 1 320px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--bg-card) 55%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--border-color) 50%, transparent);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.hero-steps-title {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.hero-steps-row {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.hero-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+}
+
+.hero-step-icon-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.hero-step-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.hero-step-arrow {
+  margin-top: 4px;
+  color: var(--border-color);
+}
+
+.hero-step-text strong {
+  display: block;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.hero-step-text span {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.landing-hero h1 {
+  margin: 0 0 10px;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+.hero-highlight {
+  color: var(--accent-color);
+}
+
+.landing-hero p {
+  margin: 0 0 20px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: var(--accent-color);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-color) 40%, transparent);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 24px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.hero-badge-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 190px;
+}
+
+.hero-badge-icon {
+  flex-shrink: 0;
+  color: var(--accent-color);
+  margin-top: 2px;
+}
+
+.hero-badge-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-badge-text strong {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.hero-badge-text span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+@media (max-width: 500px) {
+  .landing-hero {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 4px 20px;
+    gap: 12px;
+  }
+
+  .hero-step {
+    flex: 0 1 40%;
+  }
+
+  .landing-hero h1 {
+    font-size: 21px;
+  }
+
+  .landing-hero p {
+    font-size: 12.5px;
+  }
+
+  .hero-cta {
+    font-size: 13px;
+    padding: 10px 20px;
+  }
+
+  .hero-badges {
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .hero-badge-item {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+.catalog-card:hover .try-split-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.try-split-btn:hover {
+  background: var(--accent-color);
 }
 
 .catalog-header {
@@ -269,6 +596,32 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.section-divider {
+  position: relative;
+  height: 1px;
+  margin: 4px 0 28px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border-color) 15%,
+    var(--border-color) 85%,
+    transparent
+  );
+}
+
+/* Aksen kecil di tengah garis, supaya tidak terlihat seperti <hr> polos */
+.section-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--accent-color);
 }
 
 .add-catalog-btn {
@@ -508,7 +861,6 @@ onMounted(async () => {
 @media (max-width: 500px) {
   .catalog-page {
     padding: 20px 12px 40px;
-    margin-top: -40px;
   }
 
   /*Bagian Yang Perkecil hero/header khusus mobile */

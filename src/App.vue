@@ -104,14 +104,31 @@ function goBackFromHistory() { router.push("/split-gambar"); }
   />
 
   <div class="app" :class="{ 'app--login': route.path === '/login' }">
-    <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== ('/login') && route.path !== ('/register') && route.path !== ('/forgot-password')">
+    <Transition name="hero-fade">
+  <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== ('/login') && route.path !== ('/register') && route.path !== ('/forgot-password')">
+    <div class="hero-inner">
+      <button
+        v-if="route.path === '/split-gambar'"
+        type="button"
+        class="hero-back-btn"
+        @click="goToCatalogRoute"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        {{ t('input.backToCatalog') }}
+      </button>
+
       <p>{{ t('app.subtitle') }}</p>
       <div class="hero-features">
         <span class="hero-feature">⚡ {{ t('app.featureFast') }}</span>
         <span class="hero-feature">🎨 {{ t('app.featureCategory') }}</span>
         <span class="hero-feature">🤖 {{ t('app.featureAi') }}</span>
       </div>
-    </header>
+    </div>
+  </header>
+</Transition>
 
     <main class="workspace">
       <template v-if="!isLoggedIn">
@@ -131,7 +148,7 @@ function goBackFromHistory() { router.push("/split-gambar"); }
 
       <section v-else class="left-panel">
         <router-view v-slot="{ Component, route }">
-          <Transition name="page-fade" mode="out-in">
+          <Transition name="page-fade">
             <component
               :is="Component"
               :key="route.fullPath"
@@ -213,6 +230,7 @@ html {
   color: var(--text-primary);
   transition: background-color 0.2s ease, color 0.2s ease;
   padding-top: 125px;
+  position: relative;
 }
 
 .app--login {
@@ -224,6 +242,38 @@ html {
   margin: 0;
   padding: 0;
   text-align: center;
+  position: relative;   /* tambahkan ini */
+}
+
+.hero-back-btn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.hero-back-btn:hover {
+  color: var(--accent-color);
+  background: var(--bg-accent-soft);
+}
+
+@media (max-width: 600px) {
+  .hero-back-btn {
+    position: static;    /* di mobile: kembali ke alur normal, di atas paragraf */
+    margin: 0 auto 8px;
+  }
 }
 
 .hero p {
@@ -243,6 +293,49 @@ html {
 .page-fade-leave-to {
   opacity: 0;
   transform: translateY(-8px);
+}
+
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.page-fade-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.hero-fade-enter-active,
+.hero-fade-leave-active {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.2s ease, opacity 0.2s ease;
+  overflow: hidden;
+}
+
+.hero-fade-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.hero-fade-enter-from,
+.hero-fade-leave-to {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.hero-fade-enter-to,
+.hero-fade-leave-from {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.hero-inner {
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
 }
 
 .hero-features {
@@ -265,6 +358,11 @@ html {
   border: 1px solid var(--border-color);
   padding: 7px 14px;
   border-radius: 999px;
+}
+
+.workspace,
+.left-panel {
+  position: relative;
 }
 
 /* ===== PERBAIKAN: badge di mobile sekarang wrap ke baris baru,
@@ -293,4 +391,9 @@ html {
   color: #d5d7e5;
 }
 
+@media (max-width: 600px) {
+  .app {
+    padding-top: 68px; /* menyesuaikan tinggi navbar versi mobile */
+  }
+}
 </style>
