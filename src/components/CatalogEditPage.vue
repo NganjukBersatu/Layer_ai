@@ -119,13 +119,19 @@ async function handleDelete() {
           <input v-model="title" type="text" :placeholder="t('catalogEdit.titlePlaceholder')" />
         </div>
 
-        <div class="field-group">
+       <div class="field-group">
   <div class="category-header">
     <label>{{ t('catalogEdit.category') }} <span class="hint">({{ t('catalogEdit.categoryHint') }})</span></label>
-    <button type="button" class="toggle-category-btn" @click="showCategory = !showCategory">
-      {{ showCategory ? t('catalogEdit.hideCategory') : t('catalogEdit.showCategory') }}
-    </button>
   </div>
+
+  <button
+    type="button"
+    class="toggle-category-btn"
+    :class="{ active: showCategory }"
+    @click="showCategory = !showCategory"
+  >
+    {{ showCategory ? t('catalogEdit.hideCategory') : t('catalogEdit.showCategory') }}
+  </button>
 
   <div v-if="showCategory" class="category-checkboxes">
     <label
@@ -271,9 +277,6 @@ async function handleDelete() {
 }
 
 .category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 8px;
 }
 
@@ -282,26 +285,38 @@ async function handleDelete() {
 }
 
 .toggle-category-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  background: var(--bg-primary);
-  border: 1px solid var(--accent-color);
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 10px 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--accent-color);
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.15s ease;
-  white-space: nowrap;
 }
 
 .toggle-category-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.toggle-category-btn.active {
   background: var(--accent-color);
+  border-color: var(--accent-color);
   color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+.toggle-category-btn.active:hover {
+  color: white;
+  opacity: 0.9;
 }
 
 .chip {
