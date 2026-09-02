@@ -59,6 +59,7 @@
 "yearsAgo": "{n} years ago"
   },
   "input": {
+    "login": "Login",
     "title": "Input",
     "backToCatalog": "Back to Catalog",
     "loadingCredit": "Loading credit...",
@@ -247,6 +248,9 @@
   "delete": "Delete",
   "cancel": "Cancel",
   "save": "Save",
+  "translateHint": "The description will be automatically translated into other languages when saved.",
+"translating": "Translating...",
+"translateError": "Failed to translate the description. Please try again.",
   "notFound": "Item not found."
 },
 "catalogNew": {
@@ -254,6 +258,9 @@
   "title": "Add New Catalog",
   "clickToChoose": "Click to choose an image",
   "namePlaceholder": "Character title",
+  "translateHint": "Write the description in any language, it will be automatically translated into other languages.",
+"translating": "Translating...",
+"translateError": "Failed to translate the description. Please try again.",
   "descriptionPlaceholder": "Short description",
   "requiredFields": "Image and title are required.",
   "saveError": "An error occurred while saving the catalog.",

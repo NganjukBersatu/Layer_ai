@@ -59,6 +59,7 @@
 "yearsAgo": "{n} tahun lalu"
   },
   "input": {
+    "login": "Masuk",
     "title": "Input",
     "backToCatalog": "Kembali ke Katalog",
    "loadingCredit": "Memuat kredit...",
@@ -246,6 +247,9 @@
   "delete": "Hapus",
   "cancel": "Batal",
   "save": "Simpan",
+  "translateHint": "Deskripsi akan otomatis diterjemahkan ke bahasa lain saat disimpan.",
+"translating": "Menerjemahkan...",
+"translateError": "Gagal menerjemahkan deskripsi. Coba lagi.",
   "notFound": "Item tidak ditemukan."
 },
 "catalogNew": {
@@ -253,6 +257,9 @@
   "title": "Tambah Katalog Baru",
   "clickToChoose": "Klik untuk pilih gambar",
   "namePlaceholder": "Judul karakter",
+  "translateHint": "Tulis deskripsi dalam bahasa apa saja, nanti diterjemahkan otomatis ke bahasa lain.",
+"translating": "Menerjemahkan...",
+"translateError": "Gagal menerjemahkan deskripsi. Coba lagi.",
   "descriptionPlaceholder": "Deskripsi singkat",
   "requiredFields": "Gambar dan judul wajib diisi.",
   "saveError": "Terjadi kesalahan saat menyimpan katalog.",

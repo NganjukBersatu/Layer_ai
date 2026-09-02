@@ -3,17 +3,27 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useClickOutside } from '../composables/useClickOutside.js'
 import { useAuthUser } from '../composables/useAuthUser.js'
+import { useLoginModal } from '../composables/useLoginModal.js'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
 const route = useRoute()
+const { openLoginModal } = useLoginModal()
+
+const props = defineProps({
+  isLoggedIn: { type: Boolean, default: false }
+})
 
 const emit = defineEmits([
   'catalog',
   'split',
   'logout',
 ])
+
+function goToLogin() {
+  openLoginModal()
+}
 
 const theme = ref(localStorage.getItem('theme') || 'light')
 const isThemeMenuOpen = ref(false)
@@ -151,36 +161,43 @@ onMounted(() => {
         <LanguageSwitcher />
       </div>
 
-      <!-- Avatar Google (desktop) -->
-      <div v-if="hasAvatar" class="avatar-switcher desktop-only" ref="avatarSwitcherRef">
-        <button class="avatar-button" type="button" @click="isAvatarMenuOpen = !isAvatarMenuOpen">
-          <img :src="userPhoto" alt="Foto profil" class="avatar-img" referrerpolicy="no-referrer" @error="handleAvatarError" />
-        </button>
-        <div v-if="isAvatarMenuOpen" class="avatar-menu">
-          <div class="avatar-menu-header">
-            <img :src="userPhoto" alt="Foto profil" class="avatar-menu-photo" referrerpolicy="no-referrer" @error="handleAvatarError" />
-            <div class="avatar-menu-info">
-              <span class="avatar-menu-name">{{ userName }}</span>
-              <span class="avatar-menu-email">{{ userEmail }}</span>
-            </div>
-          </div>
-
-          <div class="avatar-menu-divider"></div>
-
-          <button type="button" class="avatar-menu-item" @click="handleLogout(); isAvatarMenuOpen = false">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-            {{ t('input.logout') }}
+            <template v-if="isLoggedIn">
+        <!-- Avatar Google (desktop) -->
+        <div v-if="hasAvatar" class="avatar-switcher desktop-only" ref="avatarSwitcherRef">
+          <button class="avatar-button" type="button" @click="isAvatarMenuOpen = !isAvatarMenuOpen">
+            <img :src="userPhoto" alt="Foto profil" class="avatar-img" referrerpolicy="no-referrer" @error="handleAvatarError" />
           </button>
-        </div>
-      </div>
+          <div v-if="isAvatarMenuOpen" class="avatar-menu">
+            <div class="avatar-menu-header">
+              <img :src="userPhoto" alt="Foto profil" class="avatar-menu-photo" referrerpolicy="no-referrer" @error="handleAvatarError" />
+              <div class="avatar-menu-info">
+                <span class="avatar-menu-name">{{ userName }}</span>
+                <span class="avatar-menu-email">{{ userEmail }}</span>
+              </div>
+            </div>
 
-      <!-- Fallback: tombol Keluar biasa (admin / login manual, tidak ada foto) -->
-      <button v-else type="button" class="nav-link logout-link desktop-only" @click="handleLogout">
-        {{ t('input.logout') }}
+            <div class="avatar-menu-divider"></div>
+
+            <button type="button" class="avatar-menu-item" @click="handleLogout(); isAvatarMenuOpen = false">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              {{ t('input.logout') }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Fallback: tombol Keluar biasa (admin / login manual, tidak ada foto) -->
+        <button v-else type="button" class="nav-link logout-link desktop-only" @click="handleLogout">
+          {{ t('input.logout') }}
+        </button>
+      </template>
+
+      <!-- Guest: belum login -->
+      <button v-else type="button" class="nav-link login-link desktop-only" @click="goToLogin">
+        {{ t('input.login') }}
       </button>
 
       <!-- ===== TOMBOL HAMBURGER di ujung kanan ===== -->
@@ -304,10 +321,11 @@ onMounted(() => {
         한국어
       </button>
 
-      <div class="mobile-menu-divider"></div>
+           <div class="mobile-menu-divider"></div>
 
-      <!-- Logout -->
+      <!-- Logout (login) -->
       <button
+        v-if="isLoggedIn"
         type="button"
         class="mobile-menu-item logout"
         @click="handleLogout(); closeMobileMenu()"
@@ -318,6 +336,15 @@ onMounted(() => {
           <line x1="21" y1="12" x2="9" y2="12"/>
         </svg>
         {{ t('input.logout') }}
+      </button>
+
+      <button
+        v-else
+        type="button"
+        class="mobile-menu-item"
+        @click="goToLogin(); closeMobileMenu()"
+      >
+        {{ t('input.login') }}
       </button>
     </div>
   </nav>
