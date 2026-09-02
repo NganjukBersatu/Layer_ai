@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { translateToAllLocales } from "../utils/translate.js";
 
 const { t } = useI18n();
 
@@ -13,6 +14,7 @@ const name = ref("");
 const description = ref("");
 const selectedCategories = ref([]);
 const isSubmitting = ref(false);
+const isTranslating = ref(false);
 const errorMsg = ref("");
 const isCategoryExpanded = ref(false);
 
@@ -46,14 +48,31 @@ async function handleSubmit() {
     return;
   }
 
-  isSubmitting.value = true;
   errorMsg.value = "";
+
+  // 1. Terjemahkan deskripsi (bahasa apa saja yang diketik user) ke
+  //    semua bahasa yang didukung (id/en/ja/ko) SEBELUM dikirim ke server.
+  //    Jadi user tidak perlu ketik ulang manual per bahasa.
+  let descriptionPayload = "";
+  try {
+    isTranslating.value = true;
+    const translated = await translateToAllLocales(description.value);
+    descriptionPayload = JSON.stringify(translated);
+  } catch (err) {
+    errorMsg.value = t('catalogNew.translateError');
+    isTranslating.value = false;
+    return;
+  } finally {
+    isTranslating.value = false;
+  }
+
+  isSubmitting.value = true;
 
   try {
     const formData = new FormData();
     formData.append("image", imageFile.value);
     formData.append("name", name.value);
-    formData.append("description", description.value);
+    formData.append("description", descriptionPayload);
     formData.append("category", JSON.stringify(selectedCategories.value));
 
     const userId = localStorage.getItem("userId");
@@ -105,6 +124,7 @@ async function handleSubmit() {
             class="text-input"
           rows="3"
           ></textarea>
+          <p class="translate-hint">{{ t('catalogNew.translateHint') }}</p>
 
         <!-- ===== Kategori: tombol toggle, chip baru muncul saat diklik ===== -->
         <div class="category-block">
@@ -166,8 +186,8 @@ async function handleSubmit() {
 
         <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
-        <button class="submit-btn" :disabled="isSubmitting" @click="handleSubmit">
-          {{t('catalogNew.submit')}}
+        <button class="submit-btn" :disabled="isSubmitting || isTranslating" @click="handleSubmit">
+          {{ isTranslating ? t('catalogNew.translating') : t('catalogNew.submit') }}
         </button>
       </div>
     </div>
@@ -290,6 +310,12 @@ textarea.text-input {
   min-height: 220px;
   resize: vertical;
   line-height: 1.5;
+}
+
+.translate-hint {
+  margin: -8px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 /* =====================================

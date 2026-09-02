@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { fetchItemById, updateItem, deleteItem } from "../data/catalogStore.js";
 import { useCategoryLabel } from "../utils/category.js";
+import { translateToAllLocales } from "../utils/translate.js";
 
 const categoryLabel = useCategoryLabel();
 
@@ -14,18 +15,19 @@ const item = ref(null);
 const title = ref("");
 const selectedCategories = ref([]);
 const showCategory = ref(false);
-const { t, locale } = useI18n(); // tambahkan locale di sini (baris yang sudah ada, tinggal tambah locale)
-const description = ref({ id: "", en: "", ja: "", ko: "" });
-const originalData = ref(null); // snapshot data tersimpan, untuk fitur "Batal"
+const { t } = useI18n();
 
-const currentDescription = computed({
-  get() {
-    return description.value[locale.value] || "";
-  },
-  set(value) {
-    description.value[locale.value] = value;
-  }
-});
+// `description` = objek lengkap 4 bahasa {id, en, ja, ko}, ini yang
+// akhirnya dikirim ke server. `descriptionText` = SATU textarea yang
+// diedit user (bahasa apa saja, bebas). Tidak ada lagi ganti-locale
+// manual per bahasa: begitu disimpan, seluruh `description` otomatis
+// di-generate ulang dari `descriptionText` lewat translateToAllLocales.
+const description = ref({ id: "", en: "", ja: "", ko: "" });
+const descriptionText = ref("");
+const isTranslating = ref(false);
+const errorMsg = ref("");
+
+const originalData = ref(null); // snapshot data tersimpan, untuk fitur "Batal"
 
 const availableCategories = [
   "Anime", "Chibi", "Furry", "Kawaii", "Spy X Family", "Jujutsu Kaisen",
@@ -52,26 +54,36 @@ function normalizeCategories(cats) {
   return [...new Set(normalized)];
 }
 
+// Ambil satu teks "wakil" dari objek deskripsi lama untuk ditaruh di
+// textarea saat halaman dibuka (prioritas: id -> en -> ja -> ko).
+function pickPrimaryText(descObj) {
+  if (!descObj) return "";
+  return descObj.id || descObj.en || descObj.ja || descObj.ko || "";
+}
+
 onMounted(async () => {
   item.value = await fetchItemById(route.params.id);
   if (item.value) {
     title.value = item.value.name;
     selectedCategories.value = normalizeCategories(item.value.category || []);
+
     let desc = item.value.description;
-if (typeof desc === 'string') {
-  try {
-    desc = JSON.parse(desc);
-  } catch (e) {
-    desc = { id: desc, en: "", ja: "", ko: "" }; // kalau data lama masih teks polos, taruh sbg versi Indo
-  }
-}
-description.value = desc || { id: "", en: "", ja: "", ko: "" };
+    if (typeof desc === 'string') {
+      try {
+        desc = JSON.parse(desc);
+      } catch (e) {
+        desc = { id: desc, en: "", ja: "", ko: "" }; // kalau data lama masih teks polos, taruh sbg versi Indo
+      }
+    }
+    description.value = desc || { id: "", en: "", ja: "", ko: "" };
+    descriptionText.value = pickPrimaryText(description.value);
 
     // simpan snapshot data asli untuk fitur tombol "Batal"
     originalData.value = {
       title: title.value,
       selectedCategories: [...selectedCategories.value],
       description: { ...description.value },
+      descriptionText: descriptionText.value,
     };
   }
 });
@@ -85,9 +97,30 @@ function handleCancel() {
   title.value = originalData.value.title;
   selectedCategories.value = [...originalData.value.selectedCategories];
   description.value = { ...originalData.value.description };
+  descriptionText.value = originalData.value.descriptionText;
+  errorMsg.value = "";
 }
 
 async function handleUpload() {
+  errorMsg.value = "";
+
+  // Terjemahkan ulang HANYA kalau teks deskripsi memang diubah user,
+  // supaya tidak boros memanggil API translate kalau tidak perlu.
+  const textChanged = descriptionText.value.trim() !== (originalData.value?.descriptionText || "").trim();
+
+  if (textChanged) {
+    try {
+      isTranslating.value = true;
+      description.value = await translateToAllLocales(descriptionText.value);
+    } catch (err) {
+      errorMsg.value = t('catalogEdit.translateError');
+      isTranslating.value = false;
+      return;
+    } finally {
+      isTranslating.value = false;
+    }
+  }
+
   await updateItem(route.params.id, {
     name: title.value,
     category: selectedCategories.value,
@@ -148,13 +181,18 @@ async function handleDelete() {
 
         <div class="field-group">
           <label>{{ t('catalogEdit.description') }}</label>
-          <textarea v-model="currentDescription" rows="12" :placeholder="t('catalogEdit.descriptionPlaceholder')"></textarea>
+          <textarea v-model="descriptionText" rows="12" :placeholder="t('catalogEdit.descriptionPlaceholder')"></textarea>
+          <p class="translate-hint">{{ t('catalogEdit.translateHint') }}</p>
         </div>
+
+        <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
         <div class="edit-actions">
           <button class="btn-cancel" @click="handleCancel">{{ t('catalogEdit.cancel') }}</button>
           <button class="btn-delete" @click="handleDelete">{{ t('catalogEdit.delete') }}</button>
-          <button class="btn-upload" @click="handleUpload">{{ t('catalogEdit.save') }}</button>
+          <button class="btn-upload" :disabled="isTranslating" @click="handleUpload">
+            {{ isTranslating ? t('catalogEdit.translating') : t('catalogEdit.save') }}
+          </button>
         </div>
       </div>
     </div>
@@ -268,6 +306,18 @@ async function handleDelete() {
   resize: vertical;
   line-height: 1.5;
   min-height: 260px;
+}
+
+.translate-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.error-msg {
+  color: #e53e3e;
+  font-size: 13px;
+  margin: 0 0 12px;
 }
 
 .category-checkboxes {
@@ -403,6 +453,11 @@ async function handleDelete() {
 
 .btn-upload:hover {
   opacity: 0.9;
+}
+
+.btn-upload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .not-found {

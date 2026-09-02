@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Navbar from "./components/Navbar.vue";
+import LoginModal from "./components/LoginModal.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
@@ -20,10 +21,10 @@ const selectedCategory = ref("none");
 const selectedUserId = ref(null);
 const selectedCreditAmount = ref(0);
 
-function loginSuccess() {
+function loginSuccess(redirectPath) {
   isLoggedIn.value = true;
   localStorage.setItem("isLoggedIn", "true");
-  router.push("/");
+  router.push(redirectPath || "/");
 }
 
 function logout() {
@@ -37,15 +38,7 @@ function logout() {
   selectedPreview.value = null;
   resultLayers.value = null;
 
-  router.push("/login");
-}
-
-function goToCatalog() {
-  currentPage.value = "catalog";
-}
-
-function goToInput() {
-  currentPage.value = "input";
+  router.push("/"); 
 }
 
 function goToForgotPassword() { router.push("/forgot-password"); }
@@ -95,13 +88,15 @@ function goBackFromHistory() { router.push("/split-gambar"); }
 </script>
 
 <template>
-  <Navbar
+     <Navbar
     v-if="!['/login', '/forgot-password', '/register'].includes(route.path)"
+    :isLoggedIn="isLoggedIn"
     @catalog="goToCatalogRoute"
     @split="goToInputRoute"
     @history="goToHistoryRoute"
     @logout="logout"
   />
+  <LoginModal @login="loginSuccess" />
 
   <div class="app" :class="{ 'app--login': route.path === '/login' }">
     <Transition name="hero-fade">
@@ -130,25 +125,10 @@ function goBackFromHistory() { router.push("/split-gambar"); }
   </header>
 </Transition>
 
-    <main class="workspace">
-      <template v-if="!isLoggedIn">
-        <router-view v-slot="{ Component }">
-          <Transition name="page-fade" mode="out-in">
-            <component
-              :is="Component"
-              @login="loginSuccess"
-              @forgot-password="goToForgotPassword"
-              @register="goToRegister"
-              @back-to-login="backToLogin"
-              @registered="backToLogin"
-            />
-          </Transition>
-        </router-view>
-      </template>
-
-      <section v-else class="left-panel">
+       <main class="workspace">
+      <section class="left-panel">
         <router-view v-slot="{ Component, route }">
-          <Transition name="page-fade">
+          <Transition name="page-fade" mode="out-in">
             <component
               :is="Component"
               :key="route.fullPath"
@@ -159,6 +139,11 @@ function goBackFromHistory() { router.push("/split-gambar"); }
               :category="selectedCategory"
               :userId="selectedUserId"
               :creditAmount="selectedCreditAmount"
+              @login="loginSuccess"
+              @forgot-password="goToForgotPassword"
+              @register="goToRegister"
+              @back-to-login="backToLogin"
+              @registered="backToLogin"
               @split="goToInputRoute"
               @history="goToHistoryRoute"
               @logout="logout"

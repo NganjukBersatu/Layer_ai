@@ -59,6 +59,7 @@
 "yearsAgo": "{n}年前"
   },
   "input": {
+    "login": "ログイン",
     "title": "入力",
     "backToCatalog": "カタログに戻る",
     "loadingCredit": "クレジットを読み込み中...",
@@ -246,6 +247,9 @@
   "delete": "削除",
   "cancel": "キャンセル",
   "save": "保存",
+  "translateHint": "保存すると、説明文は自動的に他の言語に翻訳されます。",
+"translating": "翻訳中...",
+"translateError": "説明文の翻訳に失敗しました。もう一度お試しください。",
   "notFound": "アイテムが見つかりません。"
 },
 "catalogNew": {
@@ -253,6 +257,9 @@
   "title": "新しいカタログを追加",
   "clickToChoose": "クリックして画像を選択",
   "namePlaceholder": "キャラクタータイトル",
+  "translateHint": "保存すると、説明文は自動的に他の言語に翻訳されます。",
+"translating": "翻訳中...",
+"translateError": "説明文の翻訳に失敗しました。もう一度お試しください。",
   "descriptionPlaceholder": "簡単な説明",
   "requiredFields": "画像とタイトルは必須です。",
   "saveError": "カタログの保存中にエラーが発生しました。",
