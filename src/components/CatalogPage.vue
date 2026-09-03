@@ -3,6 +3,7 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { catalogItems, fetchCatalog } from "../data/catalogStore.js";
+import { useAuthUser } from "../composables/useAuthUser.js";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -56,7 +57,12 @@ const vReveal = {
   },
 };
 
-const isAdmin = computed(() => localStorage.getItem("isAdmin") === "true");
+// isAdmin diambil dari useAuthUser.js (state reactive yang dibagikan
+// ke seluruh aplikasi), BUKAN dari localStorage.getItem() langsung.
+// Ini supaya tombol "+" langsung muncul begitu login berhasil, tanpa
+// perlu buka halaman lain dulu untuk memicu remount komponen.
+const { isAdmin } = useAuthUser();
+
 const isRestoringScroll = ref(true);
 
 const selectedCategory = ref("all");
@@ -361,10 +367,6 @@ onMounted(async () => {
 .catalog-page {
   max-width: 1200px;
   margin: 0 auto;
-  /* CATATAN: margin-top negatif yang sebelumnya ada di sini sudah
-     tidak diperlukan karena halaman ini sekarang punya .landing-hero
-     sendiri di bagian atas, jadi tidak ada lagi ruang kosong polos
-     antara Navbar dan konten. */
   padding: 30px 20px 60px;
 
   opacity: 1;
@@ -543,12 +545,34 @@ onMounted(async () => {
   line-height: 1.4;
 }
 
+/* Reservasi tinggi ekstra (biar rapi antar bahasa) HANYA di desktop,
+   karena di desktop badge tersusun sejajar dan butuh tinggi seragam.
+   Di mobile badge tersusun ke bawah satu-satu, jadi tidak perlu ini. */
+@media (min-width: 501px) {
+  .hero-badge-text span {
+    min-height: calc(1.4em * 2);
+  }
+
+  .landing-hero p {
+    min-height: calc(1.6em * 3);
+  }
+}
+
 @media (max-width: 500px) {
   .landing-hero {
     flex-direction: column;
     align-items: stretch;
     padding: 12px 4px 20px;
     gap: 12px;
+  }
+
+  /* PENTING: flex-basis 480px pada .hero-content awalnya untuk LEBAR
+     (saat landing-hero row/desktop). Begitu landing-hero jadi column
+     (mobile), angka itu otomatis dibaca sebagai TINGGI minimum, bikin
+     ruang kosong di bawah teks yang pendek (mis. Jepang/Korea).
+     "auto" membatalkan itu, tinggi mengikuti isi konten sepenuhnya. */
+  .hero-content {
+    flex-basis: auto;
   }
 
   .hero-step {
@@ -611,7 +635,6 @@ onMounted(async () => {
   );
 }
 
-/* Aksen kecil di tengah garis, supaya tidak terlihat seperti <hr> polos */
 .section-divider::before {
   content: "";
   position: absolute;
@@ -716,8 +739,6 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  /* Membuat semua item grid setinggi item tertinggi di barisnya,
-     supaya .catalog-card bisa "stretch" mengisi penuh (lihat di bawah) */
   align-items: stretch;
 }
 
@@ -735,15 +756,11 @@ onMounted(async () => {
   min-width: 0;
   cursor: pointer;
 
-  /* Kondisi awal sebelum card masuk ke layar */
   opacity: 0;
   transform: translateY(28px);
   transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.25s ease;
 }
 
-/* Class ini ditambahkan oleh directive v-reveal saat card
-   terdeteksi masuk ke area layar (scroll-triggered), bukan
-   langsung semua jalan saat halaman baru dibuka */
 .catalog-card.is-visible {
   opacity: 1;
   transform: translateY(0);
@@ -759,11 +776,6 @@ onMounted(async () => {
   transform: scale(1.05);
 }
 
-/* KUNCI PERBAIKAN: sebelumnya .image-container tidak punya tinggi/rasio
-   tetap, sehingga tingginya mengikuti ukuran asli tiap gambar (yang
-   berbeda-beda), membuat card jadi tidak seragam. Dengan aspect-ratio,
-   semua .image-container sekarang punya proporsi yang sama persis,
-   dan img di dalamnya (object-fit: cover) otomatis menyesuaikan/crop. */
 .image-container {
   width: 100%;
   aspect-ratio: 3 / 4;
@@ -817,7 +829,6 @@ onMounted(async () => {
   display: inline-block;
 }
 
-/* ===== Empty state (hasil pencarian/filter tidak ditemukan) ===== */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -863,7 +874,6 @@ onMounted(async () => {
     padding: 20px 12px 40px;
   }
 
-  /*Bagian Yang Perkecil hero/header khusus mobile */
   .catalog-header {
     margin-bottom: 14px;
   }
@@ -883,21 +893,21 @@ onMounted(async () => {
     gap: 10px;
   }
 
-    .catalog-info {
-    padding: 9px 9px 10px;
-    min-height: 95px;
+  .catalog-info {
+    padding: 8px 8px 10px;
+    min-height: 78px;
   }
 
   .catalog-info h3 {
-    font-size: 17px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 1.3;
   }
 
-     .tag-badge {
-    font-size: 13px;
+  .tag-badge {
+    font-size: 10px;
     font-weight: 600;
-    padding: 3px 9px;
+    padding: 2px 7px;
     white-space: nowrap;
     max-width: 100%;
     overflow: hidden;
@@ -905,7 +915,6 @@ onMounted(async () => {
     display: inline-block;
   }
 
-  /* --- Kategori bisa digeser horizontal, KHUSUS mobile --- */
   .category-filter {
     flex-wrap: nowrap;
     overflow-x: auto;

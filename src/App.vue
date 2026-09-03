@@ -1,9 +1,13 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Navbar from "./components/Navbar.vue";
 import LoginModal from "./components/LoginModal.vue";
 import { useI18n } from "vue-i18n";
+
+if ('scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
 
 const { t } = useI18n();
 const router = useRouter();
@@ -40,6 +44,19 @@ function logout() {
 
   router.push("/"); 
 }
+
+function resetScroll() {
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+onMounted(() => {
+  resetScroll();
+  window.addEventListener('load', resetScroll);
+  setTimeout(resetScroll, 100);
+  setTimeout(resetScroll, 500);
+});
 
 function goToForgotPassword() { router.push("/forgot-password"); }
 function goToRegister() { router.push("/register"); }
@@ -103,17 +120,18 @@ function goBackFromHistory() { router.push("/split-gambar"); }
   <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== ('/login') && route.path !== ('/register') && route.path !== ('/forgot-password')">
     <div class="hero-inner">
       <button
-        v-if="route.path === '/split-gambar'"
-        type="button"
-        class="hero-back-btn"
-        @click="goToCatalogRoute"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"/>
-          <polyline points="12 19 5 12 12 5"/>
-        </svg>
-        {{ t('input.backToCatalog') }}
-      </button>
+  v-if="route.path === '/split-gambar'"
+  type="button"
+  class="hero-back-btn"
+  @click="goToCatalogRoute"
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"/>
+    <polyline points="12 19 5 12 12 5"/>
+  </svg>
+  <span class="hero-back-text-full">{{ t('input.backToCatalog') }}</span>
+  <span class="hero-back-text-short">{{ t('history.back') }}</span>
+</button>
 
       <p>{{ t('app.subtitle') }}</p>
       <div class="hero-features">
@@ -254,10 +272,24 @@ html {
   background: var(--bg-accent-soft);
 }
 
+.hero-back-text-short {
+  display: none;
+}
+
 @media (max-width: 600px) {
   .hero-back-btn {
     position: static;    /* di mobile: kembali ke alur normal, di atas paragraf */
-    margin: 0 auto 8px;
+    display: flex; 
+    width: fit-content;
+    margin: 0 0 8px;      /* HAPUS "auto" di kiri, ini yang bikin dia ke tengah */
+  }
+
+  .hero-back-text-full {
+    display: none;
+  }
+
+  .hero-back-text-short {
+    display: inline;
   }
 }
 
