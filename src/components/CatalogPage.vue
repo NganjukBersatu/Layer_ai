@@ -72,7 +72,10 @@ const filteredItems = computed(() => {
   let items = catalogItems;
 
   if (selectedCategory.value !== "all") {
-    items = items.filter((item) => item.category?.includes(selectedCategory.value));
+    const target = normalizeTag(selectedCategory.value);
+    items = items.filter((item) =>
+      item.category?.some((tag) => normalizeTag(tag) === target)
+    );
   }
 
   if (searchQuery.value.trim() !== "") {

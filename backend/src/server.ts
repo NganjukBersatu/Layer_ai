@@ -10,6 +10,7 @@ import geminiSplitRouter from "./openrouter-split";
 import { removeBackground } from "@imgly/background-removal-node";
 import catalogRouter from "./routes/catalog.route";
 import authRoute from './routes/auth.route';
+import translateRouter from "./routes/translate.route";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/", geminiSplitRouter);
 
 app.use("/", catalogRouter);
+app.use("/", translateRouter);
 
 app.use("/", authRoute);
 
