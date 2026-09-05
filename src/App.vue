@@ -96,16 +96,11 @@ function restart() {
 
 function deleteResult() { resultLayers.value = null; }
 
-// PENTING: fungsi ini hanya akan terpanggil kalau HistoryPage.vue
-// meng-emit event bernama "back-from-history". Pastikan di HistoryPage.vue
-// tombol Kembali menggunakan: emit('back-from-history'), BUKAN emit('back').
-// Jika masih emit('back'), yang akan terpanggil justru goBack() di bawah,
-// yang mengarah ke halaman Catalog ("/").
 function goBackFromHistory() { router.push("/split-gambar"); }
 </script>
 
 <template>
-     <Navbar
+  <Navbar
     v-if="!['/login', '/forgot-password', '/register'].includes(route.path)"
     :isLoggedIn="isLoggedIn"
     @catalog="goToCatalogRoute"
@@ -117,33 +112,33 @@ function goBackFromHistory() { router.push("/split-gambar"); }
 
   <div class="app" :class="{ 'app--login': route.path === '/login' }">
     <Transition name="hero-fade">
-  <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== ('/login') && route.path !== ('/register') && route.path !== ('/forgot-password')">
-    <div class="hero-inner">
-      <button
-  v-if="route.path === '/split-gambar'"
-  type="button"
-  class="hero-back-btn"
-  @click="goToCatalogRoute"
->
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="19" y1="12" x2="5" y2="12"/>
-    <polyline points="12 19 5 12 12 5"/>
-  </svg>
-  <span class="hero-back-text-full">{{ t('input.backToCatalog') }}</span>
-  <span class="hero-back-text-short">{{ t('history.back') }}</span>
-</button>
+      <header class="hero" v-if="route.path !== '/' && !route.path.startsWith('/catalog') && route.path !== ('/login') && route.path !== ('/register') && route.path !== ('/forgot-password')">
+        <div class="hero-inner">
+          <button
+            v-if="route.path === '/split-gambar'"
+            type="button"
+            class="hero-back-btn"
+            @click="goToCatalogRoute"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            <span class="hero-back-text-full">{{ t('input.backToCatalog') }}</span>
+            <span class="hero-back-text-short">{{ t('history.back') }}</span>
+          </button>
 
-      <p>{{ t('app.subtitle') }}</p>
-      <div class="hero-features">
-        <span class="hero-feature">⚡ {{ t('app.featureFast') }}</span>
-        <span class="hero-feature">🎨 {{ t('app.featureCategory') }}</span>
-        <span class="hero-feature">🤖 {{ t('app.featureAi') }}</span>
-      </div>
-    </div>
-  </header>
-</Transition>
+          <p>{{ t('app.subtitle') }}</p>
+          <div class="hero-features">
+            <span class="hero-feature">⚡ {{ t('app.featureFast') }}</span>
+            <span class="hero-feature">🎨 {{ t('app.featureCategory') }}</span>
+            <span class="hero-feature">🤖 {{ t('app.featureAi') }}</span>
+          </div>
+        </div>
+      </header>
+    </Transition>
 
-       <main class="workspace">
+    <main class="workspace">
       <section class="left-panel">
         <router-view v-slot="{ Component, route }">
           <Transition name="page-fade" mode="out-in">
@@ -232,7 +227,7 @@ html {
   background: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.2s ease, color 0.2s ease;
-  padding-top: 125px;
+  padding-top: 70px;          /* ← diubah dari 80px */
   position: relative;
 }
 
@@ -240,12 +235,12 @@ html {
   padding-top: 24px;
 }
 
-/* ===== hero (badge) tidak lagi pakai margin bawaan browser ===== */
+/* ===== hero ===== */
 .hero {
   margin: 0;
-  padding: 0;
+  padding: 8px 16px 4px;     /* ← diperkecil */
   text-align: center;
-  position: relative;   /* tambahkan ini */
+  position: relative;
 }
 
 .hero-back-btn {
@@ -278,10 +273,10 @@ html {
 
 @media (max-width: 600px) {
   .hero-back-btn {
-    position: static;    /* di mobile: kembali ke alur normal, di atas paragraf */
+    position: static;
     display: flex; 
     width: fit-content;
-    margin: 0 0 8px;      /* HAPUS "auto" di kiri, ini yang bikin dia ke tengah */
+    margin: 0 0 8px;
   }
 
   .hero-back-text-full {
@@ -294,7 +289,10 @@ html {
 }
 
 .hero p {
-  margin: 0 0 4px;
+  margin: 0 0 6px;           /* ← diperkecil */
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 .page-fade-enter-active,
@@ -310,11 +308,6 @@ html {
 .page-fade-leave-to {
   opacity: 0;
   transform: translateY(-8px);
-}
-
-.page-fade-enter-active,
-.page-fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .page-fade-leave-active {
@@ -358,8 +351,8 @@ html {
 .hero-features {
   display: flex;
   justify-content: center;
-  gap: 24px;
-  margin-top: 8px;
+  gap: 12px;                 /* ← diperkecil */
+  margin-top: 6px;
   margin-bottom: 0;
   flex-wrap: wrap;
 }
@@ -382,8 +375,6 @@ html {
   position: relative;
 }
 
-/* ===== PERBAIKAN: badge di mobile sekarang wrap ke baris baru,
-   bukan di-scroll horizontal, jadi tidak ada lagi yang terpotong ===== */
 @media (max-width: 600px) {
   .hero-features {
     gap: 4px;
@@ -410,7 +401,7 @@ html {
 
 @media (max-width: 600px) {
   .app {
-    padding-top: 68px; /* menyesuaikan tinggi navbar versi mobile */
+    padding-top: 58px;       /* ← diperkecil */
   }
 }
 </style>
